@@ -11,7 +11,7 @@ public class BedEquipBehavour : IEquipable
         this.bed = bed;
     }
     public void Equip() {
-        FlatSettings.bed = this.bed;
+        HomeSettings.bed = this.bed;
         UnityEngine.Debug.Log("Equipped a bed");
     }
 }

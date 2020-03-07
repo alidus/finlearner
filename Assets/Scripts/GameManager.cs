@@ -165,7 +165,16 @@ public class GameManager : MonoBehaviour
             switch (child.name)
             {
                 case "Bed":
-                    child.GetComponent<SpriteRenderer>().sprite = FlatSettings.bed.Sprite;
+                    child.GetComponent<SpriteRenderer>().sprite = HomeSettings.Bed != null ? HomeSettings.Bed.Sprite : null;
+                    break;
+                case "Chair":
+                    child.GetComponent<SpriteRenderer>().sprite = HomeSettings.Chair != null ? HomeSettings.Chair.Sprite : null;
+                    break;
+                case "Armchair":
+                    child.GetComponent<SpriteRenderer>().sprite = HomeSettings.Armchair != null ? HomeSettings.Armchair.Sprite : null;
+                    break;
+                case "Table":
+                    child.GetComponent<SpriteRenderer>().sprite = HomeSettings.Table != null ? HomeSettings.Table.Sprite : null;
                     break;
                 default:
                     break;
