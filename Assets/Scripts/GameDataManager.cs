@@ -23,15 +23,15 @@ public class GameDataManager : MonoBehaviour
 	}
 
 	// Base stats
-	private int money;
-	public int Money
+	private float money;
+	public float Money
 	{
 		get { return money; }
 		set { money = value; }
 	}
 
-	private int mood;
-	public int Mood
+	private float mood;
+	public float Mood
 	{
 		get { return mood; }
 		set { mood = value; }

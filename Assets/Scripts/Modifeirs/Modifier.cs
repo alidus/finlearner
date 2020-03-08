@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ModifierType { Money, Mood}
-public enum ModifierEffectFreqency { OneShot, Daily, Weekly, Yearly }
+public enum ModifierEffectFreqency { OneShot, Daily, Weekly, Monthly, Yearly }
 
 [System.Serializable]
 public class Modifier
@@ -16,8 +16,8 @@ public class Modifier
         set { name = value; }
     }
     [SerializeField]
-    private int value = 20;
-    public int Value
+    private float value = 20;
+    public float Value
     {
         get { return value; }
         set { this.value = value; }
@@ -27,7 +27,7 @@ public class Modifier
     public ModifierEffectFreqency Freqency
     {
         get { return freqency; }
-        set { Freqency = value; }
+        set { freqency = value; }
     }
     [SerializeField]
     private ModifierType type;
@@ -37,7 +37,7 @@ public class Modifier
         set { type = value; }
     }
     
-    public Modifier(string name, int value, ModifierType type, ModifierEffectFreqency freqency)
+    public Modifier(string name, float value, ModifierType type, ModifierEffectFreqency freqency)
     {
         this.Name = name;
         this.Value = value;

@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
     private List<Job> activeJobs = new List<Job>();
 
     // Fin ops
-    private List<Credit> credits = new List<Credit>();
+    private List<Credit> activeCredits = new List<Credit>();
 
     // Store catalogs
     public StoreCatalog homeStoreCatalog;
@@ -140,7 +140,7 @@ public class GameController : MonoBehaviour
             TickWeek();
             isEndOfWeek = true;
         }
-        ApplyAllGlobalMultipliers(true);
+        ApplyGlobalMultipliers(true);
         gameManager.AddDayToWeekProgressIndicator();
         gameDataManager.AddToDayCounter();
         
@@ -148,11 +148,11 @@ public class GameController : MonoBehaviour
 
     private void TickWeek()
     {
-
+        ApplyGlobalMultipliers(false, true);
     }
 
 
-    private void ApplyAllGlobalMultipliers(bool daily = true, bool weekly = false, bool yearly = false)
+    private void ApplyGlobalMultipliers(bool daily = true, bool monthly = false, bool weekly = false, bool yearly = false)
     {
         foreach (Modifier modifier in modifiersPool)
         {
@@ -160,11 +160,18 @@ public class GameController : MonoBehaviour
             {
                 // Apply yearly modifier
                 ApplyModifier(modifier);
-            } else if (weekly && modifier.Freqency == ModifierEffectFreqency.Weekly)
+            }
+            else if (monthly && modifier.Freqency == ModifierEffectFreqency.Monthly)
+            {
+                // Apply monthly modifier
+                ApplyModifier(modifier);
+            }
+            else if (weekly && modifier.Freqency == ModifierEffectFreqency.Weekly)
             {
                 // Apply weekly modifier
                 ApplyModifier(modifier);
-            } else if (daily && (modifier.Freqency == ModifierEffectFreqency.Daily))
+            } 
+            else if (daily && (modifier.Freqency == ModifierEffectFreqency.Daily))
             {
                 // Apply daily modifier
                 ApplyModifier(modifier);
@@ -191,10 +198,19 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private void AddModifiersToGlobalPool(ModifiersContainer modifiers)
+    {
+        this.modifiersPool.AddRange(modifiers.Modifiers);
+        foreach(Modifier modifier in modifiers)
+        {
+            OnModifierAdded(modifier);
+        }
+    }
+
     private void AppendModifiers(List<Modifier> modifiers)
     {
         this.modifiersPool.AddRange(modifiers);
-        foreach(Modifier modifier in modifiers)
+        foreach (Modifier modifier in modifiers)
         {
             OnModifierAdded(modifier);
         }
@@ -213,13 +229,13 @@ public class GameController : MonoBehaviour
 
     }
 
-    public void AddMoney(int value)
+    public void AddMoney(float value)
     {
         gameDataManager.Money += value;
         gameManager.UpdateMoneyPanel();
     }
 
-    public void AddMood(int value)
+    public void AddMood(float value)
     {
         gameDataManager.Mood += value;
         gameManager.UpdateMoodPanel();
@@ -260,4 +276,18 @@ public class GameController : MonoBehaviour
         
     }
 
+    public void TakeTestCredit()
+    {
+        Credit credit = Credit.Create(5000, 100, 0.13f);
+        credit.Modifiers.Add(new Modifier("У вас кредит :((", -credit.GetMonthlyPaymentAmount(), ModifierType.Money, ModifierEffectFreqency.Monthly));
+
+        ActivateCredit(credit);
+    }
+
+    private void ActivateCredit(Credit credit)
+    {
+        AddMoney(credit.LoanTotalAmount);
+        activeCredits.Add(credit);
+        AddModifiersToGlobalPool(credit.Modifiers);
+    }
 }

@@ -2,27 +2,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Credit : MonoBehaviour
+public class Credit
 {
     private float yearRate;
     private float loanBalance;
+    private float loanTotalAmount;
+    public float LoanTotalAmount
+    {
+        get { return loanTotalAmount; }
+        set { loanTotalAmount = value; }
+    }
     private float daysRemained;
-    private List<Modifier> modifiers;
-
-    private Credit(float value, float periodInDays, float yearRate, List<Modifier> modifiers)
+    private float billingPeriodInDays;
+    private ModifiersContainer modifiers = new ModifiersContainer();
+    public ModifiersContainer Modifiers
+    {
+        get { return modifiers; }
+        set { modifiers = value; }
+    }
+    private Credit(float loanTotalAmount, float billingPeriodInDays, float yearRate)
     {
         this.yearRate = yearRate;
-        this.loanBalance = value;
-        this.daysRemained = periodInDays;
-        this.modifiers = modifiers;
+        this.loanBalance = loanTotalAmount;
+        this.LoanTotalAmount = loanTotalAmount;
+        this.billingPeriodInDays = billingPeriodInDays;
     }
 
-    public Credit GetNewCredit(float value, int periodInDays, float yearRate, List<Modifier> modifiers)
+    public static Credit Create(float value, int billingPeriodInDays, float yearRate)
     {
-        Credit result = new Credit(value, periodInDays, yearRate, modifiers);
+        Credit result = new Credit(value, billingPeriodInDays, yearRate);
 
         return result;
     }
 
-
+    public float GetMonthlyPaymentAmount()
+    {
+        float rateDailyPayment = yearRate / 366 * LoanTotalAmount;
+        float debtDailyPayment = LoanTotalAmount / 366;
+        return billingPeriodInDays * (rateDailyPayment + debtDailyPayment);
+    }
 }
