@@ -9,7 +9,7 @@ public enum ItemCategory
 
 public enum ItemType
 {
-    Bed, Cupboard, SingleBuy, RealEstate, Consumable, Other
+    Bed, Chair, Armchair, Table, Other
 }
 
 [System.Serializable]

@@ -73,26 +73,24 @@ public class StoreCatalog : ScriptableObject
 
     private void AttachBehaviours()
     {
-            foreach (StoreItem item in items)
+        foreach (StoreItem item in items)
+        {
+            switch (item.Category)
             {
-                switch (item.Type)
-                {
-                    case ItemType.Bed:
-                        item.EquipBehavour = new BedEquipBehavour(item);
-                        break;
-                    case ItemType.Cupboard:
-                        break;
-                    case ItemType.SingleBuy:
-                        break;
-                    case ItemType.RealEstate:
-                        break;
-                    case ItemType.Consumable:
-                        break;
-                    case ItemType.Other:
-                        break;
-                    default:
-                        break;
-                }
+                case ItemCategory.Furniture:
+                    item.EquipBehavour = new HomeFurnitureEquipBehavour(item);
+                    break;
+                case ItemCategory.Clothes:
+                    break;
+                case ItemCategory.FreeEstate:
+                    break;
+                case ItemCategory.Car:
+                    break;
+                case ItemCategory.Misc:
+                    break;
+                default:
+                    break;
             }
+        }
     }
 }
