@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    private static GameController gameController;
 
     private static GameManager instance;
     public static GameManager Instance
@@ -66,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
+        
         if (Instance == null)
         {
             Instance = this;
@@ -75,15 +77,29 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        gameDataManager = GameDataManager.Instance;
-
+        
+        Init();
         flat = GameObject.Find("Flat");
         weekProgressBar = GameObject.Find("WeekProgressBar");
         moneyPanel = GameObject.Find("MoneyPanel");
         moodPanel = GameObject.Find("MoodPanel");
         gameDataManager = GetComponent<GameDataManager>();
         GameMode = (GameMode)Resources.Load("ScriptableObjects/GameModes/FreePlayGM");
+
+        
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        
+    }
+
+    private void Init()
+    {
+        gameDataManager = GameDataManager.Instance;
+        gameController = GetComponent<GameController>();
+        gameController.OnModifierAdded += AddModifierPanel;
     }
 
 
@@ -228,12 +244,16 @@ public class GameManager : MonoBehaviour
         Transform[] children = modifiersInfoPanel.transform.GetComponentsInChildren<Transform>();
         GameObject panel = Instantiate(modifierPanelPrefab);
         string ContentPanelName = "";
-        if (modifier is MoodModifier)
+        switch (modifier.Type)
         {
-            ContentPanelName = "MoodModsContent";
-        } else if (modifier is IncomeModifier)
-        {
-            ContentPanelName = "IncomeModsContent";
+            case ModifierType.Money:
+                ContentPanelName = "MoneyModsContent";
+                break;
+            case ModifierType.Mood:
+                ContentPanelName = "MoodModsContent";
+                break;
+            default:
+                break;
         }
 
         // Iterate through children of modifiers panel and find content panels of each mod type containing array of modifiers
@@ -244,9 +264,9 @@ public class GameManager : MonoBehaviour
                 panel.transform.SetParent(child);
                 panel.transform.localScale = new Vector3(1, 1, 1);
                 Transform titleTextTransform = panel.transform.Find("Title");
-                titleTextTransform.GetComponent<Text>().text = modifier.name;
-                panel.transform.Find("TypePanel").GetComponentInChildren<Text>().text = modifier.type.ToString();
-                panel.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (modifier.value > 0 ? "+" : "") + modifier.value;
+                titleTextTransform.GetComponent<Text>().text = modifier.Name;
+                panel.transform.Find("TypePanel").GetComponentInChildren<Text>().text = modifier.Type.ToString();
+                panel.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (modifier.Value > 0 ? "+" : "") + modifier.Value;
             }
         }
     }

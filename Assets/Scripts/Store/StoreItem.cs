@@ -65,11 +65,11 @@ public class StoreItem
         set { type = value; }
     }
     [SerializeField]
-    private MoodModifier moodModifier;
-    public MoodModifier MoodModifier
+    private List<Modifier> modifiers;
+    public List<Modifier> Modifiers
     {
-        get { return moodModifier; }
-        set { moodModifier = value; }
+        get { return modifiers; }
+        set { modifiers = value; }
     }
     [SerializeField]
     private Sprite sprite;

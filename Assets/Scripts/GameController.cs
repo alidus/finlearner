@@ -15,13 +15,16 @@ public class GameController : MonoBehaviour
     public Image DayProgressBarFill;
 
     float timeSinceDayStart;
+    // Modifiers
+    private ModifiersContainer modifiersPool = new ModifiersContainer();
 
-    // Modifiers related
-    private List<IncomeModifier> incomeModifiers = new List<IncomeModifier>();
-    private List<MoodModifier> moodModifiers = new List<MoodModifier>();
 
+    // Jobs
     private List<Job> jobsPool = new List<Job>();
     private List<Job> activeJobs = new List<Job>();
+
+    // Fin ops
+    private List<Credit> credits = new List<Credit>();
 
     // Store catalogs
     public StoreCatalog homeStoreCatalog;
@@ -40,6 +43,10 @@ public class GameController : MonoBehaviour
 
     // Cashing
     public Dictionary<ItemType, StoreItem> selectedObjectPerItemType;
+
+    // Events
+    public delegate void AddModifierAction(Modifier modifier);
+    public event AddModifierAction OnModifierAdded;
 
     private void OnEnable()
     {
@@ -94,9 +101,6 @@ public class GameController : MonoBehaviour
     {
         InitJobs();
 
-        //DEBUG
-        AddModifier(new IncomeModifier("Выплаты за ипотеку", -200, ModifierType.Weekly));
-        AddModifier(new MoodModifier("Выплаты за ипотеку", -3, ModifierType.Weekly));
 
         gameManager.UpdateUI();
     }
@@ -113,18 +117,17 @@ public class GameController : MonoBehaviour
         ActivateJob(jobsPool[0]);
     }
 
+
+
     private void ActivateJob(Job job)
     {
         activeJobs.Add(job);
-        AddModifier(job.incomeModifier);
-        AddModifier(job.moodModifier);
+        AppendModifiers(job.modifiers);
     }
 
     private void DeactivateJob(Job job)
     {
         activeJobs.Remove(job);
-        RemoveIncomeModifier(job.incomeModifier);
-        RemoveMoodModifier(job.moodModifier);
     }
 
     private void TickDay()
@@ -137,13 +140,8 @@ public class GameController : MonoBehaviour
             TickWeek();
             isEndOfWeek = true;
         }
-        int deltaMoney = GetModifiersCalculation(incomeModifiers.ConvertAll(x => (Modifier)x), true, isEndOfWeek);
-        int deltaMood = GetModifiersCalculation(moodModifiers.ConvertAll(x => (Modifier)x), true, isEndOfWeek);
+        ApplyAllGlobalMultipliers(true);
         gameManager.AddDayToWeekProgressIndicator();
-        AddMoney(deltaMoney);
-        AddMood(deltaMood);
-        gameDataManager.DailyIncome = deltaMoney;
-        gameDataManager.DailyMoodChange = deltaMood;
         gameDataManager.AddToDayCounter();
         
     }
@@ -153,18 +151,59 @@ public class GameController : MonoBehaviour
 
     }
 
-    private int GetModifiersCalculation(List<Modifier> modifiers, bool countDaily, bool countWeekly)
+
+    private void ApplyAllGlobalMultipliers(bool daily = true, bool weekly = false, bool yearly = false)
     {
-        int result = 0;
-        foreach (Modifier mod in modifiers)
+        foreach (Modifier modifier in modifiersPool)
         {
-            if (countDaily && mod.type == ModifierType.Daily || countWeekly && mod.type == ModifierType.Weekly)
+            if (yearly && modifier.Freqency == ModifierEffectFreqency.Yearly)
             {
-                result += mod.value;
+                // Apply yearly modifier
+                ApplyModifier(modifier);
+            } else if (weekly && modifier.Freqency == ModifierEffectFreqency.Weekly)
+            {
+                // Apply weekly modifier
+                ApplyModifier(modifier);
+            } else if (daily && (modifier.Freqency == ModifierEffectFreqency.Daily))
+            {
+                // Apply daily modifier
+                ApplyModifier(modifier);
             }
-            
         }
-        return result;
+    }
+
+    /// <summary>
+    /// Apply modifier effects instantly
+    /// </summary>
+    /// <param name="modifier"></param>
+    private void ApplyModifier(Modifier modifier)
+    {
+        switch (modifier.Type)
+        {
+            case ModifierType.Money:
+                AddMoney(modifier.Value);
+                break;
+            case ModifierType.Mood:
+                AddMood(modifier.Value);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void AppendModifiers(List<Modifier> modifiers)
+    {
+        this.modifiersPool.AddRange(modifiers);
+        foreach(Modifier modifier in modifiers)
+        {
+            OnModifierAdded(modifier);
+        }
+    }
+
+    private void AppendModifiers(Modifier modifier)
+    {
+        this.modifiersPool.Add(modifier);
+        OnModifierAdded(modifier);
     }
 
 
@@ -195,20 +234,17 @@ public class GameController : MonoBehaviour
             {
                 item.IsOwned = true;
                 AddMoney(-item.Price);
-                switch (item.MoodModifier.type)
+                foreach (Modifier modifier in item.Modifiers)
                 {
-                    case ModifierType.Daily:
-                        AddModifier(item.MoodModifier);
-                        break;
-                    case ModifierType.Weekly:
-                        AddModifier(item.MoodModifier);
-                        break;
-                    case ModifierType.OneShot:
-                        AddMood(item.MoodModifier.value);
-                        break;
-                    default:
-                        break;
+                    if (modifier.Freqency == ModifierEffectFreqency.OneShot)
+                    {
+                        ApplyModifier(modifier);
+                    } else
+                    {
+                        AppendModifiers(modifier);
+                    }
                 }
+                
             }
         } else
         {
@@ -222,38 +258,6 @@ public class GameController : MonoBehaviour
             
         }
         
-    }
-
-    public void AddModifier(IncomeModifier mod)
-    {
-        incomeModifiers.Add(mod);
-        gameManager.AddModifierPanel(mod);
-    }
-
-    public void AddModifier(MoodModifier mod)
-    {
-        moodModifiers.Add(mod);
-        gameManager.AddModifierPanel(mod);
-    }
-
-    public void RemoveIncomeModifier(IncomeModifier mod)
-    {
-        incomeModifiers.Remove(mod);
-    }
-
-    public void RemoveIncomeModifier(int index)
-    {
-        incomeModifiers.RemoveAt(index);
-    }
-
-    public void RemoveMoodModifier(MoodModifier mod)
-    {
-        moodModifiers.Remove(mod);
-    }
-
-    public void RemoveMoodModifier(int index)
-    {
-        moodModifiers.RemoveAt(index);
     }
 
 }

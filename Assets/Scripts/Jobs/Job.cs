@@ -6,13 +6,11 @@ public class Job
 {
     public string title;
     public string desc;
-    public IncomeModifier incomeModifier;
-    public MoodModifier moodModifier;
+    public List<Modifier> modifiers;
     public Job(JobSOTemplate template)
     {
         title = template.title;
         desc = template.title;
-        incomeModifier = template.incomeModifier;
-        moodModifier = template.moodModifier;
+        modifiers = template.modifiers;
     }
 }

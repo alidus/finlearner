@@ -6,7 +6,6 @@ using UnityEngine;
 public class JobSOTemplate : ScriptableObject
 {
     public string title;
-    public string desc;
-    public IncomeModifier incomeModifier;
-    public MoodModifier moodModifier;
+    public string descrip;
+    public List<Modifier> modifiers = new List<Modifier>();
 }
