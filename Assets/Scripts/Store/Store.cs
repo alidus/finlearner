@@ -21,9 +21,9 @@ public class Store : MonoBehaviour
 
 
 
-    private void OnEnable()
+    private void Awake()
     {
-        gameManager = GameManager.Instance;
+        gameManager = GameManager.instance;
     }
 
 

@@ -12,6 +12,6 @@ public class HomeFurnitureEquipBehavour : IEquipable
     }
     public void Equip()
     {
-        HomeSettings.EquipItem(this.item);
+        HouseManager.SetFurniture(this.item);
     }
 }

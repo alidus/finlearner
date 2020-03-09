@@ -6,13 +6,14 @@ using System;
 
 public class GameController : MonoBehaviour
 {
-    // Singleton managers
+    // Managers, Controllers
     private GameManager gameManager;
     private GameDataManager gameDataManager;
+    private UIManager uiManager;
 
     public Text moneyText;
     public Text moodText;
-    public Image DayProgressBarFill;
+    
 
     float timeSinceDayStart;
     // Modifiers
@@ -45,21 +46,22 @@ public class GameController : MonoBehaviour
     public Dictionary<ItemType, StoreItem> selectedObjectPerItemType;
 
     // Events
-    public delegate void AddModifierAction(Modifier modifier);
-    public event AddModifierAction OnModifierAdded;
+    
+
+    private void Awake()
+    {
+        GameManager.OnGameStarted += OnGameStarted;
+    }
 
     private void OnEnable()
     {
-        GameManager.OnGameStarted += OnGameStarted;
-
         
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameManager.Instance;
-        gameDataManager = GameDataManager.Instance;
+        Init();
         homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
         homeStoreCatalog.Init();
         // Create store (can be multiple) components
@@ -75,35 +77,41 @@ public class GameController : MonoBehaviour
         {
             //TODO: Add selectable items to list
         }
+    }
 
-        Init();
+    private void Init()
+    {
+        gameManager = GameManager.instance;
+        gameDataManager = GameDataManager.instance;
+        uiManager = UIManager.instance;
+        InitJobs();
+
+
+        uiManager.UpdateUI();
     }
 
     // Update is called once per frame
     void Update()
     {
-        DayProgressBarFill.fillAmount = timeSinceDayStart / gameManager.GameMode.dayDuration;
-        timeSinceDayStart += Time.deltaTime;
-        if (timeSinceDayStart > gameManager.GameMode.dayDuration)
+        if (gameManager.GetGameState() == GameManager.GameState.InGame)
         {
-            TickDay();
-            timeSinceDayStart = 0;
-
-            if (gameDataManager.DayCount - gameDataManager.Age * 365 > 365)
+            uiManager.SetDayProgress(timeSinceDayStart / gameManager.GameMode.dayDuration);
+            timeSinceDayStart += Time.deltaTime;
+            if (timeSinceDayStart > gameManager.GameMode.dayDuration)
             {
-                gameDataManager.Age += 1;
+                TickDay();
+                timeSinceDayStart = 0;
+
+                if (gameDataManager.DayCount - gameDataManager.Age * 365 > 365)
+                {
+                    gameDataManager.Age += 1;
+                }
+                uiManager.UpdateInfoPanel();
             }
-            gameManager.UpdateInfoPanel();
         }
     }
 
-    private void Init()
-    {
-        InitJobs();
-
-
-        gameManager.UpdateUI();
-    }
+   
 
     private void InitJobs()
     {
@@ -141,7 +149,7 @@ public class GameController : MonoBehaviour
             isEndOfWeek = true;
         }
         ApplyGlobalMultipliers(true);
-        gameManager.AddDayToWeekProgressIndicator();
+        uiManager.UpdateDayProgressBar();
         gameDataManager.AddToDayCounter();
         
     }
@@ -201,25 +209,19 @@ public class GameController : MonoBehaviour
     private void AddModifiersToGlobalPool(ModifiersContainer modifiers)
     {
         this.modifiersPool.AddRange(modifiers.Modifiers);
-        foreach(Modifier modifier in modifiers)
-        {
-            OnModifierAdded(modifier);
-        }
+        uiManager.UpdateModifiersPanel();
     }
 
     private void AppendModifiers(List<Modifier> modifiers)
     {
         this.modifiersPool.AddRange(modifiers);
-        foreach (Modifier modifier in modifiers)
-        {
-            OnModifierAdded(modifier);
-        }
+        uiManager.UpdateModifiersPanel();
     }
 
     private void AppendModifiers(Modifier modifier)
     {
         this.modifiersPool.Add(modifier);
-        OnModifierAdded(modifier);
+        uiManager.UpdateModifiersPanel();
     }
 
 
@@ -232,13 +234,13 @@ public class GameController : MonoBehaviour
     public void AddMoney(float value)
     {
         gameDataManager.Money += value;
-        gameManager.UpdateMoneyPanel();
+        uiManager.UpdateMoneyPanel();
     }
 
     public void AddMood(float value)
     {
         gameDataManager.Mood += value;
-        gameManager.UpdateMoodPanel();
+        uiManager.UpdateMoodPanel();
     }
 
     public void HomeStoreItemClick(StoreItem item)
@@ -269,7 +271,7 @@ public class GameController : MonoBehaviour
             {
                 item.EquipBehavour.Equip();
                 homeStoreComponent.storeCatalog.EquipItem(item);
-                gameManager.UpdateFlatAppearance();
+                HouseManager.UpdateFlatAppearance();
             }
             
         }

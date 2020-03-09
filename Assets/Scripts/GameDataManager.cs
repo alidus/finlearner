@@ -4,26 +4,24 @@ using UnityEngine;
 
 public class GameDataManager : MonoBehaviour
 {
-	private static GameDataManager instance;
-	public static GameDataManager Instance
-	{
-		get { return instance; }
-		set { instance = value; }
-	}
+	public static GameDataManager instance; 
 
-	private void OnEnable()
-	{
-		if (Instance == null)
-		{
-			Instance = this;
-		} else if (Instance == this)
-		{
-			Destroy(gameObject);
-		}
-	}
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
 
-	// Base stats
-	private float money;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    // Base stats
+    private float money;
 	public float Money
 	{
 		get { return money; }
