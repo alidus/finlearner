@@ -15,6 +15,7 @@ public class UIEventMapper : MonoBehaviour
     private void Start()
     {
         gameManager = GameManager.instance;
+        gameController = GameController.instance;
 
         storeButton = GameObject.Find("StoreButton").GetComponent<Button>();
         infoPanelButton = GameObject.Find("InfoPanel").GetComponent<Button>();
@@ -22,6 +23,6 @@ public class UIEventMapper : MonoBehaviour
 
         storeButton.onClick.AddListener(gameManager.ToggleStoreMenu);
         infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);
-        getCreditButtonTEST.onClick.AddListener(gameManager.gameController.TakeTestCredit);
+        getCreditButtonTEST.onClick.AddListener(gameController.TakeTestCredit);
     }
 }

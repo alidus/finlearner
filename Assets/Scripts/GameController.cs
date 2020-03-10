@@ -6,18 +6,19 @@ using System;
 
 public class GameController : MonoBehaviour
 {
+    public static GameController instance;
     // Managers, Controllers
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private UIManager uiManager;
-
-    public Text moneyText;
-    public Text moodText;
+    private StoreController storeManager;
+    private HouseManager houseManager;
+    private StatusEffectsController statusEffectsManager;
     
 
     float timeSinceDayStart;
     // Modifiers
-    private ModifiersContainer modifiersPool = new ModifiersContainer();
+    private StatusEffectContainer activeStatusEffects = new StatusEffectContainer();
 
 
     // Jobs
@@ -31,29 +32,44 @@ public class GameController : MonoBehaviour
     public StoreCatalog homeStoreCatalog;
 
     // Store managers
-    private Store homeStoreComponent;
-
-    // UI references
-    public GameObject homeStorePanel;
-    public GameObject homeStoreCategoriesPanel;
-    public GameObject homeStoreGridPanel;
 
     // Prefabs
-    public GameObject homeStoreItemPrefab;
     public GameObject homeStoreCategoryButtonPrefab;
 
     // Cashing
     public Dictionary<ItemType, StoreItem> selectedObjectPerItemType;
 
     // Events
-    
+    public delegate void TimeIntervalTickAction();
+    public event TimeIntervalTickAction OnDailyTick;
+    public event TimeIntervalTickAction OnWeeklyTick;
+    public event TimeIntervalTickAction OnMonthlyTick;
+    public event TimeIntervalTickAction OnYearlyTick;
+
 
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance == this)
+        {
+            Destroy(gameObject);
+        }
+
+        DontDestroyOnLoad(gameObject);
+
+        UpdateReferences();
         GameManager.OnGameStarted += OnGameStarted;
     }
 
     private void OnEnable()
+    {
+        
+    }
+
+    public void UpdateReferences()
     {
         
     }
@@ -64,10 +80,7 @@ public class GameController : MonoBehaviour
         Init();
         homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
         homeStoreCatalog.Init();
-        // Create store (can be multiple) components
-        homeStoreComponent = StoreComponentFactory.CreateStoreComponent(this.transform.gameObject, homeStoreCatalog, homeStorePanel, homeStoreItemPrefab, homeStoreCategoryButtonPrefab, homeStoreCategoriesPanel, homeStoreGridPanel);
-        homeStoreComponent.OnInventoryItemClicked += HomeStoreItemClick;
-        GameManager.OnStoreButtonPress += homeStoreComponent.Toggle;
+        storeManager.HomeStoreCatalog = homeStoreCatalog;
 
         gameDataManager.Money = gameManager.GameMode.money;
         gameDataManager.Mood = gameManager.GameMode.mood;
@@ -81,11 +94,12 @@ public class GameController : MonoBehaviour
 
     private void Init()
     {
+        storeManager = StoreController.instance;
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         uiManager = UIManager.instance;
-        InitJobs();
-
+        houseManager = HouseManager.instance;
+        statusEffectsManager = StatusEffectsController.instance;
 
         uiManager.UpdateUI();
     }
@@ -130,7 +144,7 @@ public class GameController : MonoBehaviour
     private void ActivateJob(Job job)
     {
         activeJobs.Add(job);
-        AppendModifiers(job.modifiers);
+        statusEffectsManager.AddStatusEffects(job.StatusEffects);
     }
 
     private void DeactivateJob(Job job)
@@ -140,156 +154,40 @@ public class GameController : MonoBehaviour
 
     private void TickDay()
     {
-        bool isEndOfWeek = false;
-        
         gameDataManager.AddDayOfWeek();
         if (gameDataManager.DayOfWeekIndex == 0)
         {
             TickWeek();
-            isEndOfWeek = true;
         }
-        ApplyGlobalMultipliers(true);
-        uiManager.UpdateDayProgressBar();
+        OnDailyTick();
+        
         gameDataManager.AddToDayCounter();
         
     }
 
     private void TickWeek()
     {
-        ApplyGlobalMultipliers(false, true);
+        OnWeeklyTick();
     }
-
-
-    private void ApplyGlobalMultipliers(bool daily = true, bool monthly = false, bool weekly = false, bool yearly = false)
-    {
-        foreach (Modifier modifier in modifiersPool)
-        {
-            if (yearly && modifier.Freqency == ModifierEffectFreqency.Yearly)
-            {
-                // Apply yearly modifier
-                ApplyModifier(modifier);
-            }
-            else if (monthly && modifier.Freqency == ModifierEffectFreqency.Monthly)
-            {
-                // Apply monthly modifier
-                ApplyModifier(modifier);
-            }
-            else if (weekly && modifier.Freqency == ModifierEffectFreqency.Weekly)
-            {
-                // Apply weekly modifier
-                ApplyModifier(modifier);
-            } 
-            else if (daily && (modifier.Freqency == ModifierEffectFreqency.Daily))
-            {
-                // Apply daily modifier
-                ApplyModifier(modifier);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Apply modifier effects instantly
-    /// </summary>
-    /// <param name="modifier"></param>
-    private void ApplyModifier(Modifier modifier)
-    {
-        switch (modifier.Type)
-        {
-            case ModifierType.Money:
-                AddMoney(modifier.Value);
-                break;
-            case ModifierType.Mood:
-                AddMood(modifier.Value);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void AddModifiersToGlobalPool(ModifiersContainer modifiers)
-    {
-        this.modifiersPool.AddRange(modifiers.Modifiers);
-        uiManager.UpdateModifiersPanel();
-    }
-
-    private void AppendModifiers(List<Modifier> modifiers)
-    {
-        this.modifiersPool.AddRange(modifiers);
-        uiManager.UpdateModifiersPanel();
-    }
-
-    private void AppendModifiers(Modifier modifier)
-    {
-        this.modifiersPool.Add(modifier);
-        uiManager.UpdateModifiersPanel();
-    }
-
 
 
     private void OnGameStarted(GameMode gameMode)
     {
-
-    }
-
-    public void AddMoney(float value)
-    {
-        gameDataManager.Money += value;
-        uiManager.UpdateMoneyPanel();
-    }
-
-    public void AddMood(float value)
-    {
-        gameDataManager.Mood += value;
-        uiManager.UpdateMoodPanel();
-    }
-
-    public void HomeStoreItemClick(StoreItem item)
-    {
-        if (!item.IsOwned)
-        {
-            // Try to buy
-            if (item.Price <= gameDataManager.Money)
-            {
-                item.IsOwned = true;
-                AddMoney(-item.Price);
-                foreach (Modifier modifier in item.Modifiers)
-                {
-                    if (modifier.Freqency == ModifierEffectFreqency.OneShot)
-                    {
-                        ApplyModifier(modifier);
-                    } else
-                    {
-                        AppendModifiers(modifier);
-                    }
-                }
-                
-            }
-        } else
-        {
-            // Equip
-            if (item.EquipBehavour != null)
-            {
-                item.EquipBehavour.Equip();
-                homeStoreComponent.storeCatalog.EquipItem(item);
-                HouseManager.UpdateFlatAppearance();
-            }
-            
-        }
-        
+        InitJobs();
     }
 
     public void TakeTestCredit()
     {
         Credit credit = Credit.Create(5000, 100, 0.13f);
-        credit.Modifiers.Add(new Modifier("У вас кредит :((", -credit.GetMonthlyPaymentAmount(), ModifierType.Money, ModifierEffectFreqency.Monthly));
+        credit.StatusEffects.Add(new StatusEffect("У вас кредит :((", -credit.GetMonthlyPaymentAmount(), StatusEffectType.Money, StatusEffectFrequency.Monthly));
 
         ActivateCredit(credit);
     }
 
     private void ActivateCredit(Credit credit)
     {
-        AddMoney(credit.LoanTotalAmount);
+        gameDataManager.Money += credit.LoanTotalAmount;
         activeCredits.Add(credit);
-        AddModifiersToGlobalPool(credit.Modifiers);
+        statusEffectsManager.AddStatusEffects(credit.StatusEffects);
     }
 }

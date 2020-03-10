@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class GameDataManager : MonoBehaviour
 {
-	public static GameDataManager instance; 
+	public static GameDataManager instance;
+
+	// Events, Delegates
+	public delegate void MoneyValueChangedAction();
+	public event MoneyValueChangedAction OnMoneyValueChanged;
+    public delegate void MoodValueChangedAction();
+    public event MoodValueChangedAction OnMoodValueChanged;
 
     private void Awake()
     {
@@ -25,14 +31,14 @@ public class GameDataManager : MonoBehaviour
 	public float Money
 	{
 		get { return money; }
-		set { money = value; }
+		set { money = value; OnMoneyValueChanged?.Invoke() ; }
 	}
 
 	private float mood;
 	public float Mood
 	{
 		get { return mood; }
-		set { mood = value; }
+		set { mood = value; OnMoodValueChanged?.Invoke(); }
 	}
 
     public int age;

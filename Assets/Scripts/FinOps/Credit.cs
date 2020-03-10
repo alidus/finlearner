@@ -14,11 +14,11 @@ public class Credit
     }
     private float daysRemained;
     private float billingPeriodInDays;
-    private ModifiersContainer modifiers = new ModifiersContainer();
-    public ModifiersContainer Modifiers
+    private List<StatusEffect> statusEffects;
+    public System.Collections.Generic.List<StatusEffect> StatusEffects
     {
-        get { return modifiers; }
-        set { modifiers = value; }
+        get { return statusEffects; }
+        set { statusEffects = value; }
     }
     private Credit(float loanTotalAmount, float billingPeriodInDays, float yearRate)
     {

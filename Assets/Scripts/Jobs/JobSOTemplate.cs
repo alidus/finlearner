@@ -7,5 +7,5 @@ public class JobSOTemplate : ScriptableObject
 {
     public string title;
     public string descrip;
-    public List<Modifier> modifiers = new List<Modifier>();
+    public List<StatusEffect> modifiers = new List<StatusEffect>();
 }

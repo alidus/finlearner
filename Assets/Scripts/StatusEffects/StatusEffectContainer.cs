@@ -5,15 +5,15 @@ using UnityEngine;
 /// <summary>
 /// Enumerable class containing modifiers array and methods to manipulate its data
 /// </summary>
-public class ModifiersContainer : IEnumerable
+public class StatusEffectContainer : IEnumerable
 {
-    private List<Modifier> modifiers;
+    private List<StatusEffect> modifiers;
 
-	public ModifiersContainer()
+	public StatusEffectContainer()
 	{
-		modifiers = new List<Modifier>();
+		modifiers = new List<StatusEffect>();
 	}
-	public System.Collections.Generic.List<Modifier> Modifiers
+	public System.Collections.Generic.List<StatusEffect> Modifiers
 	{
 		get { return modifiers; }
 		set { modifiers = value; }
@@ -24,12 +24,12 @@ public class ModifiersContainer : IEnumerable
 		return modifiers.GetEnumerator();
 	}
 
-	public void AddRange(List<Modifier> modifiers)
+	public void AddRange(List<StatusEffect> modifiers)
 	{
 		this.modifiers.AddRange(modifiers);
 	}
 
-    public void Add(Modifier modifier)
+    public void Add(StatusEffect modifier)
     {
         this.modifiers.Add(modifier);
     }

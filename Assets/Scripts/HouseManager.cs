@@ -25,20 +25,18 @@ public class HouseManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
+
+        UpdateReferences();
     }
 
-    private void Start()
-    {
-        Init();
-    }
 
-    public static void Init()
+
+    public void UpdateReferences()
     {
         house = GameObject.Find("House");
-        var z = 5;
     }
 
-    public static void SetFurniture(StoreItem item)
+    public void SetFurniture(StoreItem item)
     {
         switch (item.Type)
         {
@@ -61,7 +59,7 @@ public class HouseManager : MonoBehaviour
         }
     }
 
-    public static void UpdateFlatAppearance()
+    public void UpdateFlatAppearance()
     {
         foreach (Transform child in house.transform)
         {

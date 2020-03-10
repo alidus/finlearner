@@ -65,8 +65,8 @@ public class StoreItem
         set { type = value; }
     }
     [SerializeField]
-    private List<Modifier> modifiers;
-    public List<Modifier> Modifiers
+    private List<StatusEffect> modifiers;
+    public List<StatusEffect> Modifiers
     {
         get { return modifiers; }
         set { modifiers = value; }

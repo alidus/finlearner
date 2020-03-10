@@ -11,15 +11,15 @@ public class GameManager : MonoBehaviour
     // Managers, Controllers
     private UIManager uiManager;
     private GameDataManager gameDataManager;
-    public GameController gameController;
-
+    private GameController gameController;
+    private StoreController storeManager;
+    private HouseManager houseManager;
+    private StatusEffectsController statusEffectsManager;
 
     // Action delegates and events
     public delegate void GameStartedAction(GameMode gameMode);
     public static event GameStartedAction OnGameStarted;
-    //public static event GameDelegate OnGameOver;
-    public delegate void StoreOpenAction();
-    public static event StoreOpenAction OnStoreButtonPress;
+
 
     // Misc
     public Sprite placeHolder;
@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
+
+        UpdateReferences();
     }
 
 
@@ -67,9 +69,17 @@ public class GameManager : MonoBehaviour
     {
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
-        gameController = GetComponent<GameController>();
+        storeManager = StoreController.instance;
+        houseManager = HouseManager.instance;
+        gameController = GameController.instance;
+        statusEffectsManager = StatusEffectsController.instance;
 
         uiManager.SetUIState(UIManager.UIState.MainMenu);
+    }
+
+    public void UpdateReferences()
+    {
+        
     }
 
     public void SetGameState(GameState gameState)
@@ -99,8 +109,6 @@ public class GameManager : MonoBehaviour
         SetGameState(GameState.InGame);
 
         StartCoroutine("LoadLevel");
-
-        
     }
 
     public IEnumerator LoadLevel()
@@ -111,16 +119,21 @@ public class GameManager : MonoBehaviour
         {
             yield return 1;
         }
-        uiManager.InitReferences();
-        HouseManager.Init();
-        uiManager.UpdateUI();
-        HouseManager.UpdateFlatAppearance();
-
-        uiManager.SetUIState(UIManager.UIState.House);
+          
     }
 
     private void OnLevelWasLoaded(int level)
     {
+        uiManager.UpdateReferences();
+        storeManager.UpdateReferences();
+        houseManager.UpdateReferences();
+        statusEffectsManager.UpdateReferences();
+
+        uiManager.UpdateUI();
+        houseManager.UpdateFlatAppearance();
+
+        storeManager.UpdateStoreView();
+        uiManager.SetUIState(UIManager.UIState.House);
         OnGameStarted(gameMode);
     }
 

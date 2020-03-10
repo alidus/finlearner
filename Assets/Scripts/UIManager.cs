@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     // Managers, Controllers
     private GameManager gameManager;
     private GameDataManager gameDataManager;
+    private GameController gameController;
 
     // UI elements
     private GameObject mainMenuPanel;
@@ -20,22 +21,20 @@ public class UIManager : MonoBehaviour
     private GameObject loadingPanel;
     private GameObject storePanel;
     private GameObject infoPanel;
-    private GameObject modifiersInfoPanel;
+    private GameObject StatusEffectsPanel;
     private GameObject moneyPanel;
     private GameObject moodPanel;
     private GameObject weekProgressBar;
     private GameObject dayProgressBar;
     private Image dayProgressBarFillImage;
 
-    // UI prefabs
-    public GameObject modifierPanelPrefab;
 
     // Colors
     Color passedDayColor = new Color(1, 1, 1, 1);
     Color presentDayColor = new Color(1, 1, 1, 0.3f);
 
     // Other
-    Dictionary<Modifier, GameObject> modifiersPanelDictionary = new Dictionary<Modifier, GameObject>();
+    Dictionary<StatusEffect, GameObject> modifiersPanelDictionary = new Dictionary<StatusEffect, GameObject>();
 
     public enum UIState
     {
@@ -58,21 +57,18 @@ public class UIManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
+
+        UpdateReferences();
     }
 
-    private void OnEnable()
-    {
-        InitReferences();
-    }
-
-    public void InitReferences()
+    public void UpdateReferences()
     {
         mainMenuPanel = GameObject.Find("MainMenuPanel");
         cardSelectionPanel = GameObject.Find("CardSelectionPanel");
         loadingPanel = GameObject.Find("LoadingPanel");
         storePanel = GameObject.Find("StorePanel");
         infoPanel = GameObject.Find("InfoPanel");
-        modifiersInfoPanel = GameObject.Find("ModifiersInfoPanel");
+        StatusEffectsPanel = GameObject.Find("StatusEffectsPanel");
         moneyPanel = GameObject.Find("MoneyPanel");
         moodPanel = GameObject.Find("MoodPanel");
         weekProgressBar = GameObject.Find("WeekProgressBar");
@@ -89,8 +85,11 @@ public class UIManager : MonoBehaviour
     {
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
+        gameController = GameController.instance;
 
-        
+        gameController.OnDailyTick += UpdateDayProgressBar;
+        gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
+        gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
     }
 
     /// <summary>
@@ -116,14 +115,15 @@ public class UIManager : MonoBehaviour
                 loadingPanel.SetActive(true);
                 break;
             case UIState.House:
-
+                StatusEffectsPanel.SetActive(false);
+                storePanel.SetActive(false);
                 break;
             case UIState.Store:
-                modifiersInfoPanel.SetActive(false);
+                StatusEffectsPanel.SetActive(false);
                 storePanel.SetActive(true);
                 break;
             case UIState.ModifiersInfo:
-                modifiersInfoPanel.SetActive(true);
+                StatusEffectsPanel.SetActive(true);
                 storePanel.SetActive(false);
                 break;
             default:
@@ -179,12 +179,12 @@ public class UIManager : MonoBehaviour
         {
             SetUIState(UIState.House);
         }
-        modifiersInfoPanel.SetActive(state);
+        StatusEffectsPanel.SetActive(state);
     }
 
     public void ToggleModifiersInfoPanel()
     {
-        if (modifiersInfoPanel.activeSelf)
+        if (StatusEffectsPanel.activeSelf)
         {
             ShowModifiersInfoPanel(false);
         }
@@ -194,44 +194,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public GameObject CreateModifierPanel(Modifier modifier)
-    {
-        Transform[] children = modifiersInfoPanel.transform.GetComponentsInChildren<Transform>();
-        GameObject panel = Instantiate(modifierPanelPrefab);
-        string ContentPanelName = "";
-        switch (modifier.Type)
-        {
-            case ModifierType.Money:
-                ContentPanelName = "MoneyModsContent";
-                break;
-            case ModifierType.Mood:
-                ContentPanelName = "MoodModsContent";
-                break;
-            default:
-                break;
-        }
-
-        // Iterate through children of modifiers panel and find content panels of each mod type containing array of modifiers
-        foreach (Transform child in children)
-        {
-            if (child.name == ContentPanelName)
-            {
-                panel.transform.SetParent(child);
-                panel.transform.localScale = new Vector3(1, 1, 1);
-                Transform titleTextTransform = panel.transform.Find("Title");
-                titleTextTransform.GetComponent<Text>().text = modifier.Name;
-                panel.transform.Find("TypePanel").GetComponentInChildren<Text>().text = modifier.Type.ToString();
-                panel.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (modifier.Value > 0 ? "+" : "") + modifier.Value;
-            }
-        }
-
-        return panel;
-    }
-
-    public void UpdateModifiersPanel()
-    {
-
-    }
+   
 
     public void UpdateDayProgressBar()
     {

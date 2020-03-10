@@ -4,13 +4,31 @@ using UnityEngine;
 
 public class Job
 {
-    public string title;
-    public string desc;
-    public List<Modifier> modifiers;
+    [SerializeField]
+    private string title;
+    public string Title
+    {
+        get { return title; }
+        set { title = value; }
+    }
+    [SerializeField]
+    private string desc;
+    public string Desc
+    {
+        get { return desc; }
+        set { desc = value; }
+    }
+    [SerializeField]
+    private List<StatusEffect> statusEffects;
+    public System.Collections.Generic.List<StatusEffect> StatusEffects
+    {
+        get { return statusEffects; }
+        set { statusEffects = value; }
+    }
     public Job(JobSOTemplate template)
     {
-        title = template.title;
-        desc = template.title;
-        modifiers = template.modifiers;
+        Title = template.title;
+        Desc = template.title;
+        StatusEffects = template.modifiers;
     }
 }
