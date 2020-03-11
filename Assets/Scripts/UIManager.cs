@@ -153,7 +153,7 @@ public class UIManager : MonoBehaviour
 
         storeButton.onClick.AddListener(gameManager.ToggleStoreMenu);
         infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);
-        getCreditButtonTEST.onClick.AddListener(gameController.TakeTestCredit);
+        getCreditButtonTEST.onClick.AddListener(gameController.GetLoan);
     }
 
     /// <summary>

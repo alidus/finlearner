@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private StoreController storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
+    private HintsManager hintsManager;
 
     // Action delegates and events
     public delegate void GameStartedAction(GameMode gameMode);
@@ -77,6 +78,7 @@ public class GameManager : MonoBehaviour
         houseManager = HouseManager.instance;
         gameController = GameController.instance;
         statusEffectsManager = StatusEffectsController.instance;
+        hintsManager = HintsManager.instance;
 
         uiManager.SetUIState(UIManager.UIState.MainMenu);
     }
@@ -93,6 +95,7 @@ public class GameManager : MonoBehaviour
 
     public void OpenCardSelection()
     {
+        hintsManager.ShowHoveringPanel("Hello there", "General Kenobi!");
         uiManager.SetUIState(UIManager.UIState.CardSelection);
     }
 

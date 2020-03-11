@@ -23,7 +23,7 @@ public class GameController : MonoBehaviour
     private List<Job> activeJobs = new List<Job>();
 
     // Fin ops
-    private List<Credit> activeCredits = new List<Credit>();
+    private List<Loan> activeCredits = new List<Loan>();
 
     // Store catalogs
     public StoreCatalog homeStoreCatalog;
@@ -170,18 +170,22 @@ public class GameController : MonoBehaviour
         InitJobs();
     }
 
-    public void TakeTestCredit()
+    public void GetLoan()
     {
-        Credit credit = Credit.Create(5000, 100, 0.13f);
-        credit.StatusEffects.Add(new StatusEffect("У вас кредит :((", -credit.GetMonthlyPaymentAmount(), StatusEffectType.Money, StatusEffectFrequency.Monthly));
+        Loan.LoanBuilder builder = new Loan.LoanBuilder();
+        Loan loan = builder.SetRate(0.16f)
+            .SetInitialValue(5000f)
+            .SetPeriod(100)
+            .AddStatusEffect(new StatusEffect("У вас кредит :((", -5000f, StatusEffectType.Money, StatusEffectFrequency.Monthly))
+            .Build();
 
-        ActivateCredit(credit);
+        ActivateLoan(loan);
     }
 
-    private void ActivateCredit(Credit credit)
+    private void ActivateLoan(Loan loan)
     {
-        gameDataManager.Money += credit.LoanTotalAmount;
-        activeCredits.Add(credit);
-        statusEffectsManager.AddStatusEffects(credit.StatusEffects);
+        gameDataManager.Money += loan.InitialValue;
+        activeCredits.Add(loan);
+        statusEffectsManager.AddStatusEffects(loan.StatusEffects);
     }
 }
