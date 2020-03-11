@@ -15,14 +15,14 @@ public class UIManager : MonoBehaviour
     private GameDataManager gameDataManager;
     private GameController gameController;
     private StoreController storeController;
+    private StatusEffectsController statusEffectsController;
 
     // UI elements
     private GameObject mainMenuPanel;
     private GameObject cardSelectionPanel;
     private GameObject loadingPanel;
-   
     private GameObject infoPanel;
-    private GameObject StatusEffectsPanel;
+    private GameObject statusEffectsPanel;
     private GameObject moneyPanel;
     private GameObject moodPanel;
     private GameObject weekProgressBar;
@@ -30,16 +30,22 @@ public class UIManager : MonoBehaviour
     private GameObject uiCanvas;
     private GameObject gameplayHUDPanel;
     private GameObject overlaysContainerPanel;
+    private GameObject moneyStatusEffectsContentPanel;
+    private GameObject moodStatusEffectsContentPanel;
     // Store
     private GameObject storePanel;
     private GameObject storeShowcasePanel;
     private GameObject storeCategoriesPanel;
-    public GameObject storeItemPrefab;
-    public GameObject categoryButtonPrefab;
+
+
     // Buttons
     private Button storeButton;
     private Button infoPanelButton;
     private Button getCreditButtonTEST;
+    // Prefabs
+    public GameObject StatusEffectPanelPrefab;
+    public GameObject categoryButtonPrefab;
+    public GameObject storeItemPrefab;
 
     private Image dayProgressBarFillImage;
 
@@ -91,17 +97,30 @@ public class UIManager : MonoBehaviour
             gameplayHUDPanel = GameObject.Find("GameplayHUDPanel");
             overlaysContainerPanel = gameplayHUDPanel.transform.Find("OverlaysContainerPanel").gameObject;
             storePanel = overlaysContainerPanel.transform.Find("StorePanel").gameObject;
+            statusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel").gameObject;
+            foreach (Transform transform in statusEffectsPanel.transform.GetComponentsInChildren<Transform>())
+            {
+                if (transform.gameObject.name == "MoneyStatusEffectsContentPanel")
+                {
+                    moneyStatusEffectsContentPanel = transform.gameObject;
+                }
+                else if (transform.gameObject.name == "MoodStatusEffectsContentPanel")
+                {
+                    moodStatusEffectsContentPanel = transform.gameObject;
+                }
+            }
             infoPanel = GameObject.Find("InfoPanel");
-            StatusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel").gameObject;
+            statusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel").gameObject;
             moneyPanel = GameObject.Find("MoneyPanel");
             moodPanel = GameObject.Find("MoodPanel");
             weekProgressBar = GameObject.Find("WeekProgressBar");
             dayProgressBar = GameObject.Find("DayProgressBar");
+
             dayProgressBarFillImage = GameObject.Find("DayProgressBarFillImage") != null ? GameObject.Find("DayProgressBarFillImage").GetComponent<Image>() : null;
             storeShowcasePanel = storePanel.transform.GetChild(0).transform.Find("StoreShowcasePanel").gameObject;
             storeCategoriesPanel = storePanel.transform.GetChild(0).transform.Find("StoreCategoriesPanel").gameObject;
             MapButtonsToActions();
-        }  
+        }
     }
 
     private void Start()
@@ -115,11 +134,13 @@ public class UIManager : MonoBehaviour
         gameDataManager = GameDataManager.instance;
         gameController = GameController.instance;
         storeController = StoreController.instance;
+        statusEffectsController = StatusEffectsController.instance;
 
         gameController.OnDailyTick += UpdateDayProgressBar;
         gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
         storeController.OnStoreStateChanged += UpdateStoreView;
+        statusEffectsController.OnStatusEffectsChanged += UpdateStatusEffectsView;
     }
 
 
@@ -135,11 +156,11 @@ public class UIManager : MonoBehaviour
         getCreditButtonTEST.onClick.AddListener(gameController.TakeTestCredit);
     }
 
-        /// <summary>
-        /// Set UI state and manipulate related UI elements accordingly (like close mod info upon store opening, etc)
-        /// </summary>
-        /// <param name="state"></param>
-        public void SetUIState(UIState state)
+    /// <summary>
+    /// Set UI state and manipulate related UI elements accordingly (like close mod info upon store opening, etc)
+    /// </summary>
+    /// <param name="state"></param>
+    public void SetUIState(UIState state)
     {
         switch (state)
         {
@@ -159,17 +180,17 @@ public class UIManager : MonoBehaviour
                 break;
             case UIState.House:
                 overlaysContainerPanel.SetActive(false);
-                StatusEffectsPanel.SetActive(false);
+                statusEffectsPanel.SetActive(false);
                 storePanel.SetActive(false);
                 break;
             case UIState.Store:
                 overlaysContainerPanel.SetActive(true);
-                StatusEffectsPanel.SetActive(false);
+                statusEffectsPanel.SetActive(false);
                 storePanel.SetActive(true);
                 break;
             case UIState.ModifiersInfo:
                 overlaysContainerPanel.SetActive(true);
-                StatusEffectsPanel.SetActive(true);
+                statusEffectsPanel.SetActive(true);
                 storePanel.SetActive(false);
                 break;
             default:
@@ -225,12 +246,12 @@ public class UIManager : MonoBehaviour
         {
             SetUIState(UIState.House);
         }
-        StatusEffectsPanel.SetActive(state);
+        statusEffectsPanel.SetActive(state);
     }
 
     public void ToggleModifiersInfoPanel()
     {
-        if (StatusEffectsPanel.activeSelf)
+        if (statusEffectsPanel.activeSelf)
         {
             ShowModifiersInfoPanel(false);
         }
@@ -240,7 +261,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-   
+
 
     public void UpdateDayProgressBar()
     {
@@ -271,8 +292,43 @@ public class UIManager : MonoBehaviour
                 imgComp.gameObject.SetActive(true);
             }
         }
-        
+
     }
+
+
+    public void UpdateStatusEffectsView()
+    {
+        if (statusEffectsPanel)
+        {
+            // Clear status effect panel
+            foreach (Transform transform in moneyStatusEffectsContentPanel.transform.GetComponentInChildren<Transform>())
+            {
+                Destroy(transform.gameObject);
+            }
+            foreach (Transform transform in moodStatusEffectsContentPanel.transform.GetComponentInChildren<Transform>())
+            {
+                Destroy(transform.gameObject);
+            }
+            // Iterate through status effects list and create status effects panel
+            foreach (StatusEffect statusEffect in statusEffectsController.StatusEffects)
+            {
+                GameObject panel = Instantiate(StatusEffectPanelPrefab);
+                if (statusEffect.Type == StatusEffectType.Money)
+                {
+                    panel.transform.SetParent(moneyStatusEffectsContentPanel.transform);
+                } else if (statusEffect.Type == StatusEffectType.Mood)
+                {
+                    panel.transform.SetParent(moodStatusEffectsContentPanel.transform);
+                }
+                panel.transform.localScale = new Vector3(1, 1, 1);
+                panel.transform.Find("Info").transform.Find("TopPanel").transform.Find("TitleText").GetComponent<Text>().text = statusEffect.Name;
+                Transform BottomPanelTransform = panel.transform.Find("Info").transform.Find("BottomPanel");
+                BottomPanelTransform.transform.Find("TypePanel").GetComponentInChildren<Text>().text = statusEffect.Freqency.ToString();
+                BottomPanelTransform.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (statusEffect.Value > 0 ? "+" : "") + statusEffect.Value;
+            }
+        }
+    }
+
 
     public void UpdateStoreView()
     {

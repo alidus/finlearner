@@ -10,16 +10,18 @@ public class StatusEffectsController : MonoBehaviour
     // Controllers, Managers
     private GameController gameController;
     private GameDataManager gameDataManager;
-
-    // UI elements
-    private GameObject statusEffectsPanel;
-
-    // Prefabs
-    public GameObject StatusEffectPanelPrefab;
-
+    
     // Status effects
     List<StatusEffect> statusEffects = new List<StatusEffect>();
+    public System.Collections.Generic.List<StatusEffect> StatusEffects
+    {
+        get { return statusEffects; }
+        set { statusEffects = value; }
+    }
 
+    // Events, Delegates
+    public delegate void StatusEffectsChangedAction();
+    public event StatusEffectsChangedAction OnStatusEffectsChanged;
     private void Awake()
     {
         if (instance == null)
@@ -38,8 +40,7 @@ public class StatusEffectsController : MonoBehaviour
 
     public void UpdateReferences()
     {
-        statusEffectsPanel = GameObject.Find("StatusEffectsPanel");
-        var z = 5;
+
     }
 
     private void Start()
@@ -58,66 +59,28 @@ public class StatusEffectsController : MonoBehaviour
         gameController.OnYearlyTick += ExecuteYearlyStatusEffects;
     }
 
-    public GameObject CreateStatusEffectPanel(StatusEffect statusEffect)
-    {
-        if (statusEffectsPanel)
-        {
-            Transform[] children = statusEffectsPanel.transform.GetComponentsInChildren<Transform>();
-            GameObject panel = Instantiate(StatusEffectPanelPrefab);
-            string ContentPanelName = "";
-            switch (statusEffect.Type)
-            {
-                case StatusEffectType.Money:
-                    ContentPanelName = "MoneyStatusEffectsContent";
-                    break;
-                case StatusEffectType.Mood:
-                    ContentPanelName = "MoodStatusEffectsContent";
-                    break;
-                default:
-                    break;
-            }
-
-            // Iterate through children of modifiers panel and find content panels of each mod type containing array of modifiers
-            foreach (Transform child in children)
-            {
-                if (child.name == ContentPanelName)
-                {
-                    panel.transform.SetParent(child);
-                    panel.transform.localScale = new Vector3(1, 1, 1);
-                    panel.transform.Find("Info").transform.Find("TopPanel").transform.Find("TitleText").GetComponent<Text>().text = statusEffect.Name;
-                    Transform BottomPanelTransform = panel.transform.Find("Info").transform.Find("BottomPanel");
-                    BottomPanelTransform.transform.Find("TypePanel").GetComponentInChildren<Text>().text = statusEffect.Freqency.ToString();
-                    BottomPanelTransform.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (statusEffect.Value > 0 ? "+" : "") + statusEffect.Value;
-                }
-            }
-
-            return panel;
-        } else
-        {
-            return null;
-        }
-    }
+    
 
     private void ExecuteDailyStatusEffects()
     {
-        ApplyStatusEffects(StatusEffectFrequency.Daily);
+        ExecuteStatusEffects(StatusEffectFrequency.Daily);
     }
     private void ExecuteWeeklyStatusEffects()
     {
-        ApplyStatusEffects(StatusEffectFrequency.Weekly);
+        ExecuteStatusEffects(StatusEffectFrequency.Weekly);
     }
     private void ExecuteMonthlyStatusEffects()
     {
-        ApplyStatusEffects(StatusEffectFrequency.Monthly);
+        ExecuteStatusEffects(StatusEffectFrequency.Monthly);
     }
     private void ExecuteYearlyStatusEffects()
     {
-        ApplyStatusEffects(StatusEffectFrequency.Yearly);
+        ExecuteStatusEffects(StatusEffectFrequency.Yearly);
     }
 
-    private void ApplyStatusEffects(StatusEffectFrequency frequency)
+    private void ExecuteStatusEffects(StatusEffectFrequency frequency)
     {
-        foreach (StatusEffect statusEffect in statusEffects)
+        foreach (StatusEffect statusEffect in StatusEffects)
         {
             if (statusEffect.Freqency == frequency)
             {
@@ -155,16 +118,13 @@ public class StatusEffectsController : MonoBehaviour
 
     public void AddStatusEffects(List<StatusEffect> statusEffects)
     {
-        this.statusEffects.AddRange(statusEffects);
-        foreach (StatusEffect statusEffect in statusEffects)
-        {
-            CreateStatusEffectPanel(statusEffect);
-        }
+        this.StatusEffects.AddRange(statusEffects);
+        OnStatusEffectsChanged();
     }
 
     public void AddStatusEffects(StatusEffect statusEffect)
     {
-        this.statusEffects.Add(statusEffect);
-        CreateStatusEffectPanel(statusEffect);
+        this.StatusEffects.Add(statusEffect);
+        OnStatusEffectsChanged();
     }
 }

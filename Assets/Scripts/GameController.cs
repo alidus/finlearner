@@ -17,9 +17,6 @@ public class GameController : MonoBehaviour
     
 
     float timeSinceDayStart;
-    // Modifiers
-    private StatusEffectContainer activeStatusEffects = new StatusEffectContainer();
-
 
     // Jobs
     private List<Job> jobsPool = new List<Job>();
