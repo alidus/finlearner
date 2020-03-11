@@ -26,7 +26,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameMode gameMode;
     private GameState gameState = GameState.MainMenu;
-
+    public GameManager.GameState GameStateP
+    {
+        get { return gameState; }
+        set { gameState = value; }
+    }
     public GameMode GameMode
     {
         get { return gameMode; }
@@ -79,20 +83,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateReferences()
     {
-        
+
     }
-
-    public void SetGameState(GameState gameState)
-    {
-        this.gameState = gameState;
-    }
-
-    public GameState GetGameState()
-    {
-        return gameState;
-    }
-
-
 
     public void OpenMainMenu()
     {
@@ -106,7 +98,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        SetGameState(GameState.InGame);
+        GameStateP = GameState.InGame;
 
         StartCoroutine("LoadLevel");
     }
@@ -132,7 +124,7 @@ public class GameManager : MonoBehaviour
         uiManager.UpdateUI();
         houseManager.UpdateFlatAppearance();
 
-        storeManager.UpdateStoreView();
+        uiManager.UpdateStoreView();
         uiManager.SetUIState(UIManager.UIState.House);
         OnGameStarted(gameMode);
     }

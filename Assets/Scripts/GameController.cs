@@ -36,9 +36,6 @@ public class GameController : MonoBehaviour
     // Prefabs
     public GameObject homeStoreCategoryButtonPrefab;
 
-    // Cashing
-    public Dictionary<ItemType, StoreItem> selectedObjectPerItemType;
-
     // Events
     public delegate void TimeIntervalTickAction();
     public event TimeIntervalTickAction OnDailyTick;
@@ -80,7 +77,7 @@ public class GameController : MonoBehaviour
         Init();
         homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
         homeStoreCatalog.Init();
-        storeManager.HomeStoreCatalog = homeStoreCatalog;
+        storeManager.ActiveCatalog = homeStoreCatalog;
 
         gameDataManager.Money = gameManager.GameMode.money;
         gameDataManager.Mood = gameManager.GameMode.mood;
@@ -107,7 +104,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameManager.GetGameState() == GameManager.GameState.InGame)
+        if (gameManager.GameStateP == GameManager.GameState.InGame)
         {
             uiManager.SetDayProgress(timeSinceDayStart / gameManager.GameMode.dayDuration);
             timeSinceDayStart += Time.deltaTime;

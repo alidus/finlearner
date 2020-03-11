@@ -14,18 +14,33 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private GameController gameController;
+    private StoreController storeController;
 
     // UI elements
     private GameObject mainMenuPanel;
     private GameObject cardSelectionPanel;
     private GameObject loadingPanel;
-    private GameObject storePanel;
+   
     private GameObject infoPanel;
     private GameObject StatusEffectsPanel;
     private GameObject moneyPanel;
     private GameObject moodPanel;
     private GameObject weekProgressBar;
     private GameObject dayProgressBar;
+    private GameObject uiCanvas;
+    private GameObject gameplayHUDPanel;
+    private GameObject overlaysContainerPanel;
+    // Store
+    private GameObject storePanel;
+    private GameObject storeShowcasePanel;
+    private GameObject storeCategoriesPanel;
+    public GameObject storeItemPrefab;
+    public GameObject categoryButtonPrefab;
+    // Buttons
+    private Button storeButton;
+    private Button infoPanelButton;
+    private Button getCreditButtonTEST;
+
     private Image dayProgressBarFillImage;
 
 
@@ -63,17 +78,30 @@ public class UIManager : MonoBehaviour
 
     public void UpdateReferences()
     {
-        mainMenuPanel = GameObject.Find("MainMenuPanel");
-        cardSelectionPanel = GameObject.Find("CardSelectionPanel");
-        loadingPanel = GameObject.Find("LoadingPanel");
-        storePanel = GameObject.Find("StorePanel");
-        infoPanel = GameObject.Find("InfoPanel");
-        StatusEffectsPanel = GameObject.Find("StatusEffectsPanel");
-        moneyPanel = GameObject.Find("MoneyPanel");
-        moodPanel = GameObject.Find("MoodPanel");
-        weekProgressBar = GameObject.Find("WeekProgressBar");
-        dayProgressBar = GameObject.Find("DayProgressBar");
-        dayProgressBarFillImage = GameObject.Find("DayProgressBarFillImage") != null ? GameObject.Find("DayProgressBarFillImage").GetComponent<Image>() : null ;
+        uiCanvas = GameObject.Find("UICanvas");
+        // Update references to UI elements based on game state
+        if (gameManager == null || gameManager.GameStateP == GameManager.GameState.MainMenu)
+        {
+            mainMenuPanel = uiCanvas.transform.Find("MainMenuPanel").gameObject;
+            cardSelectionPanel = uiCanvas.transform.Find("CardSelectionPanel").gameObject;
+            loadingPanel = uiCanvas.transform.Find("LoadingPanel").gameObject;
+        }
+        else
+        {
+            gameplayHUDPanel = GameObject.Find("GameplayHUDPanel");
+            overlaysContainerPanel = gameplayHUDPanel.transform.Find("OverlaysContainerPanel").gameObject;
+            storePanel = overlaysContainerPanel.transform.Find("StorePanel").gameObject;
+            infoPanel = GameObject.Find("InfoPanel");
+            StatusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel").gameObject;
+            moneyPanel = GameObject.Find("MoneyPanel");
+            moodPanel = GameObject.Find("MoodPanel");
+            weekProgressBar = GameObject.Find("WeekProgressBar");
+            dayProgressBar = GameObject.Find("DayProgressBar");
+            dayProgressBarFillImage = GameObject.Find("DayProgressBarFillImage") != null ? GameObject.Find("DayProgressBarFillImage").GetComponent<Image>() : null;
+            storeShowcasePanel = storePanel.transform.GetChild(0).transform.Find("StoreShowcasePanel").gameObject;
+            storeCategoriesPanel = storePanel.transform.GetChild(0).transform.Find("StoreCategoriesPanel").gameObject;
+            MapButtonsToActions();
+        }  
     }
 
     private void Start()
@@ -86,17 +114,32 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         gameController = GameController.instance;
+        storeController = StoreController.instance;
 
         gameController.OnDailyTick += UpdateDayProgressBar;
         gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
+        storeController.OnStoreStateChanged += UpdateStoreView;
     }
 
-    /// <summary>
-    /// Set UI state and manipulate related UI elements accordingly (like close mod info upon store opening, etc)
-    /// </summary>
-    /// <param name="state"></param>
-    public void SetUIState(UIState state)
+
+
+    private void MapButtonsToActions()
+    {
+        storeButton = GameObject.Find("StoreButton").GetComponent<Button>();
+        infoPanelButton = GameObject.Find("InfoPanel").GetComponent<Button>();
+        getCreditButtonTEST = GameObject.Find("GetCreditButton").GetComponent<Button>();
+
+        storeButton.onClick.AddListener(gameManager.ToggleStoreMenu);
+        infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);
+        getCreditButtonTEST.onClick.AddListener(gameController.TakeTestCredit);
+    }
+
+        /// <summary>
+        /// Set UI state and manipulate related UI elements accordingly (like close mod info upon store opening, etc)
+        /// </summary>
+        /// <param name="state"></param>
+        public void SetUIState(UIState state)
     {
         switch (state)
         {
@@ -115,14 +158,17 @@ public class UIManager : MonoBehaviour
                 loadingPanel.SetActive(true);
                 break;
             case UIState.House:
+                overlaysContainerPanel.SetActive(false);
                 StatusEffectsPanel.SetActive(false);
                 storePanel.SetActive(false);
                 break;
             case UIState.Store:
+                overlaysContainerPanel.SetActive(true);
                 StatusEffectsPanel.SetActive(false);
                 storePanel.SetActive(true);
                 break;
             case UIState.ModifiersInfo:
+                overlaysContainerPanel.SetActive(true);
                 StatusEffectsPanel.SetActive(true);
                 storePanel.SetActive(false);
                 break;
@@ -226,6 +272,74 @@ public class UIManager : MonoBehaviour
             }
         }
         
+    }
+
+    public void UpdateStoreView()
+    {
+        UpdateStoreCategoriesPanel();
+        UpdateStoreShowcasePanel();
+    }
+
+    void UpdateStoreCategoriesPanel()
+    {
+        foreach (Transform child in storeCategoriesPanel.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        List<ItemCategory> presentedCategories = storeController.ActiveCatalog.GetCategories();
+
+        foreach (ItemCategory category in presentedCategories)
+        {
+            GameObject categoryButtonObject = (GameObject)Instantiate(categoryButtonPrefab);
+
+            RectTransform mRectTransform = categoryButtonObject.GetComponent<RectTransform>();
+            categoryButtonObject.GetComponentInChildren<Text>().text = category.ToString();
+            categoryButtonObject.transform.SetParent(storeCategoriesPanel.transform);
+            mRectTransform.localScale = new Vector3(1, 1, 1);
+
+            categoryButtonObject.GetComponent<Button>().onClick.AddListener(delegate () { storeController.SelectedCategory = category; });
+        }
+
+        if (presentedCategories.Count > 0)
+        {
+            storeController.SelectedCategory = 0;
+        }
+    }
+
+    void UpdateStoreShowcasePanel()
+    {
+        // Clear store item panels array
+        foreach (Transform child in storeShowcasePanel.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+        foreach (StoreItem item in storeController.ActiveCatalog.GetAllItemsOfCategory(storeController.SelectedCategory))
+        {
+            GameObject itemObject = Instantiate(storeItemPrefab);
+            itemObject.GetComponent<Button>().onClick.AddListener(delegate () { storeController.StoreItemClick(item); });
+            //itemObject.GetComponentInParent<Text>().text = item.name;
+            itemObject.transform.SetParent(storeShowcasePanel.transform);
+            itemObject.transform.localScale = new Vector3(1, 1, 1);
+            Transform iconTransform = itemObject.transform.Find("Icon");
+            iconTransform.transform.Find("PriceTag").GetComponentInChildren<Text>().text = "$" + item.Price.ToString();
+            itemObject.transform.Find("TitleText").GetComponent<Text>().text = item.Name;
+            iconTransform.GetComponent<Image>().sprite = item.Sprite != null ? item.Sprite : gameManager.placeHolder;
+
+            if (item.IsEquiped)
+            {
+                itemObject.transform.Find("EquipHighlightPanel").gameObject.SetActive(true);
+            }
+            else
+            {
+                itemObject.transform.Find("EquipHighlightPanel").gameObject.SetActive(false);
+            }
+
+            if (item.IsOwned)
+            {
+                iconTransform.transform.Find("OwnIndicator").gameObject.SetActive(true);
+            }
+        }
     }
 
     public void ShowStorePanel(bool state)
