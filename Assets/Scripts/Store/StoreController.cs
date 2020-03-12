@@ -34,9 +34,6 @@ public class StoreController : MonoBehaviour
     }
     
 
-    public delegate void StoreItemClickAction(StoreItem item);
-    public event StoreItemClickAction OnInventoryItemClicked;
-
     private void Awake()
     {
         if (instance == null)

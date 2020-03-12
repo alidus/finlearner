@@ -1991,6 +1991,7 @@ GameObject:
   - component: {fileID: 1890301948}
   - component: {fileID: 1890301949}
   - component: {fileID: 1890301950}
+  - component: {fileID: 1890301951}
   m_Layer: 0
   m_Name: GameLogic
   m_TagString: Untagged
@@ -2066,12 +2067,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f551b7b9cc7a4784fa7d7b9f9084b5f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StatusEffectPanelPrefab: {fileID: 3403658928574910087, guid: 788765f21eb58694f98c57f6f09a5ca8,
-    type: 3}
-  categoryButtonPrefab: {fileID: 8742498482344078455, guid: d1a56b80dba60194d8b1fac9c8ced2b0,
-    type: 3}
-  storeItemPrefab: {fileID: 6448784097537142342, guid: b9da006e6aa631640bb1c86c97199c7b,
-    type: 3}
 --- !u!114 &1890301947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2119,5 +2114,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b406e515b40644347aff80cef55b45e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1890301951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890301941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0190907177b8d74286c205136db6fc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HouseManager : MonoBehaviour
 {
@@ -66,16 +67,16 @@ public class HouseManager : MonoBehaviour
             switch (child.name)
             {
                 case "Bed":
-                    child.GetComponent<SpriteRenderer>().sprite = HouseManager.Bed != null ? HouseManager.Bed.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Bed != null ? HouseManager.Bed.Sprite : null;
                     break;
                 case "Chair":
-                    child.GetComponent<SpriteRenderer>().sprite = HouseManager.Chair != null ? HouseManager.Chair.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Chair != null ? HouseManager.Chair.Sprite : null;
                     break;
                 case "Armchair":
-                    child.GetComponent<SpriteRenderer>().sprite = HouseManager.Armchair != null ? HouseManager.Armchair.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Armchair != null ? HouseManager.Armchair.Sprite : null;
                     break;
                 case "Table":
-                    child.GetComponent<SpriteRenderer>().sprite = HouseManager.Table != null ? HouseManager.Table.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Table != null ? HouseManager.Table.Sprite : null;
                     break;
                 default:
                     break;

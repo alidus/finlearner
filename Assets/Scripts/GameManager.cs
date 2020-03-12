@@ -129,6 +129,7 @@ public class GameManager : MonoBehaviour
 
         uiManager.UpdateStoreView();
         uiManager.SetUIState(UIManager.UIState.House);
+        hintsManager.ShowHint("Свободная игра", "В этом режиме игры вам предстоит прожить жизнь по собственному желанию", new HoveringMessageHintPresenter(true, true));
         OnGameStarted(gameMode);
     }
 
@@ -145,6 +146,11 @@ public class GameManager : MonoBehaviour
     public void ToggleModifiersInformation()
     {
         uiManager.ToggleModifiersInfoPanel();
+    }
+
+    public void ToggleLaborExchange()
+    {
+        uiManager.ToggleLaborExchange();
     }
 
    

@@ -8,13 +8,12 @@ public class StoreCatalog : ScriptableObject
     public string title;
     public List<StoreItem> items = new List<StoreItem>();
 
-
     public void Init()
     {
         AttachBehaviours();
     }
 
-    public List<ItemCategory> GetCategories()
+    public List<ItemCategory> GetPresentedCategories()
     {
         List<ItemCategory> result = new List<ItemCategory>();
         foreach (StoreItem item in items)

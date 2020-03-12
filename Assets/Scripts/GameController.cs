@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
     private StoreController storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
+    private HintsManager hintsManager;
     
 
     float timeSinceDayStart;
@@ -39,6 +40,9 @@ public class GameController : MonoBehaviour
     public event TimeIntervalTickAction OnWeeklyTick;
     public event TimeIntervalTickAction OnMonthlyTick;
     public event TimeIntervalTickAction OnYearlyTick;
+
+    // Tutorial
+    private bool showTutorial = true;
 
 
     private void Awake()
@@ -79,11 +83,6 @@ public class GameController : MonoBehaviour
         gameDataManager.Money = gameManager.GameMode.money;
         gameDataManager.Mood = gameManager.GameMode.mood;
         gameDataManager.Age = gameManager.GameMode.age;
-
-        foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
-        {
-            //TODO: Add selectable items to list
-        }
     }
 
     private void Init()
@@ -94,6 +93,7 @@ public class GameController : MonoBehaviour
         uiManager = UIManager.instance;
         houseManager = HouseManager.instance;
         statusEffectsManager = StatusEffectsController.instance;
+        hintsManager = HintsManager.instance;
 
         uiManager.UpdateUI();
     }
@@ -118,8 +118,6 @@ public class GameController : MonoBehaviour
             }
         }
     }
-
-   
 
     private void InitJobs()
     {

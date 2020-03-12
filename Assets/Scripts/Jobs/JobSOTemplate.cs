@@ -6,6 +6,6 @@ using UnityEngine;
 public class JobSOTemplate : ScriptableObject
 {
     public string title;
-    public string descrip;
+    public string description;
     public List<StatusEffect> modifiers = new List<StatusEffect>();
 }
