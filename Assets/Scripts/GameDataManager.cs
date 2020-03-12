@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,19 @@ public class GameDataManager : MonoBehaviour
     public delegate void MoodValueChangedAction();
     public event MoodValueChangedAction OnMoodValueChanged;
 
-    private void Awake()
+    public delegate void TimeMilestoneReachedAction();
+	public event TimeMilestoneReachedAction OnNewDayStarted;
+	public event TimeMilestoneReachedAction OnNewWeekStarted;
+    public event TimeMilestoneReachedAction OnNewMonthStarted;
+    public event TimeMilestoneReachedAction OnNewYearStarted;
+	public delegate void BirthdayAction();
+	public event BirthdayAction OnBirthday;
+
+	// Sprites
+	public Sprite placeHolderSprite;
+	public Sprite emptySprite;
+
+	private void Awake()
     {
         if (instance == null)
         {
@@ -26,12 +39,28 @@ public class GameDataManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // Base stats
-    private float money;
+	private bool isRecordingIncome;
+	public bool IsRecordingIncome
+	{
+		get { return isRecordingIncome; }
+		set { isRecordingIncome = value; }
+	}
+	// Base stats
+	private float money;
 	public float Money
 	{
 		get { return money; }
-		set { money = value; OnMoneyValueChanged?.Invoke() ; }
+		set { 
+			if (IsRecordingIncome)
+			{
+				float delta = (value - money);
+				DailyIncome += delta;
+                WeeklyIncome += delta;
+                MonthlyIncome += delta;
+                YearlyIncome += delta;
+            }
+			money = value;
+			OnMoneyValueChanged?.Invoke(); }
 	}
 
 	private float mood;
@@ -41,25 +70,38 @@ public class GameDataManager : MonoBehaviour
 		set { mood = value; OnMoodValueChanged?.Invoke(); }
 	}
 
-    public int age;
+    private int age = 18;
     public int Age
     {
         get { return age; }
         set { age = value; }
     }
     // Income
-    private int dailyIncome;
-	public int DailyIncome
+    private float dailyIncome;
+	public float DailyIncome
 	{
 		get { return dailyIncome; }
 		set { dailyIncome = value; }
 	}
 
-	private int weeklyIncome;
-	public int WeeklyIncome
+	private float weeklyIncome;
+	public float WeeklyIncome
 	{
 		get { return weeklyIncome; }
 		set { weeklyIncome = value; }
+	}
+
+	private float monthlyIncome;
+	public float MonthlyIncome
+	{
+		get { return monthlyIncome; }
+		set { monthlyIncome = value; }
+	}
+	private float yearlyIncome;
+	public float YearlyIncome
+	{
+		get { return yearlyIncome; }
+		set { yearlyIncome = value; }
 	}
 	// Mood
 	private int dailyMoodChange;
@@ -74,34 +116,49 @@ public class GameDataManager : MonoBehaviour
 		get { return weeklyMoodChange; }
 		set { weeklyMoodChange = value; }
 	}
-	// Time
-	private int dayOfWeekIndex;
-	public int DayOfWeekIndex
+
+	private DateTime currentDateTime = DateTime.Now;
+	public System.DateTime CurrentDateTime
 	{
-		get { return dayOfWeekIndex; }
-		set { dayOfWeekIndex = value; }
+		get { return currentDateTime; }
+		private set { currentDateTime = value; }
 	}
 
-	private int dayCount;
-	public int DayCount
+	private DateTime birthdayDate = DateTime.Now.AddDays(10);
+	public System.DateTime BirthdayDate
 	{
-		get { return dayCount; }
-		set { dayCount = value; }
+		get { return birthdayDate; }
+		set { birthdayDate = value; }
 	}
-
-	public void AddToDayCounter()
-	{
-		DayCount++;
-	}
-
-	public void AddDayOfWeek()
-	{
-		if (DayOfWeekIndex > 5)
+	public void AddDay()
+    {
+		DailyIncome = 0;
+		OnNewDayStarted();
+		int currentMonth = currentDateTime.Month;
+		int currentYear = currentDateTime.Year;
+		CurrentDateTime = currentDateTime.AddDays(1);
+		
+		if ((int)currentDateTime.DayOfWeek == 0)
 		{
-			DayOfWeekIndex = 0;
-		} else
-		{
-			DayOfWeekIndex++;
+			WeeklyIncome = 0;
+			OnNewWeekStarted();
 		}
-	}
+		if ((int)currentDateTime.Month != currentMonth)
+		{
+			MonthlyIncome = 0;
+			OnNewMonthStarted();
+		}
+        if ((int)currentDateTime.Year != currentYear)
+        {
+			YearlyIncome = 0;
+            OnNewYearStarted();
+        }
+
+		if (currentDateTime.Date == birthdayDate.Date)
+		{
+			// Happy birthday
+			Age++;
+			OnBirthday();
+		}
+    }
 }

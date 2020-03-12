@@ -2011,7 +2011,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabb72510a822f04ca83190a0a8e6a6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  age: 0
+  placeHolderSprite: {fileID: 21300000, guid: ecd0c5067afbc244b8fe43692e2c7162, type: 3}
+  emptySprite: {fileID: 21300000, guid: c6c767a8bd283024b9b9fd9298c0ec7b, type: 3}
 --- !u!114 &1890301943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2024,9 +2025,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0369d2a935a8448af511645e98c482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  homeStoreCatalog: {fileID: 11400000, guid: 6e5a4d67cab5a3f46b22a9ac82479c8a, type: 2}
-  homeStoreCategoryButtonPrefab: {fileID: 8742498482344078455, guid: d1a56b80dba60194d8b1fac9c8ced2b0,
-    type: 3}
 --- !u!114 &1890301944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2039,7 +2037,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12423286d780ea74890bcf8e1de989c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeHolder: {fileID: 21300000, guid: ecd0c5067afbc244b8fe43692e2c7162, type: 3}
   gameMode: {fileID: 11400000, guid: c97242c6d5562c449bd86954000fd8d3, type: 2}
 --- !u!4 &1890301945
 Transform:

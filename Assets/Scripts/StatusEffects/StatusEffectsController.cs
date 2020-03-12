@@ -53,10 +53,10 @@ public class StatusEffectsController : MonoBehaviour
         gameController = GameController.instance;
         gameDataManager = GameDataManager.instance;
         // Listen to game controller ticks and execute appropriate modifiers
-        gameController.OnDailyTick += ExecuteDailyStatusEffects;
-        gameController.OnWeeklyTick += ExecuteWeeklyStatusEffects;
-        gameController.OnMonthlyTick += ExecuteMonthlyStatusEffects;
-        gameController.OnYearlyTick += ExecuteYearlyStatusEffects;
+        gameDataManager.OnNewDayStarted += ExecuteDailyStatusEffects;
+        gameDataManager.OnNewWeekStarted += ExecuteWeeklyStatusEffects;
+        gameDataManager.OnNewMonthStarted += ExecuteMonthlyStatusEffects;
+        gameDataManager.OnNewYearStarted += ExecuteYearlyStatusEffects;
     }
 
     

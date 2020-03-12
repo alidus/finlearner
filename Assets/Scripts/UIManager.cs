@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private GameController gameController;
-    private StoreController storeController;
+    private StoreManager storeController;
     private StatusEffectsController statusEffectsController;
     private LaborExchangeManager laborExchangeManager;
 
@@ -61,6 +61,7 @@ public class UIManager : MonoBehaviour
     // Colors
     Color passedDayColor = new Color(1, 1, 1, 1);
     Color presentDayColor = new Color(1, 1, 1, 0.3f);
+    Color emptyDayColor = new Color(1, 1, 1, .0f);
 
     // Other
     Dictionary<StatusEffect, GameObject> modifiersPanelDictionary = new Dictionary<StatusEffect, GameObject>();
@@ -153,11 +154,11 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         gameController = GameController.instance;
-        storeController = StoreController.instance;
+        storeController = StoreManager.instance;
         statusEffectsController = StatusEffectsController.instance;
         laborExchangeManager = LaborExchangeManager.instance;
 
-        gameController.OnDailyTick += UpdateDayProgressBar;
+        gameDataManager.OnNewDayStarted += UpdateDayOfWeekProgressBar;
         gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
         storeController.OnStoreStateChanged += UpdateStoreView;
@@ -240,15 +241,21 @@ public class UIManager : MonoBehaviour
         UpdateInfoPanel();
         UpdateStoreView();
         UpdateLaborExchangeView();
+        UpdateDayOfWeekProgressBar();
     }
 
     public void UpdateInfoPanel()
     {
         if (infoPanel)
         {
+            infoPanel.transform.Find("Date").GetComponent<Text>().text = gameDataManager.CurrentDateTime.ToString("dd/MM/yyyy");
             infoPanel.transform.Find("Age").GetComponent<Text>().text = gameDataManager.Age.ToString() + " лет";
-            infoPanel.transform.Find("Day").GetComponent<Text>().text = "День: " + gameDataManager.DayCount.ToString();
-            infoPanel.transform.Find("Income").GetComponent<Text>().text = "Доход:\n$" + gameDataManager.DailyIncome.ToString();
+            infoPanel.transform.Find("Day").GetComponent<Text>().text = "День года: " + gameDataManager.CurrentDateTime.DayOfYear.ToString();
+            infoPanel.transform.Find("Income").GetComponent<Text>().text = "Доход:\n" +
+               "$" + gameDataManager.DailyIncome.ToString() + " за день\n" +
+              "$" + gameDataManager.WeeklyIncome.ToString() + " за неделю\n" +
+               "$" + gameDataManager.MonthlyIncome.ToString() + " за месяц\n" +
+               "$" + gameDataManager.YearlyIncome.ToString() + " за год\n";
         }
     }
 
@@ -300,34 +307,30 @@ public class UIManager : MonoBehaviour
 
 
 
-    public void UpdateDayProgressBar()
+    public void UpdateDayOfWeekProgressBar()
     {
-        if (dayProgressBar)
+        if (weekProgressBar)
         {
-            if (gameDataManager.DayOfWeekIndex == 0)
+            int normalDayOfWeekIndex = ((int)gameDataManager.CurrentDateTime.DayOfWeek == 0) ? 6 : (int)gameDataManager.CurrentDateTime.DayOfWeek - 1;
+            // Clear each day indicator
+            foreach (Image image in weekProgressBar.GetComponentsInChildren<Image>())
             {
-                foreach (Image imgComp in weekProgressBar.GetComponentsInChildren<Image>())
+                // Paint only fill image
+                if (image.gameObject.name == "DayRBFill")
                 {
-                    if (imgComp.transform.parent.gameObject.name == "DayRB (1)")
-                    {
-                        imgComp.color = presentDayColor;
-                        continue;
-                    }
-
-                    if (imgComp.gameObject.name == "DayRBFill")
-                    {
-                        imgComp.gameObject.SetActive(false);
-                    }
+                    image.color = emptyDayColor;
                 }
+
             }
-            else
+
+            // Fill previous days with solid color
+            for (int i = 0; i < normalDayOfWeekIndex; i++)
             {
-                Image prevImgComp = weekProgressBar.transform.Find("DayRB (" + (gameDataManager.DayOfWeekIndex).ToString() + ")").Find("DayRBFill").GetComponent<Image>();
-                prevImgComp.color = passedDayColor;
-                Image imgComp = weekProgressBar.transform.Find("DayRB (" + (gameDataManager.DayOfWeekIndex + 1).ToString() + ")").Find("DayRBFill").GetComponent<Image>();
-                imgComp.color = presentDayColor;
-                imgComp.gameObject.SetActive(true);
+                weekProgressBar.transform.Find("DayRB (" + i.ToString() + ")").Find("DayRBFill").GetComponent<Image>().color = passedDayColor;
             }
+
+            // Fill present day with transparent color
+            weekProgressBar.transform.Find("DayRB (" + normalDayOfWeekIndex.ToString() + ")").Find("DayRBFill").GetComponent<Image>().color = presentDayColor;
         }
 
     }
@@ -422,7 +425,7 @@ public class UIManager : MonoBehaviour
             Transform iconTransform = storeItemPanel.transform.Find("Icon");
             iconTransform.transform.Find("PriceTag").GetComponentInChildren<Text>().text = "$" + item.Price.ToString();
             storeItemPanel.transform.Find("TitleText").GetComponent<Text>().text = item.Name;
-            iconTransform.GetComponent<Image>().sprite = item.Sprite != null ? item.Sprite : gameManager.placeHolder;
+            iconTransform.GetComponent<Image>().sprite = item.Sprite != null ? item.Sprite : gameDataManager.placeHolderSprite;
 
             if (item.IsEquiped)
             {
@@ -518,7 +521,7 @@ public class UIManager : MonoBehaviour
             jobPanel.transform.localScale = new Vector3(1, 1, 1);
             Transform iconTransform = jobPanel.transform.Find("Icon");
             jobPanel.transform.Find("TitleText").GetComponent<Text>().text = job.Title;
-            iconTransform.GetComponent<Image>().sprite = job.Sprite != null ? job.Sprite : gameManager.placeHolder;
+            iconTransform.GetComponent<Image>().sprite = job.Sprite != null ? job.Sprite : gameDataManager.placeHolderSprite;
         }
     }
 

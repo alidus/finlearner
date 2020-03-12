@@ -4,9 +4,12 @@ using UnityEngine;
 
 using UnityEngine.UI;
 
-public class StoreController : MonoBehaviour
+/// <summary>
+/// Controls store logic
+/// </summary>
+public class StoreManager : MonoBehaviour
 {
-    public static StoreController instance;
+    public static StoreManager instance;
 
     // Controllers, Managers
     private GameManager gameManager;
@@ -32,6 +35,8 @@ public class StoreController : MonoBehaviour
         get { return activeCatalog; }
         set { activeCatalog = value; }
     }
+
+    private StatusEffect dafaultStoreItemStatusEffect = new StatusEffect("Покупка в магазине", 20, StatusEffectType.Mood, StatusEffectFrequency.OneShot);
     
 
     private void Awake()
@@ -79,6 +84,12 @@ public class StoreController : MonoBehaviour
                 // Buy item
                 item.IsOwned = true;
                 gameDataManager.Money -= item.Price;
+                // TODO: do it better way
+                // If store item doesnt have modifier then apply default store item modifier
+                if (item.Modifiers.Count == 0)
+                {
+                    item.Modifiers.Add(dafaultStoreItemStatusEffect);
+                }
                 foreach (StatusEffect statusEffect in item.Modifiers)
                 {
                     if (statusEffect.Freqency == StatusEffectFrequency.OneShot)

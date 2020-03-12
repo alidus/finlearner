@@ -33,8 +33,12 @@ public class HintsManager : MonoBehaviour
         hoveringPanelPrefab = Resources.Load<GameObject>("Prefabs/Hints/HoveringPanel");
     }
 
-    public void ShowHint(string title, string msg, IHintPresenter presenter)
+    public void ShowHint(string title, string msg, IHintPresenter presenter = null)
     {
+        if (presenter == null)
+        {
+            presenter = new HoveringMessageHintPresenter(true, false);
+        }
         Hint hint = new Hint(title, msg, presenter);
         hint.Show();
     }

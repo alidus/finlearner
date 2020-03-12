@@ -22,7 +22,11 @@ MonoBehaviour:
     isEquiped: 0
     category: 0
     type: 0
-    modifiers: []
+    modifiers:
+    - name: 
+      value: 0
+      freqency: 0
+      type: 0
     sprite: {fileID: 21300000, guid: 86ad4e448a73b3042944ac22717584b6, type: 3}
   - name: "\u041A\u0440\u0430\u0441\u043D\u0430\u044F \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
     desc: "\u043A\u0440\u043E\u0432\u0430\u0442\u044C"

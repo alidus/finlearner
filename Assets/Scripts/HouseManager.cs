@@ -7,6 +7,8 @@ public class HouseManager : MonoBehaviour
 {
     public static HouseManager instance;
 
+    private GameDataManager gameDataManager;
+
     private static GameObject house;
 
     public static StoreItem Bed { get; set; }
@@ -30,6 +32,15 @@ public class HouseManager : MonoBehaviour
         UpdateReferences();
     }
 
+    private void Start()
+    {
+        Init();
+    }
+
+    void Init()
+    {
+        gameDataManager = GameDataManager.instance;
+    }
 
 
     public void UpdateReferences()
@@ -67,16 +78,16 @@ public class HouseManager : MonoBehaviour
             switch (child.name)
             {
                 case "Bed":
-                    child.GetComponent<Image>().sprite = HouseManager.Bed != null ? HouseManager.Bed.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Bed != null ? HouseManager.Bed.Sprite : gameDataManager.emptySprite;
                     break;
                 case "Chair":
-                    child.GetComponent<Image>().sprite = HouseManager.Chair != null ? HouseManager.Chair.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Chair != null ? HouseManager.Chair.Sprite : gameDataManager.emptySprite;
                     break;
                 case "Armchair":
-                    child.GetComponent<Image>().sprite = HouseManager.Armchair != null ? HouseManager.Armchair.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Armchair != null ? HouseManager.Armchair.Sprite : gameDataManager.emptySprite;
                     break;
                 case "Table":
-                    child.GetComponent<Image>().sprite = HouseManager.Table != null ? HouseManager.Table.Sprite : null;
+                    child.GetComponent<Image>().sprite = HouseManager.Table != null ? HouseManager.Table.Sprite : gameDataManager.emptySprite;
                     break;
                 default:
                     break;

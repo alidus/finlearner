@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
+/// <summary>
+/// Controls base gameplay logic
+/// </summary>
 public class GameController : MonoBehaviour
 {
     public static GameController instance;
@@ -11,7 +14,7 @@ public class GameController : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private UIManager uiManager;
-    private StoreController storeManager;
+    private StoreManager storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
@@ -27,19 +30,8 @@ public class GameController : MonoBehaviour
     private List<Loan> activeCredits = new List<Loan>();
 
     // Store catalogs
-    public StoreCatalog homeStoreCatalog;
+    private StoreCatalog homeStoreCatalog;
 
-    // Store managers
-
-    // Prefabs
-    public GameObject homeStoreCategoryButtonPrefab;
-
-    // Events
-    public delegate void TimeIntervalTickAction();
-    public event TimeIntervalTickAction OnDailyTick;
-    public event TimeIntervalTickAction OnWeeklyTick;
-    public event TimeIntervalTickAction OnMonthlyTick;
-    public event TimeIntervalTickAction OnYearlyTick;
 
     // Tutorial
     private bool showTutorial = true;
@@ -59,7 +51,6 @@ public class GameController : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         UpdateReferences();
-        GameManager.OnGameStarted += OnGameStarted;
     }
 
     private void OnEnable()
@@ -76,24 +67,33 @@ public class GameController : MonoBehaviour
     void Start()
     {
         Init();
+        homeStoreCatalog = Resources.Load("ScriptableObjects/Store/HomeStoreCatalog") as StoreCatalog;
         homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
         homeStoreCatalog.Init();
         storeManager.ActiveCatalog = homeStoreCatalog;
-
-        gameDataManager.Money = gameManager.GameMode.money;
-        gameDataManager.Mood = gameManager.GameMode.mood;
-        gameDataManager.Age = gameManager.GameMode.age;
     }
 
     private void Init()
     {
-        storeManager = StoreController.instance;
+        storeManager = StoreManager.instance;
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         uiManager = UIManager.instance;
         houseManager = HouseManager.instance;
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
+
+        gameDataManager.Money = gameManager.GameMode.money;
+        gameDataManager.Mood = gameManager.GameMode.mood;
+        gameDataManager.Age = gameManager.GameMode.age;
+        gameDataManager.IsRecordingIncome = true;
+
+        gameManager.OnGameStarted += OnGameStarted;
+        gameDataManager.OnNewDayStarted += TickDay;
+        gameDataManager.OnNewWeekStarted += TickWeek;
+        gameDataManager.OnNewMonthStarted += TickMonth;
+        gameDataManager.OnNewYearStarted += TickYear;
+        gameDataManager.OnBirthday += delegate { hintsManager.ShowHint("С днем рождения!", "Сегодня у вас день рождения, поздавляем вас и желаем счастья и денег :)"); };
 
         uiManager.UpdateUI();
     }
@@ -103,17 +103,15 @@ public class GameController : MonoBehaviour
     {
         if (gameManager.GameStateP == GameManager.GameState.InGame)
         {
+            // TODO: implement as event from dataManager
             uiManager.SetDayProgress(timeSinceDayStart / gameManager.GameMode.dayDuration);
             timeSinceDayStart += Time.deltaTime;
             if (timeSinceDayStart > gameManager.GameMode.dayDuration)
             {
-                TickDay();
+                gameDataManager.AddDay();
                 timeSinceDayStart = 0;
 
-                if (gameDataManager.DayCount - gameDataManager.Age * 365 > 365)
-                {
-                    gameDataManager.Age += 1;
-                }
+                // TODO: implement as event from dataManager
                 uiManager.UpdateInfoPanel();
             }
         }
@@ -146,22 +144,22 @@ public class GameController : MonoBehaviour
 
     private void TickDay()
     {
-        gameDataManager.AddDayOfWeek();
-        if (gameDataManager.DayOfWeekIndex == 0)
-        {
-            TickWeek();
-        }
-        OnDailyTick();
-        
-        gameDataManager.AddToDayCounter();
-        
+
     }
 
     private void TickWeek()
     {
-        OnWeeklyTick();
+
     }
 
+    private void TickMonth()
+    {
+
+    }
+    private void TickYear()
+    {
+
+    }
 
     private void OnGameStarted(GameMode gameMode)
     {
@@ -174,9 +172,8 @@ public class GameController : MonoBehaviour
         Loan loan = builder.SetRate(0.16f)
             .SetInitialValue(5000f)
             .SetPeriod(100)
-            .AddStatusEffect(new StatusEffect("У вас кредит :((", -5000f, StatusEffectType.Money, StatusEffectFrequency.Monthly))
             .Build();
-
+        loan.StatusEffects.Add(new StatusEffect("Выплата кредита", -loan.GetMonthlyPaymentValue(), StatusEffectType.Money, StatusEffectFrequency.Monthly));
         ActivateLoan(loan);
     }
 

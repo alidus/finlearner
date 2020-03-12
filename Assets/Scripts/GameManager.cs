@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Manage overall game state
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -12,18 +15,17 @@ public class GameManager : MonoBehaviour
     private UIManager uiManager;
     private GameDataManager gameDataManager;
     private GameController gameController;
-    private StoreController storeManager;
+    private StoreManager storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
 
     // Action delegates and events
     public delegate void GameStartedAction(GameMode gameMode);
-    public static event GameStartedAction OnGameStarted;
+    public event GameStartedAction OnGameStarted;
 
 
     // Misc
-    public Sprite placeHolder;
     [SerializeField]
     private GameMode gameMode;
     private GameState gameState = GameState.MainMenu;
@@ -74,7 +76,7 @@ public class GameManager : MonoBehaviour
     {
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
-        storeManager = StoreController.instance;
+        storeManager = StoreManager.instance;
         houseManager = HouseManager.instance;
         gameController = GameController.instance;
         statusEffectsManager = StatusEffectsController.instance;
