@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     public void OpenCardSelection()
     {
-        hintsManager.ShowHoveringPanel("Hello there", "General Kenobi!");
+        hintsManager.ShowHint("Выбор уровня кампании", "В игре будет представлен режим кампании с набором отдельных миссий, в каждой из которых перед игроком будет стоять определенная задача в рамках сложившихся обстоятельств.", new HoveringMessageHintPresenter(true, true));
         uiManager.SetUIState(UIManager.UIState.CardSelection);
     }
 

@@ -33,11 +33,9 @@ public class HintsManager : MonoBehaviour
         hoveringPanelPrefab = Resources.Load<GameObject>("Prefabs/Hints/HoveringPanel");
     }
 
-    public void ShowHoveringPanel(string title, string msg)
+    public void ShowHint(string title, string msg, IHintPresenter presenter)
     {
-        
-        GameObject panel = Instantiate(hoveringPanelPrefab, uiCanvas.transform);
-        HoveringMessage hoveringMessage = new HoveringMessage(title, msg, panel);
-        hoveringMessage.Show();
+        Hint hint = new Hint(title, msg, presenter);
+        hint.Show();
     }
 }

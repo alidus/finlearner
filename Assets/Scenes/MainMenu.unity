@@ -1990,6 +1990,7 @@ GameObject:
   - component: {fileID: 1890301947}
   - component: {fileID: 1890301948}
   - component: {fileID: 1890301949}
+  - component: {fileID: 1890301950}
   m_Layer: 0
   m_Name: GameLogic
   m_TagString: Untagged
@@ -2106,5 +2107,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16406de1f4914a645a50c918b0e6e7c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1890301950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1890301941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b406e515b40644347aff80cef55b45e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
