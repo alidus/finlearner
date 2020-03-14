@@ -127,4 +127,18 @@ public class StatusEffectsController : MonoBehaviour
         this.StatusEffects.Add(statusEffect);
         OnStatusEffectsChanged();
     }
+
+    public void RemoveStatusEffects(List<StatusEffect> statusEffects)
+    {
+        this.StatusEffects.RemoveAll(statusEffect => statusEffects.Contains(statusEffect));
+        OnStatusEffectsChanged();
+    }
+
+    public void RemoveStatusEffects(StatusEffect statusEffect)
+    {
+        this.StatusEffects.Remove(statusEffect);
+        OnStatusEffectsChanged();
+    }
+
+
 }

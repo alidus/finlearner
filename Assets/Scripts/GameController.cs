@@ -18,19 +18,14 @@ public class GameController : MonoBehaviour
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
-    
+    private LaborExchangeManager laborExchangeManager;
+
 
     float timeSinceDayStart;
 
-    // Jobs
-    private List<Job> jobsPool = new List<Job>();
-    private List<Job> activeJobs = new List<Job>();
 
     // Fin ops
     private List<Loan> activeCredits = new List<Loan>();
-
-    // Store catalogs
-    private StoreCatalog homeStoreCatalog;
 
 
     // Tutorial
@@ -67,10 +62,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         Init();
-        homeStoreCatalog = Resources.Load("ScriptableObjects/Store/HomeStoreCatalog") as StoreCatalog;
-        homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
-        homeStoreCatalog.Init();
-        storeManager.ActiveCatalog = homeStoreCatalog;
+        
     }
 
     private void Init()
@@ -82,6 +74,7 @@ public class GameController : MonoBehaviour
         houseManager = HouseManager.instance;
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
+        laborExchangeManager = LaborExchangeManager.instance;
 
         gameDataManager.Money = gameManager.GameMode.money;
         gameDataManager.Mood = gameManager.GameMode.mood;
@@ -89,10 +82,10 @@ public class GameController : MonoBehaviour
         gameDataManager.IsRecordingIncome = true;
 
         gameManager.OnGameStarted += OnGameStarted;
-        gameDataManager.OnNewDayStarted += TickDay;
-        gameDataManager.OnNewWeekStarted += TickWeek;
-        gameDataManager.OnNewMonthStarted += TickMonth;
-        gameDataManager.OnNewYearStarted += TickYear;
+        //gameDataManager.OnNewDayStarted += TickDay;
+        //gameDataManager.OnNewWeekStarted += TickWeek;
+        //gameDataManager.OnNewMonthStarted += TickMonth;
+        //gameDataManager.OnNewYearStarted += TickYear;
         gameDataManager.OnBirthday += delegate { hintsManager.ShowHint("С днем рождения!", "Сегодня у вас день рождения, поздавляем вас и желаем счастья и денег :)"); };
 
         uiManager.UpdateUI();
@@ -115,55 +108,40 @@ public class GameController : MonoBehaviour
                 uiManager.UpdateInfoPanel();
             }
         }
-    }
 
-    private void InitJobs()
-    {
-        foreach (UnityEngine.Object job in Resources.LoadAll("ScriptableObjects/Jobs"))
+        if (Input.GetKey(KeyCode.Escape))
         {
-            jobsPool.Add(new Job((JobSOTemplate)job));
-            print(job.name);
+            gameManager.Pause();
         }
-
-        // DEBUG
-        ActivateJob(jobsPool[0]);
     }
 
 
+    //private void TickDay()
+    //{
 
-    private void ActivateJob(Job job)
-    {
-        activeJobs.Add(job);
-        statusEffectsManager.AddStatusEffects(job.StatusEffects);
-    }
+    //}
 
-    private void DeactivateJob(Job job)
-    {
-        activeJobs.Remove(job);
-    }
+    //private void TickWeek()
+    //{
 
-    private void TickDay()
-    {
+    //}
 
-    }
+    //private void TickMonth()
+    //{
 
-    private void TickWeek()
-    {
+    //}
+    //private void TickYear()
+    //{
 
-    }
-
-    private void TickMonth()
-    {
-
-    }
-    private void TickYear()
-    {
-
-    }
+    //}
 
     private void OnGameStarted(GameMode gameMode)
     {
-        InitJobs();
+        if (showTutorial)
+        {
+            hintsManager.ShowHint("Свободная игра", "В этом режиме игры вам предстоит прожить жизнь по собственному желанию", new HoveringMessageHintPresenter(true, true));
+        }
+
     }
 
     public void GetLoan()

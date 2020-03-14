@@ -15,14 +15,25 @@ public class LaborExchangeManager : MonoBehaviour
     public delegate void LaborExchangeStateChangedAction();
     public event LaborExchangeStateChangedAction OnLaborExchangeStateChanged;
 
-    private List<Job> jobs = new List<Job>();
-    public System.Collections.Generic.List<Job> Jobs
+    private List<Job> globalJobsPool = new List<Job>();
+    private List<Job> activeJobs = new List<Job>();
+    public System.Collections.Generic.List<Job> ActiveJobs
     {
-        get { return jobs; }
-        set { jobs = value; }
+        get { return activeJobs; }
+        private set { activeJobs = value; }
+    }
+    public System.Collections.Generic.List<Job> GlobalJobsPool
+    {
+        get { return globalJobsPool; }
+       private set { globalJobsPool = value; }
     }
 
-    public JobCategory SelectedCategory { get; set; }
+    private JobCategory selectedCategory;
+    public JobCategory SelectedCategory
+    {
+        get { return selectedCategory; }
+        set { if (selectedCategory != value) { selectedCategory = value; OnLaborExchangeStateChanged(); };  }
+    }
     private void Awake()
     {
         if (instance == null)
@@ -49,11 +60,22 @@ public class LaborExchangeManager : MonoBehaviour
     {
         Init();
     }
-    
+
+    public void Init()
+    {
+        gameManager = GameManager.instance;
+        gameDataManager = GameDataManager.instance;
+        statusEffectsController = StatusEffectsController.instance;
+        houseManager = HouseManager.instance;
+        uiManager = UIManager.instance;
+
+        GlobalJobsPool = (Resources.Load("ScriptableObjects/Jobs/JobListSO") as JobList).Jobs;
+    }
+
     public List<Job> GetAllJobsOfCategory(JobCategory category)
     {
         List<Job> result = new List<Job>();
-        foreach (Job job in Jobs)
+        foreach (Job job in GlobalJobsPool)
         {
             if (job.Category == category)
                 result.Add(job);
@@ -65,7 +87,7 @@ public class LaborExchangeManager : MonoBehaviour
     public List<JobCategory> GetPresentedCategories()
     {
         List<JobCategory> result = new List<JobCategory>();
-        foreach (Job job in Jobs)
+        foreach (Job job in GlobalJobsPool)
         {
             if (!result.Contains(job.Category))
             {
@@ -76,23 +98,42 @@ public class LaborExchangeManager : MonoBehaviour
         return result;
     }
 
-    public void Init()
+    private void GetJob(Job job)
     {
-        gameManager = GameManager.instance;
-        gameDataManager = GameDataManager.instance;
-        statusEffectsController = StatusEffectsController.instance;
-        houseManager = HouseManager.instance;
-        uiManager = UIManager.instance;
+        if (!ActiveJobs.Contains(job))
+        {
+            ActiveJobs.Add(job);
+            statusEffectsController.AddStatusEffects(job.StatusEffects);
+            OnLaborExchangeStateChanged();
+        }
     }
 
-    public void AddJob(Job job)
+    private void QuitJob(Job job)
     {
-        Jobs.Add(job);
+        ActiveJobs.Remove(job);
+        statusEffectsController.RemoveStatusEffects(job.StatusEffects);
         OnLaborExchangeStateChanged();
+    }
+
+    public void AddJobToGlobalPool(Job job)
+    {
+        GlobalJobsPool.Add(job);
+        OnLaborExchangeStateChanged();
+    }
+
+    public bool IsJobActive(Job job)
+    {
+        return ActiveJobs.Contains(job);
     }
 
     public void JobPanelClick(Job job)
     {
-
+        if (IsJobActive(job))
+        {
+            QuitJob(job);
+        } else
+        {
+            GetJob(job);
+        }
     }
 }

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum JobCategory { IT, Service, Govermant}
+public enum JobCategory { IT, Service, Govermant, Art}
 
+[System.Serializable]
 public class Job
 {
     [SerializeField]
@@ -20,13 +21,8 @@ public class Job
         get { return desc; }
         set { desc = value; }
     }
+    
     [SerializeField]
-    private List<StatusEffect> statusEffects;
-    public System.Collections.Generic.List<StatusEffect> StatusEffects
-    {
-        get { return statusEffects; }
-        set { statusEffects = value; }
-    }
     private JobCategory category;
     public JobCategory Category
     {
@@ -34,9 +30,18 @@ public class Job
         set { category = value; }
     }
 
+    [SerializeField]
     public Sprite Sprite
     {
         get; set;
+    }
+
+    [SerializeField]
+    private List<StatusEffect> statusEffects;
+    public System.Collections.Generic.List<StatusEffect> StatusEffects
+    {
+        get { return statusEffects; }
+        set { statusEffects = value; }
     }
 
     public Job(JobSOTemplate template)
@@ -48,6 +53,36 @@ public class Job
     private Job()
     {
 
+    }
+
+    public IncomeData GetIncomeData()
+    {
+        IncomeData result = new IncomeData();
+        foreach (StatusEffect statusEffect in StatusEffects)
+        {
+            if (statusEffect.Type == StatusEffectType.Money)
+            {
+                switch (statusEffect.Freqency)
+                {
+                    case StatusEffectFrequency.Daily:
+                        result.DailyIncome += statusEffect.Value;
+                        break;
+                    case StatusEffectFrequency.Weekly:
+                        result.WeeklyIncome += statusEffect.Value;
+                        break;
+                    case StatusEffectFrequency.Monthly:
+                        result.MonthlyIncome += statusEffect.Value;
+                        break;
+                    case StatusEffectFrequency.Yearly:
+                        result.YearlyIncome += statusEffect.Value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return result;
     }
 
     public bool isValid()

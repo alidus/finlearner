@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
 
+    private PlayMusic playMusic;
+
     // Action delegates and events
     public delegate void GameStartedAction(GameMode gameMode);
     public event GameStartedAction OnGameStarted;
@@ -50,7 +52,8 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-        } else if (instance != this)
+        }
+        else if (instance != this)
         {
             Destroy(gameObject);
         }
@@ -82,17 +85,21 @@ public class GameManager : MonoBehaviour
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
 
-        uiManager.SetUIState(UIManager.UIState.MainMenu);
+        playMusic.Play(playMusic.MainMenuMusicPlayer);
     }
 
     public void UpdateReferences()
     {
-
+        playMusic = GameObject.Find("MusicPlayer").GetComponent<PlayMusic>();
     }
 
     public void OpenMainMenu()
     {
-        uiManager.SetUIState(UIManager.UIState.MainMenu);
+        if (GameStateP == GameState.InGame)
+        {
+            StartCoroutine("LoadLevel", "MainMenu");
+        }
+        
     }
 
     public void OpenCardSelection()
@@ -103,15 +110,13 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        GameStateP = GameState.InGame;
-
-        StartCoroutine("LoadLevel");
+        StartCoroutine("LoadLevel", "GameplayScene");
     }
 
-    public IEnumerator LoadLevel()
+    public IEnumerator LoadLevel(string sceneName)
     {
         uiManager.SetUIState(UIManager.UIState.Loading);
-        var gameplayScene = SceneManager.LoadSceneAsync("GameplayScene");
+        var gameplayScene = SceneManager.LoadSceneAsync(sceneName);
         while (!gameplayScene.isDone)
         {
             yield return 1;
@@ -121,18 +126,32 @@ public class GameManager : MonoBehaviour
 
     private void OnLevelWasLoaded(int level)
     {
+        Init();
+        GameStateP = (GameState)level;
+
         uiManager.UpdateReferences();
-        storeManager.UpdateReferences();
-        houseManager.UpdateReferences();
-        statusEffectsManager.UpdateReferences();
+        
+
+        switch (GameStateP)
+        {
+            case GameState.MainMenu:
+                playMusic.Play(playMusic.MainMenuMusicPlayer);
+                uiManager.SetUIState(UIManager.UIState.MainMenu);
+                break;
+            case GameState.InGame:
+                playMusic.Play(playMusic.GameplayMusicPlayer);
+                storeManager.UpdateReferences();
+                houseManager.UpdateReferences();
+                statusEffectsManager.UpdateReferences();
+                houseManager.UpdateFlatAppearance();
+                uiManager.SetUIState(UIManager.UIState.House);
+                OnGameStarted(gameMode);
+                break;
+            default:
+                break;
+        }
 
         uiManager.UpdateUI();
-        houseManager.UpdateFlatAppearance();
-
-        uiManager.UpdateStoreView();
-        uiManager.SetUIState(UIManager.UIState.House);
-        hintsManager.ShowHint("Свободная игра", "В этом режиме игры вам предстоит прожить жизнь по собственному желанию", new HoveringMessageHintPresenter(true, true));
-        OnGameStarted(gameMode);
     }
 
     public void PlayButtonOnClick(int gameModeIndex)
@@ -155,11 +174,15 @@ public class GameManager : MonoBehaviour
         uiManager.ToggleLaborExchange();
     }
 
-   
+    public void Pause()
+    {
+        uiManager.ShowPauseMenu(true);
+        Time.timeScale = 0;
+    }
 
-    
-
-
-    
-
+    public void Unpause()
+    {
+        uiManager.ShowPauseMenu(false);
+        Time.timeScale = 1;
+    }
 }

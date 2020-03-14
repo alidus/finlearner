@@ -124,7 +124,7 @@ public class GameDataManager : MonoBehaviour
 		private set { currentDateTime = value; }
 	}
 
-	private DateTime birthdayDate = DateTime.Now.AddDays(10);
+	private DateTime birthdayDate = DateTime.Now.AddDays(200);
 	public System.DateTime BirthdayDate
 	{
 		get { return birthdayDate; }
