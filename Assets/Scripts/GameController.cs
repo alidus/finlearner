@@ -70,7 +70,7 @@ public class GameController : MonoBehaviour
         homeStoreCatalog = Resources.Load("ScriptableObjects/Store/HomeStoreCatalog") as StoreCatalog;
         homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
         homeStoreCatalog.Init();
-        storeManager.ActiveCatalog = homeStoreCatalog;
+        storeManager.HouseStoreCatalog = homeStoreCatalog;
     }
 
     private void Init()

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using static UnityEngine.UI.Button;
 
 public enum ItemCategory
 {
@@ -78,5 +80,31 @@ public class StoreItem
         get { return sprite; }
         set { sprite = value; }
     }
-    public IEquipable EquipBehavour { get; set; }
+
+    public IStoreItemClickBehaviour ClickBehavior { get; set; }
+
+    void OnClick()
+    {
+        ClickBehavior.Click();
+    }
+
+    public void Init()
+    {
+        switch (Category)
+        {
+            case ItemCategory.Furniture:
+                ClickBehavior = new FurnitureItemClickBehavour(this);
+                break;
+            case ItemCategory.Clothes:
+                break;
+            case ItemCategory.FreeEstate:
+                break;
+            case ItemCategory.Car:
+                break;
+            case ItemCategory.Misc:
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -16,6 +16,8 @@ public class HouseManager : MonoBehaviour
     public static StoreItem Armchair { get; set; }
     public static StoreItem Table { get; set; }
 
+    public Dictionary<ItemType, StoreItem> EquippedFurniture { get; set; }
+
     private void Awake()
     {
         if (instance == null)
@@ -40,6 +42,8 @@ public class HouseManager : MonoBehaviour
     void Init()
     {
         gameDataManager = GameDataManager.instance;
+
+
     }
 
 
@@ -48,26 +52,17 @@ public class HouseManager : MonoBehaviour
         house = GameObject.Find("House");
     }
 
-    public void SetFurniture(StoreItem item)
+    public void EquipFurniture(StoreItem item)
     {
-        switch (item.Type)
+        if (item.Category == ItemCategory.Furniture)
         {
-            case ItemType.Bed:
-                Bed = item;
-                break;
-            case ItemType.Chair:
-                Chair = item;
-                break;
-            case ItemType.Armchair:
-                Armchair = item;
-                break;
-            case ItemType.Table:
-                Table = item;
-                break;
-            case ItemType.Other:
-                break;
-            default:
-                break;
+            if (EquippedFurniture.ContainsKey(item.Type))
+            {
+                EquippedFurniture[item.Type] = item;
+            }
+        } else
+        {
+            Debug.Log("Attempt to equip non-furniture category item from HouseManager.EquipFurniture");
         }
     }
 

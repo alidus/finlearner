@@ -23,17 +23,12 @@ public class StoreManager : MonoBehaviour
     public event StoreStateChangedAction OnStoreStateChanged;
 
     [SerializeField]
-    private StoreCatalog activeCatalog;
-    private ItemCategory selectedCategory;
-    public ItemCategory SelectedCategory
+    private StoreCatalog houseStoreCatalog;
+    
+    public StoreCatalog HouseStoreCatalog
     {
-        get { return selectedCategory; }
-        set { if (selectedCategory != value) { selectedCategory = value; OnStoreStateChanged(); } ;}
-    }
-    public StoreCatalog ActiveCatalog
-    {
-        get { return activeCatalog; }
-        set { activeCatalog = value; }
+        get { return houseStoreCatalog; }
+        set { houseStoreCatalog = value; }
     }
 
     private StatusEffect dafaultStoreItemStatusEffect = new StatusEffect("Покупка в магазине", 20, StatusEffectType.Mood, StatusEffectFrequency.OneShot);
@@ -75,6 +70,8 @@ public class StoreManager : MonoBehaviour
         uiManager = UIManager.instance;
     }
 
+    
+
     public void StoreItemClick(StoreItem item)
     {
         if (!item.IsOwned)
@@ -107,10 +104,10 @@ public class StoreManager : MonoBehaviour
         else
         {
             // Equip
-            if (item.EquipBehavour != null)
+            if (item.ClicBehavior != null)
             {
-                item.EquipBehavour.Equip();
-                activeCatalog.EquipItem(item);
+                item.ClicBehavior.Equip();
+                houseStoreCatalog.EquipItem(item);
                 houseManager.UpdateFlatAppearance();
                 OnStoreStateChanged();
             }

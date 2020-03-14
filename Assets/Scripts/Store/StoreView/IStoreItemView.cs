@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEquipable 
+public interface IStoreItemView
 {
-    void Equip();
+    GameObject StoreItemPanel { get; set; }
 }

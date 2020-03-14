@@ -8,6 +8,13 @@ public class StoreCatalog : ScriptableObject
     public string title;
     public List<StoreItem> items = new List<StoreItem>();
 
+    public StoreCatalog()
+    {
+
+    }
+
+    public ItemCategory SelectedCategory { get; set; }
+
     public void Init()
     {
         AttachBehaviours();
@@ -23,6 +30,20 @@ public class StoreCatalog : ScriptableObject
                 result.Add(item.Category);
             }
             
+        }
+        return result;
+    }
+
+    public List<ItemType> GetPresentedTypes()
+    {
+        List<ItemType> result = new List<ItemType>();
+        foreach (StoreItem item in items)
+        {
+            if (!result.Contains(item.Type))
+            {
+                result.Add(item.Type);
+            }
+
         }
         return result;
     }
@@ -77,7 +98,7 @@ public class StoreCatalog : ScriptableObject
             switch (item.Category)
             {
                 case ItemCategory.Furniture:
-                    item.EquipBehavour = new HomeFurnitureEquipBehavour(item);
+                    item.ClicBehavior = new FurnitureItemClickBehavour(item);
                     break;
                 case ItemCategory.Clothes:
                     break;
