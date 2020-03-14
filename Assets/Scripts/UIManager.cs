@@ -47,6 +47,7 @@ public class UIManager : MonoBehaviour
     private GameObject jobsShowcasePanel;
     private GameObject jobCategoriesPanel;
 
+    private IStoreView activeStoreView;
 
     // Buttons
     private Button storeButton;
@@ -243,11 +244,12 @@ public class UIManager : MonoBehaviour
                 overlaysContainerPanel.SetActive(true);
                 statusEffectsPanel.SetActive(false);
                 laborExchangePanel.SetActive(false);
-                pauseMenuPanel.SetActive(false);
-                storePanel.SetActive(false);
+                SwitchToHouseStore();
                 break;
             case UIState.Store:
-
+                activeStoreView.Update();
+                activeStoreView.Show();
+                overlaysContainerPanel.SetActive(true);
                 statusEffectsPanel.SetActive(false);
                 storePanel.SetActive(true);
                 laborExchangePanel.SetActive(false);
@@ -403,80 +405,8 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-
-
-    public void UpdateStoreView()
-    {
-        if (storeItemCategoriesPanel && storeItemsShowcasePanel)
-        {
-            UpdateStoreCategoriesPanel();
-            UpdateStoreShowcasePanel();
-        }
-    }
-
-    void UpdateStoreCategoriesPanel()
-    {
-        // TODO: implement empty items array behavior
-        foreach (Transform child in storeItemCategoriesPanel.transform)
-        {
-            GameObject.Destroy(child.gameObject);
-        }
-
-        List<ItemCategory> presentedCategories = storeManager.HomeStoreCatalog.GetPresentedCategories();
-
-        foreach (ItemCategory category in presentedCategories)
-        {
-            GameObject storeItemCategoryPanel = (GameObject)Instantiate(storeItemCategoryPanelPrefab);
-
-            RectTransform mRectTransform = storeItemCategoryPanel.GetComponent<RectTransform>();
-            storeItemCategoryPanel.GetComponentInChildren<Text>().text = category.ToString();
-            storeItemCategoryPanel.transform.SetParent(storeItemCategoriesPanel.transform);
-            mRectTransform.localScale = new Vector3(1, 1, 1);
-
-            storeItemCategoryPanel.GetComponent<Button>().onClick.AddListener(delegate () { storeManager.SelectedCategory = category; });
-        }
-
-        if (!presentedCategories.Contains(storeManager.SelectedCategory))
-        {
-            storeManager.SelectedCategory = presentedCategories[0];
-        }
-    }
-
-    void UpdateStoreShowcasePanel()
-    {
-        // TODO: implement empty items array behavior
-        // Clear store item panels array
-        foreach (Transform child in storeItemsShowcasePanel.transform)
-        {
-            GameObject.Destroy(child.gameObject);
-        }
-        foreach (StoreItem item in storeManager.HomeStoreCatalog.GetAllItemsOfCategory(storeManager.SelectedCategory))
-        {
-            GameObject storeItemPanel = Instantiate(storeItemPanelPrefab);
-            storeItemPanel.GetComponent<Button>().onClick.AddListener(delegate () { storeManager.StoreItemClick(item); });
-            //itemObject.GetComponentInParent<Text>().text = item.name;
-            storeItemPanel.transform.SetParent(storeItemsShowcasePanel.transform);
-            storeItemPanel.transform.localScale = new Vector3(1, 1, 1);
-            Transform iconTransform = storeItemPanel.transform.Find("Icon");
-            iconTransform.transform.Find("PriceTag").GetComponentInChildren<Text>().text = "$" + item.Price.ToString();
-            storeItemPanel.transform.Find("TitleText").GetComponent<Text>().text = item.Name;
-            iconTransform.GetComponent<Image>().sprite = item.Sprite != null ? item.Sprite : gameDataManager.placeHolderSprite;
-
-            if (item.IsEquiped)
-            {
-                storeItemPanel.transform.Find("EquipHighlightPanel").gameObject.SetActive(true);
-            }
-            else
-            {
-                storeItemPanel.transform.Find("EquipHighlightPanel").gameObject.SetActive(false);
-            }
-
-            if (item.IsOwned)
-            {
-                iconTransform.transform.Find("OwnIndicator").gameObject.SetActive(true);
-            }
-        }
-    }
+   
+    
 
     public void ShowStorePanel(bool state)
     {
@@ -593,8 +523,9 @@ public class UIManager : MonoBehaviour
         ShowLaborExchangePanel(!laborExchangePanel.activeSelf);
     }
 
-    public void ShowPauseMenu(bool state)
+    public void SwitchToHouseStore()
     {
-        pauseMenuPanel.SetActive(state);
+        activeStoreView = new DefaultStoreView(storeManager.HouseStoreCatalog, storePanel.transform);
+        
     }
 }
