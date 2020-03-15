@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private UIManager uiManager;
     private GameDataManager gameDataManager;
     private GameController gameController;
-    private StoreManager storeManager;
+    private ItemManager storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     {
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
-        storeManager = StoreManager.instance;
+        storeManager = ItemManager.instance;
         houseManager = HouseManager.instance;
         gameController = GameController.instance;
         statusEffectsManager = StatusEffectsController.instance;

@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private UIManager uiManager;
-    private StoreManager storeManager;
+    private ItemManager storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
@@ -66,7 +66,7 @@ public class GameController : MonoBehaviour
 
     private void Init()
     {
-        storeManager = StoreManager.instance;
+        storeManager = ItemManager.instance;
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         uiManager = UIManager.instance;

@@ -11,12 +11,12 @@ public class HouseManager : MonoBehaviour
 
     private static GameObject house;
 
-    public static StoreItem Bed { get; set; }
-    public static StoreItem Chair { get; set; }
-    public static StoreItem Armchair { get; set; }
-    public static StoreItem Table { get; set; }
+    public static Item Bed { get; set; }
+    public static Item Chair { get; set; }
+    public static Item Armchair { get; set; }
+    public static Item Table { get; set; }
 
-    public Dictionary<ItemType, StoreItem> EquippedFurniture { get; set; }
+    public Dictionary<FurnitureType, Item> EquippedFurniture { get; set; }
 
     private void Awake()
     {
@@ -52,7 +52,7 @@ public class HouseManager : MonoBehaviour
         house = GameObject.Find("House");
     }
 
-    public void EquipFurniture(StoreItem item)
+    public void EquipFurniture(Item item)
     {
         if (item.Category == ItemCategory.Furniture)
         {

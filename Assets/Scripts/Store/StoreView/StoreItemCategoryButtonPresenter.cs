@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-public class DefaultStoreCategoryView : IStoreCategoryView
+public class StoreItemCategoryButtonPresenter : MonoBehaviour, IItemGroupButtonPresenter<ItemObject>
 {
     public GameObject StoreCategoryPanel { get; private set; }
     GameDataManager gameDataManager;
@@ -17,23 +17,26 @@ public class DefaultStoreCategoryView : IStoreCategoryView
     public Button ButtonComponent { get; set; }
     public ButtonClickedEvent OnClick { get => ButtonComponent.onClick; set => ButtonComponent.onClick = value; }
 
-    public string Title { get => TextComponent.text;
-        set { TextComponent.text = value; } }
-    public Sprite Sprite { get => ImageComponent.sprite;
-        set => ImageComponent.sprite = value; }
+    public string Title { get => StoreCategoryPanel.GetComponentInChildren<Text>().text;
+        set { StoreCategoryPanel.GetComponentInChildren<Text>().text = value; } }
+    public Sprite Sprite { get => StoreCategoryPanel.GetComponent<Image>().sprite;
+        set => StoreCategoryPanel.GetComponent<Image>().sprite = value; }
+    public ItemGroup<ItemObject> ItemGroup { get; set; }
 
-
-
-    public DefaultStoreCategoryView(GameObject parent)
+    private void OnEnable()
     {
+        ItemGroup = this.GetComponentInParent<Store>().SelectedItemGroup;
         gameDataManager = GameDataManager.instance;
-        StoreCategoryPanel = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/DefaultStoreCategoryView") as GameObject, parent.transform);
         ImageComponent = StoreCategoryPanel.GetComponent<Image>();
         TextComponent = StoreCategoryPanel.GetComponentInChildren<Text>();
         ButtonComponent = StoreCategoryPanel.GetComponent<Button>();
         Sprite = gameDataManager.placeHolderSprite;
         Title = "DEFAULT_STORE_CATEGORY_TITLE";
     }
+    public void Update()
+    {
+        ItemGroup = this.GetComponentInParent<Store>().SelectedItemGroup;
 
-
+        Title = ItemGroup.Title;
+    }
 }

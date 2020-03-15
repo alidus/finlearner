@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private GameController gameController;
-    private StoreManager storeManager;
+    private ItemManager storeManager;
     private StatusEffectsController statusEffectsController;
     private LaborExchangeManager laborExchangeManager;
 
@@ -46,8 +46,6 @@ public class UIManager : MonoBehaviour
     private GameObject jobsShowcasePanel;
     private GameObject jobCategoriesPanel;
 
-    private IStoreView activeStoreView;
-
     // Buttons
     private Button storeButton;
     private Button infoPanelButton;
@@ -62,8 +60,6 @@ public class UIManager : MonoBehaviour
     private Button mainMenuFreePlayButton;
     // Prefabs
     private GameObject statusEffectPanelPrefab;
-    private GameObject storeItemCategoryPanelPrefab;
-    private GameObject storeItemPanelPrefab;
     private GameObject jobCategoryPanelPrefab;
     private GameObject jobPanelPrefab;
 
@@ -182,7 +178,7 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         gameController = GameController.instance;
-        storeManager = StoreManager.instance;
+        storeManager = ItemManager.instance;
         statusEffectsController = StatusEffectsController.instance;
         laborExchangeManager = LaborExchangeManager.instance;
 
@@ -476,11 +472,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowPauseMenu()
     {
-        pauseMenuPanel.SetActive(true);
-    }
-
-    public void HidePauseMenu()
-    {
-        pauseMenuPanel.SetActive(false);
+        activeStoreView = new StorePresenter(storeManager.HouseStoreCatalog, storePanel.transform);
+        
     }
 }
