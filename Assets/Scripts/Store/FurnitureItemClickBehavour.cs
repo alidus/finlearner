@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class FurnitureItemClickBehavour : IStoreItemClickBehaviour
 {
-    StoreItem item;
+    Item item;
 
     public bool IsEquipped { get; set; } 
     private HouseManager houseManager;
 
-    public FurnitureItemClickBehavour(StoreItem item)
+    public FurnitureItemClickBehavour(Item item)
     {
         this.item = item;
         houseManager = HouseManager.instance;

@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private UIManager uiManager;
-    private StoreManager storeManager;
+    private ItemManager storeManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
@@ -62,15 +62,15 @@ public class GameController : MonoBehaviour
     void Start()
     {
         Init();
-        homeStoreCatalog = Resources.Load("ScriptableObjects/Store/HomeStoreCatalog") as StoreCatalog;
-        homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
+        homeStoreCatalog = Resources.Load("ScriptableObjects/Store/HomeStoreCatalog") as ItemDatabase;
+        homeStoreCatalog = Instantiate(homeStoreCatalog) as ItemDatabase;
         homeStoreCatalog.Init();
         storeManager.HouseStoreCatalog = homeStoreCatalog;
     }
 
     private void Init()
     {
-        storeManager = StoreManager.instance;
+        storeManager = ItemManager.instance;
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         uiManager = UIManager.instance;

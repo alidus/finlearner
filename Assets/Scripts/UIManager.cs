@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private GameController gameController;
-    private StoreManager storeManager;
+    private ItemManager storeManager;
     private StatusEffectsController statusEffectsController;
     private LaborExchangeManager laborExchangeManager;
 
@@ -39,15 +39,13 @@ public class UIManager : MonoBehaviour
     private GameObject pauseMenuPanel;
 
     // Store
-    private GameObject storePanel;
+    public GameObject storePanel;
     private GameObject storeItemsShowcasePanel;
     private GameObject storeItemCategoriesPanel;
     // Labor exchange
     private GameObject laborExchangePanel;
     private GameObject jobsShowcasePanel;
     private GameObject jobCategoriesPanel;
-
-    private IStoreView activeStoreView;
 
     // Buttons
     private Button storeButton;
@@ -62,8 +60,6 @@ public class UIManager : MonoBehaviour
     private Button mainMenuFreePlayButton;
     // Prefabs
     private GameObject statusEffectPanelPrefab;
-    private GameObject storeItemCategoryPanelPrefab;
-    private GameObject storeItemPanelPrefab;
     private GameObject jobCategoryPanelPrefab;
     private GameObject jobPanelPrefab;
 
@@ -123,8 +119,6 @@ public class UIManager : MonoBehaviour
             gameplayHUDPanel = GameObject.Find("GameplayHUDPanel");
             overlaysContainerPanel = gameplayHUDPanel.transform.Find("OverlaysContainerPanel").gameObject;
             storePanel = overlaysContainerPanel.transform.Find("StorePanel").gameObject;
-            storeItemsShowcasePanel = storePanel.transform.GetChild(0).transform.Find("StoreShowcasePanel").gameObject;
-            storeItemCategoriesPanel = storePanel.transform.GetChild(0).transform.Find("StoreCategoriesPanel").gameObject;
 
             laborExchangePanel = overlaysContainerPanel.transform.Find("LaborExchangePanel").gameObject;
             jobsShowcasePanel = laborExchangePanel.transform.GetChild(0).transform.Find("JobsShowcasePanel").gameObject;
@@ -172,7 +166,7 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         gameController = GameController.instance;
-        storeManager = StoreManager.instance;
+        storeManager = ItemManager.instance;
         statusEffectsController = StatusEffectsController.instance;
         laborExchangeManager = LaborExchangeManager.instance;
 
@@ -525,7 +519,7 @@ public class UIManager : MonoBehaviour
 
     public void SwitchToHouseStore()
     {
-        activeStoreView = new DefaultStoreView(storeManager.HouseStoreCatalog, storePanel.transform);
+        activeStoreView = new StorePresenter(storeManager.HouseStoreCatalog, storePanel.transform);
         
     }
 }
