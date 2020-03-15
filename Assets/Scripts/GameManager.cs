@@ -85,7 +85,8 @@ public class GameManager : MonoBehaviour
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
 
-        playMusic.Play(playMusic.MainMenuMusicPlayer);
+        
+        uiManager.InitSceneChange(GameStateP);
     }
 
     public void UpdateReferences()
@@ -126,17 +127,12 @@ public class GameManager : MonoBehaviour
 
     private void OnLevelWasLoaded(int level)
     {
-        Init();
-        GameStateP = (GameState)level;
-
-        uiManager.UpdateReferences();
-        
+        GameStateP = (GameState)level;        
 
         switch (GameStateP)
         {
             case GameState.MainMenu:
                 playMusic.Play(playMusic.MainMenuMusicPlayer);
-                uiManager.SetUIState(UIManager.UIState.MainMenu);
                 break;
             case GameState.InGame:
                 playMusic.Play(playMusic.GameplayMusicPlayer);
@@ -144,14 +140,17 @@ public class GameManager : MonoBehaviour
                 houseManager.UpdateReferences();
                 statusEffectsManager.UpdateReferences();
                 houseManager.UpdateFlatAppearance();
-                uiManager.SetUIState(UIManager.UIState.House);
                 OnGameStarted(gameMode);
                 break;
             default:
                 break;
         }
 
+        uiManager.InitSceneChange(GameStateP);
+
         uiManager.UpdateUI();
+
+        playMusic.Play(playMusic.MainMenuMusicPlayer);
     }
 
     public void PlayButtonOnClick(int gameModeIndex)
@@ -176,13 +175,13 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
-        uiManager.ShowPauseMenu(true);
+        uiManager.ShowPauseMenu();
         Time.timeScale = 0;
     }
 
     public void Unpause()
     {
-        uiManager.ShowPauseMenu(false);
+        uiManager.HidePauseMenu();
         Time.timeScale = 1;
     }
 }

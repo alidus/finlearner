@@ -2233,12 +2233,12 @@ GameObject:
   - component: {fileID: 1890301944}
   - component: {fileID: 1890301943}
   - component: {fileID: 1890301942}
-  - component: {fileID: 1890301946}
   - component: {fileID: 1890301947}
   - component: {fileID: 1890301948}
   - component: {fileID: 1890301949}
   - component: {fileID: 1890301950}
   - component: {fileID: 1890301951}
+  - component: {fileID: 1890301946}
   m_Layer: 0
   m_Name: GameLogic
   m_TagString: Untagged
@@ -2335,7 +2335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f908442f68c20cf48a61496dd61a249f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  homeStoreCatalog: {fileID: 0}
+  houseStoreCatalog: {fileID: 0}
 --- !u!114 &1890301949
 MonoBehaviour:
   m_ObjectHideFlags: 0

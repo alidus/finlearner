@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,11 +40,9 @@ public class UIManager : MonoBehaviour
     private GameObject pauseMenuPanel;
 
     // Store
-    private GameObject storePanel;
-    private GameObject storeItemsShowcasePanel;
-    private GameObject storeItemCategoriesPanel;
+    private GameObject storeContainer;
     // Labor exchange
-    private GameObject laborExchangePanel;
+    private GameObject laborExchangeContainer;
     private GameObject jobsShowcasePanel;
     private GameObject jobCategoriesPanel;
 
@@ -53,6 +52,7 @@ public class UIManager : MonoBehaviour
     private Button storeButton;
     private Button infoPanelButton;
     private Button getCreditButtonTEST;
+
     private Button laborExchangeButton;
     private Button pauseMenuResumeButton;
     private Button pauseMenuSettingsButton;
@@ -103,32 +103,27 @@ public class UIManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         // TODO: not very good, try to do it another way
         gameManager = GameManager.instance;
-        UpdateReferences();
     }
 
-    public void UpdateReferences()
+    private void UpdateReferences(GameManager.GameState state)
     {
         loadingCanvas = GameObject.Find("LoadingCanvas").gameObject;
         DontDestroyOnLoad(loadingCanvas);
         loadingPanel = loadingCanvas.transform.Find("LoadingPanel").gameObject;
         uiCanvas = GameObject.Find("UICanvas");
         // Update references to UI elements based on game state
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        if (state == GameManager.GameState.MainMenu)
         {
             mainMenuPanel = uiCanvas.transform.Find("MainMenuPanel").gameObject;
             cardSelectionPanel = uiCanvas.transform.Find("CardSelectionPanel").gameObject;
         }
-        else
+        else if (state == GameManager.GameState.InGame)
         {
             gameplayHUDPanel = GameObject.Find("GameplayHUDPanel");
             overlaysContainerPanel = gameplayHUDPanel.transform.Find("OverlaysContainerPanel").gameObject;
-            storePanel = overlaysContainerPanel.transform.Find("StorePanel").gameObject;
-            storeItemsShowcasePanel = storePanel.transform.GetChild(0).transform.Find("StoreShowcasePanel").gameObject;
-            storeItemCategoriesPanel = storePanel.transform.GetChild(0).transform.Find("StoreCategoriesPanel").gameObject;
+            storeContainer = overlaysContainerPanel.transform.Find("StoreContainer").gameObject;
 
-            laborExchangePanel = overlaysContainerPanel.transform.Find("LaborExchangePanel").gameObject;
-            jobsShowcasePanel = laborExchangePanel.transform.GetChild(0).transform.Find("JobsShowcasePanel").gameObject;
-            jobCategoriesPanel = laborExchangePanel.transform.GetChild(0).transform.Find("JobCategoriesPanel").gameObject;
+            laborExchangeContainer = overlaysContainerPanel.transform.Find("LaborExchangeContainer").gameObject;
             statusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel").gameObject;
             pauseMenuPanel = overlaysContainerPanel.transform.Find("PauseMenuPanel").gameObject;
             foreach (Transform transform in statusEffectsPanel.transform.GetComponentsInChildren<Transform>())
@@ -156,10 +151,25 @@ public class UIManager : MonoBehaviour
             storeItemPanelPrefab = Resources.Load("Prefabs/Store/StoreItemPanel") as GameObject;
             jobCategoryPanelPrefab = Resources.Load("Prefabs/Jobs/JobCategoryPanel") as GameObject;
             jobPanelPrefab = Resources.Load("Prefabs/Jobs/JobPanel") as GameObject;
-
-           
         }
-        MapButtonsToActions();
+        MapButtonsToActions(state);
+    }
+
+    internal void InitSceneChange(GameManager.GameState gameStateP)
+    {
+        UpdateReferences(gameStateP);
+        switch (gameStateP)
+        {
+            case GameManager.GameState.MainMenu:
+                
+                SetUIState(UIManager.UIState.MainMenu);
+                break;
+            case GameManager.GameState.InGame:
+                SetUIState(UIManager.UIState.House);
+                break;
+            default:
+                break;
+        }
     }
 
     private void Start()
@@ -179,16 +189,15 @@ public class UIManager : MonoBehaviour
         gameDataManager.OnNewDayStarted += UpdateDayOfWeekProgressBar;
         gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
-        storeManager.OnStoreStateChanged += UpdateStoreView;
         statusEffectsController.OnStatusEffectsChanged += UpdateStatusEffectsView;
-        laborExchangeManager.OnLaborExchangeStateChanged += UpdateLaborExchangeView;
+        //laborExchangeManager.OnLaborExchangeStateChanged += UpdateLaborExchangeView;
     }
 
 
 
-    private void MapButtonsToActions()
+    private void MapButtonsToActions(GameManager.GameState state)
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        if (state == GameManager.GameState.MainMenu)
         {
             Transform mainMenuButtonsContainer = mainMenuPanel.transform.Find("ButtonsContainer").transform;
             mainMenuCampaignButton = mainMenuButtonsContainer.transform.Find("CampaignButton").GetComponent<Button>();
@@ -196,7 +205,7 @@ public class UIManager : MonoBehaviour
 
             mainMenuCampaignButton.onClick.AddListener(gameManager.OpenCardSelection);
             mainMenuFreePlayButton.onClick.AddListener(gameManager.StartGame);
-        } else
+        } else if (state == GameManager.GameState.InGame)
         {
             storeButton = GameObject.Find("StoreButton").GetComponent<Button>();
             laborExchangeButton = GameObject.Find("LaborExchangeButton").GetComponent<Button>();
@@ -240,31 +249,33 @@ public class UIManager : MonoBehaviour
                 loadingPanel.SetActive(true);
                 break;
             case UIState.House:
+                storeManager.InitHomeStore();
                 loadingPanel.SetActive(false);
                 overlaysContainerPanel.SetActive(true);
                 statusEffectsPanel.SetActive(false);
-                laborExchangePanel.SetActive(false);
-                SwitchToHouseStore();
+                laborExchangeContainer.SetActive(false);
+                storeContainer.SetActive(false);
+                UpdateStoreView();
                 break;
             case UIState.Store:
                 activeStoreView.Update();
-                activeStoreView.Show();
                 overlaysContainerPanel.SetActive(true);
                 statusEffectsPanel.SetActive(false);
-                storePanel.SetActive(true);
-                laborExchangePanel.SetActive(false);
+                storeContainer.SetActive(true);
+                laborExchangeContainer.SetActive(false);
+                storeContainer.SetActive(true);
                 break;
             case UIState.ModifiersInfo:
 
                 statusEffectsPanel.SetActive(true);
-                storePanel.SetActive(false);
-                laborExchangePanel.SetActive(false);
+                storeContainer.SetActive(false);
+                laborExchangeContainer.SetActive(false);
                 break;
             case UIState.LaborExchange:
 
                 statusEffectsPanel.SetActive(false);
-                storePanel.SetActive(true);
-                laborExchangePanel.SetActive(true);
+                storeContainer.SetActive(true);
+                laborExchangeContainer.SetActive(true);
                 break;
             default:
                 break;
@@ -277,8 +288,18 @@ public class UIManager : MonoBehaviour
         UpdateMoodPanel();
         UpdateInfoPanel();
         UpdateStoreView();
-        UpdateLaborExchangeView();
+
         UpdateDayOfWeekProgressBar();
+    }
+
+    private void UpdateStoreView()
+    {
+        if (storeContainer && storeManager.ActiveStoreCatalog)
+        {
+            activeStoreView = new DefaultStoreView(storeManager.ActiveStoreCatalog, storeContainer.transform);
+
+            activeStoreView.Update();
+        }       
     }
 
     public void UpdateInfoPanel()
@@ -398,7 +419,7 @@ public class UIManager : MonoBehaviour
                     panel.transform.SetParent(moodStatusEffectsContentPanel.transform);
                 }
                 panel.transform.localScale = new Vector3(1, 1, 1);
-                panel.transform.Find("Info").transform.Find("TopPanel").transform.Find("TitleText").GetComponent<Text>().text = statusEffect.Name;
+                panel.transform.Find("Info").transform.Find("TopPanel").transform.Find("TitleText").GetComponent<Text>().text = statusEffect.Title;
                 Transform BottomPanelTransform = panel.transform.Find("Info").transform.Find("BottomPanel");
                 BottomPanelTransform.transform.Find("TypePanel").GetComponentInChildren<Text>().text = statusEffect.Freqency.ToString();
                 BottomPanelTransform.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (statusEffect.Value > 0 ? "+" : "") + statusEffect.Value;
@@ -422,7 +443,7 @@ public class UIManager : MonoBehaviour
 
     public void ToggleStorePanel()
     {
-        ShowStorePanel(!storePanel.activeSelf);
+        ShowStorePanel(!storeContainer.activeSelf);
     }
 
     public void SetDayProgress(float value)
@@ -433,78 +454,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateLaborExchangeView()
-    {
-        if (jobCategoriesPanel && jobsShowcasePanel)
-        {
-            UpdateJobCategoriesPanel();
-            UpdateJobsShowcasePanel();
-        }
-    }
-
-    void UpdateJobCategoriesPanel()
-    {
-        // TODO: implement empty items array behavior
-        foreach (Transform child in jobCategoriesPanel.transform)
-        {
-            GameObject.Destroy(child.gameObject);
-        }
-
-        List<JobCategory> presentedCategories = laborExchangeManager.GetPresentedCategories();
-
-        foreach (JobCategory category in presentedCategories)
-        {
-            GameObject jobCategoryPanel = (GameObject)Instantiate(jobCategoryPanelPrefab);
-
-            RectTransform mRectTransform = jobCategoryPanel.GetComponent<RectTransform>();
-            jobCategoryPanel.GetComponentInChildren<Text>().text = category.ToString();
-            jobCategoryPanel.transform.SetParent(jobCategoriesPanel.transform);
-            mRectTransform.localScale = new Vector3(1, 1, 1);
-
-            jobCategoryPanel.GetComponent<Button>().onClick.AddListener(delegate () { laborExchangeManager.SelectedCategory = category; print(category); });
-        }
-
-        if (!presentedCategories.Contains(laborExchangeManager.SelectedCategory))
-        {
-            laborExchangeManager.SelectedCategory = presentedCategories[0];
-        }
-    }
-
-    void UpdateJobsShowcasePanel()
-    {
-        // TODO: implement empty items array behavior
-        foreach (Transform child in jobsShowcasePanel.transform)
-        {
-            GameObject.Destroy(child.gameObject);
-        }
-        foreach (Job job in laborExchangeManager.GetAllJobsOfCategory(laborExchangeManager.SelectedCategory))
-        {
-            GameObject jobPanel = Instantiate(jobPanelPrefab);
-            jobPanel.GetComponent<Button>().onClick.AddListener(delegate () { laborExchangeManager.JobPanelClick(job); });
-            //itemObject.GetComponentInParent<Text>().text = item.name;
-            jobPanel.transform.SetParent(jobsShowcasePanel.transform);
-            jobPanel.transform.localScale = new Vector3(1, 1, 1);
-            Transform iconTransform = jobPanel.transform.Find("Icon");
-            iconTransform.GetComponent<Image>().sprite = job.Sprite != null ? job.Sprite : gameDataManager.placeHolderSprite;
-            IncomeData incomeData = job.GetIncomeData();
-            string incomeInfoText = "Разовые выплаты: \n";
-            incomeInfoText += incomeData.DailyIncome > 0 ? "$" + incomeData.DailyIncome.ToString() + " в день\n" : "";
-            incomeInfoText += incomeData.WeeklyIncome > 0 ? "$" + incomeData.WeeklyIncome.ToString() + " в неделю\n" : "";
-            incomeInfoText += incomeData.MonthlyIncome > 0 ? "$" + incomeData.MonthlyIncome.ToString() + " в месяц\n" : "";
-            incomeInfoText += incomeData.YearlyIncome > 0 ? "$" + incomeData.YearlyIncome.ToString() + " в год\n" : "";
-            jobPanel.transform.Find("Income").GetComponentInChildren<Text>().text = incomeInfoText;
-            jobPanel.transform.Find("TitleText").GetComponent<Text>().text = job.Title;
-
-            if (laborExchangeManager.IsJobActive(job))
-            {
-                jobPanel.transform.Find("EquipHighlightPanel").gameObject.SetActive(true);
-            }
-            else
-            {
-                jobPanel.transform.Find("EquipHighlightPanel").gameObject.SetActive(false);
-            }
-        }
-    }
+    
 
     public void ShowLaborExchangePanel(bool state)
     {
@@ -520,12 +470,17 @@ public class UIManager : MonoBehaviour
 
     public void ToggleLaborExchange()
     {
-        ShowLaborExchangePanel(!laborExchangePanel.activeSelf);
+        ShowLaborExchangePanel(!laborExchangeContainer.activeSelf);
     }
 
-    public void SwitchToHouseStore()
+
+    public void ShowPauseMenu()
     {
-        activeStoreView = new DefaultStoreView(storeManager.HouseStoreCatalog, storePanel.transform);
-        
+        pauseMenuPanel.SetActive(true);
+    }
+
+    public void HidePauseMenu()
+    {
+        pauseMenuPanel.SetActive(false);
     }
 }

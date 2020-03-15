@@ -10,7 +10,7 @@ public class StatusEffect
 {
     [SerializeField]
     private string name = "MODIFIER_NAME";
-    public string Name
+    public string Title
     {
         get { return name; }
         set { name = value; }
@@ -39,7 +39,7 @@ public class StatusEffect
     
     public StatusEffect(string name, float value, StatusEffectType type, StatusEffectFrequency freqency)
     {
-        this.Name = name;
+        this.Title = name;
         this.Value = value;
         this.Type = type;
         this.Freqency = freqency;

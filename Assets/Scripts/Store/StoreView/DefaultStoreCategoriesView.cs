@@ -6,15 +6,14 @@ public class DefaultStoreCategoriesView : IStoreCategoriesView
 {
     StoreManager storeManager;
 
-    public StoreCatalog StoreCatalog { get; set; }
+    public StoreCatalog StoreCatalog { get; private set; }
     public GameObject StoreCategoriesPanel { get; set; }
-    public GameObject StoreCategoryPanelPrefab { get; set; }
 
-    public DefaultStoreCategoriesView(GameObject storeCategoriesPanelPrefab, GameObject storeCategoryPanelPrefab, Transform parent)
+    public DefaultStoreCategoriesView(IStoreView parentView)
     {
+        StoreCatalog = parentView.StoreCatalog;
         storeManager = StoreManager.instance;
-        StoreCategoriesPanel = GameObject.Instantiate(storeCategoriesPanelPrefab, parent);
-        StoreCategoryPanelPrefab = storeCategoryPanelPrefab;
+        StoreCategoriesPanel = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/DefaultStoreCategoriesView") as GameObject, parentView.StorePanel.transform);
     }
 
     public void Update() {
@@ -24,7 +23,7 @@ public class DefaultStoreCategoriesView : IStoreCategoriesView
 
         foreach (ItemCategory category in presentedCategories)
         {
-            DefaultStoreCategoryView storeCategoryView = new DefaultStoreCategoryView(StoreCategoryPanelPrefab, StoreCategoriesPanel.transform);
+            DefaultStoreCategoryView storeCategoryView = new DefaultStoreCategoryView(StoreCategoriesPanel);
             storeCategoryView.Title = category.ToString();
             storeCategoryView.OnClick.AddListener(delegate () { StoreCatalog.SelectedCategory = category; });
         }

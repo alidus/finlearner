@@ -4,5 +4,11 @@ using UnityEngine;
 
 public interface IStoreItemView
 {
-    GameObject StoreItemPanel { get; set; }
+
+    StoreItem StoreItem { get; }
+
+    string Title { get;  }
+    Sprite Sprite { get;  }
+
+    void Update();
 }

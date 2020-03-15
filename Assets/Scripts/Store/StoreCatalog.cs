@@ -5,9 +5,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/StoreCatalogue", order = 1)]
 public class StoreCatalog : ScriptableObject
 {
-    public string title;
-    public List<StoreItem> items = new List<StoreItem>();
-
+    [SerializeField]
+    private List<StoreItem> items = new List<StoreItem>();
+    public List<StoreItem> Items
+    {
+        get { return items; }
+        set { items = value; }
+    }
     public StoreCatalog()
     {
 
@@ -17,13 +21,13 @@ public class StoreCatalog : ScriptableObject
 
     public void Init()
     {
-        AttachBehaviours();
+
     }
 
     public List<ItemCategory> GetPresentedCategories()
     {
         List<ItemCategory> result = new List<ItemCategory>();
-        foreach (StoreItem item in items)
+        foreach (StoreItem item in Items)
         {
             if (!result.Contains(item.Category))
             {
@@ -37,7 +41,7 @@ public class StoreCatalog : ScriptableObject
     public List<ItemType> GetPresentedTypes()
     {
         List<ItemType> result = new List<ItemType>();
-        foreach (StoreItem item in items)
+        foreach (StoreItem item in Items)
         {
             if (!result.Contains(item.Type))
             {
@@ -51,7 +55,7 @@ public class StoreCatalog : ScriptableObject
     public List<StoreItem> GetAllItemsOfCategory(ItemCategory category)
     {
         List<StoreItem> result = new List<StoreItem>();
-        foreach (StoreItem item in items)
+        foreach (StoreItem item in Items)
         {
             if (item.Category == category)
             {
@@ -64,7 +68,7 @@ public class StoreCatalog : ScriptableObject
     public List<StoreItem> GetAllItemsOfType(ItemType type)
     {
         List<StoreItem> result = new List<StoreItem>();
-        foreach (StoreItem item in items)
+        foreach (StoreItem item in Items)
         {
             if (item.Type == type)
             {
@@ -72,45 +76,5 @@ public class StoreCatalog : ScriptableObject
             }
         }
         return result;
-    }
-
-    public void EquipItem(StoreItem storeItem)
-    {
-        foreach (StoreItem item in items)
-        {
-            if (item.Type == storeItem.Type)
-            {
-                if (storeItem == item)
-                {
-                    item.IsEquiped = true;
-                } else
-                {
-                    item.IsEquiped = false;
-                }
-            }
-        }
-    }
-
-    private void AttachBehaviours()
-    {
-        foreach (StoreItem item in items)
-        {
-            switch (item.Category)
-            {
-                case ItemCategory.Furniture:
-                    item.ClicBehavior = new FurnitureItemClickBehavour(item);
-                    break;
-                case ItemCategory.Clothes:
-                    break;
-                case ItemCategory.FreeEstate:
-                    break;
-                case ItemCategory.Car:
-                    break;
-                case ItemCategory.Misc:
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 }

@@ -4,10 +4,9 @@ using UnityEngine;
 
 public interface IStoreCategoriesView
 {
-    StoreCatalog StoreCatalog { get; set; }
+    StoreCatalog StoreCatalog { get; }
     GameObject StoreCategoriesPanel { get; set; }
 
-    GameObject StoreCategoryPanelPrefab { get; set; }
 
     void Update();
 

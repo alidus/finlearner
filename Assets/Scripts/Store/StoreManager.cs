@@ -18,9 +18,8 @@ public class StoreManager : MonoBehaviour
     private HouseManager houseManager;
     private UIManager uiManager;
 
-    // Events, delegates
-    public delegate void StoreStateChangedAction();
-    public event StoreStateChangedAction OnStoreStateChanged;
+    public StoreCatalog ActiveStoreCatalog { get; set; }
+
 
     [SerializeField]
     private StoreCatalog houseStoreCatalog;
@@ -69,55 +68,13 @@ public class StoreManager : MonoBehaviour
         houseManager = HouseManager.instance;
         uiManager = UIManager.instance;
 
-        homeStoreCatalog = Resources.Load("ScriptableObjects/Store/HomeStoreCatalog") as StoreCatalog;
-        homeStoreCatalog = Instantiate(homeStoreCatalog) as StoreCatalog;
-        homeStoreCatalog.Init();
-        HomeStoreCatalog = homeStoreCatalog;
+
     }
 
-    
-
-    public void StoreItemClick(StoreItem item)
+    public void InitHomeStore()
     {
-        if (!item.IsOwned)
-        {
-            if (item.Price <= gameDataManager.Money)
-            {
-                // Buy item
-                item.IsOwned = true;
-                gameDataManager.Money -= item.Price;
-                // TODO: do it better way
-                // If store item doesnt have modifier then apply default store item modifier
-                if (item.Modifiers.Count == 0)
-                {
-                    item.Modifiers.Add(dafaultStoreItemStatusEffect);
-                }
-                foreach (StatusEffect statusEffect in item.Modifiers)
-                {
-                    if (statusEffect.Freqency == StatusEffectFrequency.OneShot)
-                    {
-                        statusEffectsController.ExecuteOneShotStatusEffect(statusEffect);
-                    }
-                    else
-                    {
-                        statusEffectsController.AddStatusEffects(statusEffect);
-                    }
-                }
-                OnStoreStateChanged();
-            }
-        }
-        else
-        {
-            // Equip
-            if (item.ClicBehavior != null)
-            {
-                item.ClicBehavior.Equip();
-                houseStoreCatalog.EquipItem(item);
-                houseManager.UpdateFlatAppearance();
-                OnStoreStateChanged();
-            }
-
-        }
-
+        HouseStoreCatalog = Instantiate(Resources.Load("ScriptableObjects/Store/HomeStoreCatalog")) as StoreCatalog;
+        HouseStoreCatalog.Init();
+        ActiveStoreCatalog = HouseStoreCatalog;
     }
 }

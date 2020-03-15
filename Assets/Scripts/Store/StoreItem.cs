@@ -18,11 +18,11 @@ public enum ItemType
 public class StoreItem
 {
     [SerializeField]
-    private string name;
-    public string Name
+    private string title;
+    public string Title
     {
-        get { return name; }
-        set { name = value; }
+        get { return title; }
+        set { title = value; }
     }
     [SerializeField]
     private string desc;
@@ -31,27 +31,7 @@ public class StoreItem
         get { return desc; }
         set { desc = value; }
     }
-    [SerializeField]
-    private int price;
-    public int Price
-    {
-        get { return price; }
-        set { price = value; }
-    }
-    [SerializeField]
-    private bool isOwned;
-    public bool IsOwned
-    {
-        get { return isOwned; }
-        set { isOwned = value; }
-    }
-    [SerializeField]
-    private bool isEquiped;
-    public bool IsEquiped
-    {
-        get { return isEquiped; }
-        set { isEquiped = value; }
-    }
+
     [SerializeField]
     private ItemCategory category = ItemCategory.Misc;
     public ItemCategory Category
@@ -67,11 +47,11 @@ public class StoreItem
         set { type = value; }
     }
     [SerializeField]
-    private List<StatusEffect> modifiers;
-    public List<StatusEffect> Modifiers
+    private List<StatusEffect> statusEffects;
+    public List<StatusEffect> StatusEffects
     {
-        get { return modifiers; }
-        set { modifiers = value; }
+        get { return statusEffects; }
+        set { statusEffects = value; }
     }
     [SerializeField]
     private Sprite sprite;
@@ -81,30 +61,30 @@ public class StoreItem
         set { sprite = value; }
     }
 
-    public IStoreItemClickBehaviour ClickBehavior { get; set; }
+    [SerializeField]
+    private List<AbstractStoreItemBehaviour> behaviours = new List<AbstractStoreItemBehaviour>();
+    public List<AbstractStoreItemBehaviour> Behaviours { private get { return behaviours; } set { behaviours = value; } }
 
-    void OnClick()
+    public T AddBehaviour<T>(AbstractStoreItemBehaviour behaviour) where T : AbstractStoreItemBehaviour
     {
-        ClickBehavior.Click();
+        Behaviours.Add(behaviour);
+        return GetBehaviour<T>();
     }
 
-    public void Init()
+    public bool RemoveBehaviour<T>() where T : AbstractStoreItemBehaviour
     {
-        switch (Category)
+        return Behaviours.Remove(GetBehaviour<T>());
+    }
+    public T GetBehaviour<T>() where T : AbstractStoreItemBehaviour
+    {
+        return (T)Behaviours.Find(behaviour => behaviour is T);
+    }
+
+    public void Click()
+    {
+        foreach (AbstractStoreItemBehaviour storeItemClickBehaviour in Behaviours)
         {
-            case ItemCategory.Furniture:
-                ClickBehavior = new FurnitureItemClickBehavour(this);
-                break;
-            case ItemCategory.Clothes:
-                break;
-            case ItemCategory.FreeEstate:
-                break;
-            case ItemCategory.Car:
-                break;
-            case ItemCategory.Misc:
-                break;
-            default:
-                break;
+            storeItemClickBehaviour.Execute();
         }
     }
 }

@@ -12,9 +12,10 @@ public class DefaultStoreView : IStoreView
     public DefaultStoreView(StoreCatalog storeCatalog, Transform parent)
     {
         StorePanel = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/DefaultStoreView") as GameObject, parent);
-        StoreCategoriesView = new DefaultStoreCategoriesView(Resources.Load("Prefabs/Store/Views/DefaultStoreCategoriesView") as GameObject, Resources.Load("Prefabs/Store/Views/DefaultStoreCategoryView") as GameObject, StorePanel.transform);
-        StoreShowcaseView = new DefaultStoreShowcaseView(Resources.Load("Prefabs/Store/Views/DefaultStoreShowcaseView") as GameObject, StorePanel.transform);
         StoreCatalog = storeCatalog;
+        StoreCategoriesView = new DefaultStoreCategoriesView(this);
+        StoreShowcaseView = new DefaultStoreShowcaseView(this);
+        
     }    
 
     public void Update()
@@ -22,15 +23,4 @@ public class DefaultStoreView : IStoreView
         StoreCategoriesView.Update();
         StoreShowcaseView.Update();
     }
-
-    public void Show()
-    {
-        StorePanel.SetActive(false);
-    }
-
-    public void Hide()
-    {
-        StorePanel.SetActive(true);
-    }
- 
 }

@@ -9,9 +9,10 @@ public class DefaultStoreShowcaseView : IStoreShowcaseView
 
     public GameObject StoreItemPanelPrefab { get; set; }
 
-    public DefaultStoreShowcaseView(GameObject storeShowcasePanelPrefab, Transform parent)
+    public DefaultStoreShowcaseView(IStoreView parentView)
     {
-        StoreShowcasePanel = GameObject.Instantiate(storeShowcasePanelPrefab, parent);
+        StoreCatalog = parentView.StoreCatalog;
+        StoreShowcasePanel = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/DefaultStoreShowcaseView") as GameObject, parentView.StorePanel.transform);
     }
 
     public void Update() {
@@ -21,32 +22,10 @@ public class DefaultStoreShowcaseView : IStoreShowcaseView
         {
             GameObject.Destroy(child.gameObject);
         }
-        foreach (StoreItem item in StoreCatalog.GetAllItemsOfCategory(StoreCatalog.SelectedCategory))
+        foreach (StoreItem storeItem in StoreCatalog.GetAllItemsOfCategory(StoreCatalog.SelectedCategory))
         {
-            DefaultStoreItemView itemView = new DefaultStoreItemView(StoreItemPanelPrefab, StoreShowcasePanel.transform);
-            itemView.OnClick.AddListener(delegate () { storeManager.StoreItemClick(item); });
-
-            //itemObject.GetComponentInParent<Text>().text = item.name;
-            storeItemPanel.transform.SetParent(storeItemsShowcasePanel.transform);
-            storeItemPanel.transform.localScale = new Vector3(1, 1, 1);
-            Transform iconTransform = storeItemPanel.transform.Find("Icon");
-            iconTransform.transform.Find("PriceTag").GetComponentInChildren<Text>().text = "$" + item.Price.ToString();
-            storeItemPanel.transform.Find("TitleText").GetComponent<Text>().text = item.Name;
-            iconTransform.GetComponent<Image>().sprite = item.Sprite != null ? item.Sprite : gameDataManager.placeHolderSprite;
-
-            if (item.IsEquiped)
-            {
-                storeItemPanel.transform.Find("EquipHighlightPanel").gameObject.SetActive(true);
-            }
-            else
-            {
-                storeItemPanel.transform.Find("EquipHighlightPanel").gameObject.SetActive(false);
-            }
-
-            if (item.IsOwned)
-            {
-                iconTransform.transform.Find("OwnIndicator").gameObject.SetActive(true);
-            }
+            DefaultStoreItemView itemView = new DefaultStoreItemView(storeItem, StoreShowcasePanel.transform);
+            itemView.OnClick.AddListener(delegate () { storeItem.Click(); });
         }
     }
 }
