@@ -11,15 +11,17 @@ public class HouseManager : MonoBehaviour
 
     private static GameObject house;
 
-    public static Item Bed { get; set; }
-    public static Item Chair { get; set; }
-    public static Item Armchair { get; set; }
-    public static Item Table { get; set; }
+    public static FurnitureItem Bed { get; set; }
+    public static FurnitureItem Chair { get; set; }
+    public static FurnitureItem Armchair { get; set; }
+    public static FurnitureItem Table { get; set; }
 
     public Dictionary<FurnitureType, Item> EquippedFurniture { get; set; }
 
     private void Awake()
     {
+        if (GameDataManager.instance.DEBUG)
+            Debug.Log("HouseManager awake");
         if (instance == null)
         {
             instance = this;
@@ -42,8 +44,6 @@ public class HouseManager : MonoBehaviour
     void Init()
     {
         gameDataManager = GameDataManager.instance;
-
-
     }
 
 
@@ -52,22 +52,18 @@ public class HouseManager : MonoBehaviour
         house = GameObject.Find("House");
     }
 
-    public void EquipFurniture(Item item)
+    public void EquipFurniture(FurnitureItem item)
     {
-        if (item.Category == ItemCategory.Furniture)
+        if (EquippedFurniture.ContainsKey(item.FurnitureType))
         {
-            if (EquippedFurniture.ContainsKey(item.Type))
-            {
-                EquippedFurniture[item.Type] = item;
-            }
-        } else
-        {
-            Debug.Log("Attempt to equip non-furniture category item from HouseManager.EquipFurniture");
+            EquippedFurniture[item.FurnitureType] = item;
         }
     }
 
     public void UpdateFlatAppearance()
     {
+        // TODO: Singleton initialization check
+        Init();
         foreach (Transform child in house.transform)
         {
             switch (child.name)

@@ -11,6 +11,5 @@ public class GameMode : ScriptableObject
     public GameModeType type;
     public int money;
     public int mood;
-    public float dayDuration;
     public int age;
 }

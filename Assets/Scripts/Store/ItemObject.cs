@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.Events;
 
 
-
-public class ItemObject : Item, IClickable, IPurchasable, IEquipable, IDrawable
+[System.Serializable]
+public class ObjectItem : Item, IClickable, IPurchasable, IEquipable, IDrawable
 {
-    public enum ItemObjectType { Furniture, Clothing}
-    
+    [SerializeField]
+    private Sprite sprite;
 
     public UnityAction OnClick { get; set; }
     public bool CanBeEquipped { get; set; }
@@ -16,29 +16,27 @@ public class ItemObject : Item, IClickable, IPurchasable, IEquipable, IDrawable
     public bool IsEquipped { get; private set; }
     public bool CanBePurchased { get; set; }
     public bool IsPurchased { get; private set; }
-    public ItemType Type { get => type; set => type = value; }
-    public ItemObjectType ObjectType { get => objectType; set => objectType = value; }
-    public Sprite Sprite { get; set; }
 
-    [SerializeField]
-    private ItemType type;
-    [SerializeField]
-    private ItemObjectType objectType;
+    public Sprite Sprite { get => sprite; set => sprite = value; }
 
-    public ItemObject()
+
+    public ObjectItem()
     {
-        OnClick = delegate { 
+        OnClick = delegate
+        {
             if (CanBeEquipped)
             {
                 if (!IsEquipped)
                 {
                     Equip();
 
-                } else
+                }
+                else
                 {
                     Uneqip();
                 }
-            } else if (CanBePurchased)
+            }
+            else if (CanBePurchased)
             {
                 if (!IsPurchased)
                 {

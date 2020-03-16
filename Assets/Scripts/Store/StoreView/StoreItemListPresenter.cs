@@ -1,25 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class StoreItemsListPresenter : MonoBehaviour, IItemListPresenter<ItemObject>
+[ExecuteInEditMode]
+public class StoreItemListPresenter : MonoBehaviour, IItemListPresenter<ObjectItem>
 {
-    public ItemDatabase<ItemObject> ItemDatabase { get; private set; }
+    public Store Store { get; set; }
+    public ItemGroup<ObjectItem> ItemGroup { get; set; }
+
+    public Transform ScrollViewContentTransform { get; set; }
 
     private void OnEnable()
     {
-        ItemDatabase = this.GetComponentInParent<Store>().ItemDatabase;
-    }
+        Store = GetComponentInParent<Store>();
+        var k = this.transform.Find("ScrollView");
+        var z = this.transform.Find("ScrollView")?.Find("Viewport");
+        var n = this.transform.Find("ScrollView")?.Find("Viewport")?.Find("Content");
+        ScrollViewContentTransform = this.transform.Find("ScrollView")?.Find("Viewport")?.Find("Content") ?? null;
 
-    public void Update() {
-        foreach (Transform child in this.transform)
+        UpdatePresenter();
+    }
+    public void UpdatePresenter() {
+        if (Store)
         {
-            GameObject.Destroy(child.gameObject);
-        }
-        foreach (ItemObject item in this.GetComponentInParent<Store>().SelectedItemGroup)
-        {
-            // TODO: optimize not to clear entire array of gameObjects on every update but based on changes made
-            StoreFactory.CreateItemPresenter(item, this.transform);
+            ItemGroup = Store.SelectedItemGroup;
+            if (ItemGroup != null && ScrollViewContentTransform)
+            {
+                foreach (Transform child in ScrollViewContentTransform)
+                {
+                    GameObject.DestroyImmediate(child.gameObject);
+                }
+                foreach (ObjectItem item in ItemGroup)
+                {
+                    // TODO: optimize not to clear entire array of gameObjects on every update but based on changes made
+                    StoreFactory.CreateItemPresenter(item, ScrollViewContentTransform).UpdatePresenter();
+                }
+            } else
+            {
+                Debug.Log("Selected group missing in store");
+            }
+
+            
         }
     }
 }

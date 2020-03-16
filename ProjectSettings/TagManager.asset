@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - GameLogic
+  - MusicPlayer
   layers:
   - Default
   - TransparentFX
@@ -41,11 +43,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Environment
-    uniqueID: 1770342115
-    locked: 0
   - name: Background
     uniqueID: 2761297835
+    locked: 0
+  - name: Environment
+    uniqueID: 1770342115
     locked: 0
   - name: Foreground
     uniqueID: 2798817737

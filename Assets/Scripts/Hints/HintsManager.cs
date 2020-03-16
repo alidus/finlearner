@@ -13,6 +13,8 @@ public class HintsManager : MonoBehaviour
 
     private void Awake()
     {
+        if (GameDataManager.instance.DEBUG)
+            Debug.Log("HintsManager awake");
         if (instance == null)
         {
             instance = this;

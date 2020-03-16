@@ -10,34 +10,37 @@ public class GameDataManager : MonoBehaviour
 	// Events, Delegates
 	public delegate void MoneyValueChangedAction();
 	public event MoneyValueChangedAction OnMoneyValueChanged;
-    public delegate void MoodValueChangedAction();
-    public event MoodValueChangedAction OnMoodValueChanged;
+	public delegate void MoodValueChangedAction();
+	public event MoodValueChangedAction OnMoodValueChanged;
 
-    public delegate void TimeMilestoneReachedAction();
+	public delegate void TimeMilestoneReachedAction();
 	public event TimeMilestoneReachedAction OnNewDayStarted;
 	public event TimeMilestoneReachedAction OnNewWeekStarted;
-    public event TimeMilestoneReachedAction OnNewMonthStarted;
-    public event TimeMilestoneReachedAction OnNewYearStarted;
+	public event TimeMilestoneReachedAction OnNewMonthStarted;
+	public event TimeMilestoneReachedAction OnNewYearStarted;
 	public delegate void BirthdayAction();
 	public event BirthdayAction OnBirthday;
+	public event Action OnDayProgressChanged;
 
 	// Sprites
 	public Sprite placeHolderSprite;
 	public Sprite emptySprite;
 
 	private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
+	{
+		if (DEBUG)
+			Debug.Log("GameDataManager awake");
+		if (instance == null)
+		{
+			instance = this;
+		}
+		else if (instance != this)
+		{
+			Destroy(gameObject);
+		}
 
-        DontDestroyOnLoad(gameObject);
-    }
+		DontDestroyOnLoad(gameObject);
+	}
 
 	private bool isRecordingIncome;
 	public bool IsRecordingIncome
@@ -50,17 +53,19 @@ public class GameDataManager : MonoBehaviour
 	public float Money
 	{
 		get { return money; }
-		set { 
+		set
+		{
 			if (IsRecordingIncome)
 			{
 				float delta = (value - money);
 				DailyIncome += delta;
-                WeeklyIncome += delta;
-                MonthlyIncome += delta;
-                YearlyIncome += delta;
-            }
+				WeeklyIncome += delta;
+				MonthlyIncome += delta;
+				YearlyIncome += delta;
+			}
 			money = value;
-			OnMoneyValueChanged?.Invoke(); }
+			OnMoneyValueChanged?.Invoke();
+		}
 	}
 
 	private float mood;
@@ -70,14 +75,14 @@ public class GameDataManager : MonoBehaviour
 		set { mood = value; OnMoodValueChanged?.Invoke(); }
 	}
 
-    private int age = 18;
-    public int Age
-    {
-        get { return age; }
-        set { age = value; }
-    }
-    // Income
-    private float dailyIncome;
+	private int age = 18;
+	public int Age
+	{
+		get { return age; }
+		set { age = value; }
+	}
+	// Income
+	private float dailyIncome;
 	public float DailyIncome
 	{
 		get { return dailyIncome; }
@@ -125,19 +130,36 @@ public class GameDataManager : MonoBehaviour
 	}
 
 	private DateTime birthdayDate = DateTime.Now.AddDays(200);
+	private float dayProgress;
+
 	public System.DateTime BirthdayDate
 	{
 		get { return birthdayDate; }
 		set { birthdayDate = value; }
 	}
+
+	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged(); }  }
+	/// <summary>
+	/// How much hours pass per second
+	/// </summary>
+	public float HoursPerSecond { get; internal set; } = 6;
+
+	public bool DEBUG { get; set; } = true;
+	public void LoadGamemodeData(GameMode gameMode)
+	{
+		Money = gameMode.money;
+		Mood = gameMode.mood;
+		Age = gameMode.age;
+		IsRecordingIncome = true;
+	}
 	public void AddDay()
-    {
+	{
 		DailyIncome = 0;
 		OnNewDayStarted();
 		int currentMonth = currentDateTime.Month;
 		int currentYear = currentDateTime.Year;
 		CurrentDateTime = currentDateTime.AddDays(1);
-		
+
 		if ((int)currentDateTime.DayOfWeek == 0)
 		{
 			WeeklyIncome = 0;
@@ -148,11 +170,11 @@ public class GameDataManager : MonoBehaviour
 			MonthlyIncome = 0;
 			OnNewMonthStarted();
 		}
-        if ((int)currentDateTime.Year != currentYear)
-        {
+		if ((int)currentDateTime.Year != currentYear)
+		{
 			YearlyIncome = 0;
-            OnNewYearStarted();
-        }
+			OnNewYearStarted();
+		}
 
 		if (currentDateTime.Date == birthdayDate.Date)
 		{
@@ -160,5 +182,5 @@ public class GameDataManager : MonoBehaviour
 			Age++;
 			OnBirthday();
 		}
-    }
+	}
 }

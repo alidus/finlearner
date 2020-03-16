@@ -2,26 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StorePresenter : MonoBehaviour, IItemsPresenter<ItemObject>
+[ExecuteInEditMode]
+public class StorePresenter : MonoBehaviour, IItemsPresenter<ObjectItem>
 {
-    public IItemGroupButtonsPresenter<ItemObject> StoreItemCategoryButtonsPresenter { get; set; }
+
+    public Store Store { get; set; }
+
+    public StoreItemCategoryButtonsPresenter StoreItemCategoryButtonsPresenter { get; set; }
     
-    public IItemListPresenter<ItemObject> StoreItemsListPresenter {get; set;}
+    public StoreItemListPresenter StoreItemsListPresenter {get; set;}
 
-    public GameObject StoreGameObject { get; set; }
-
-    public ItemDatabase<ItemObject> ItemDatabase { get; set; }
-
-    public void OnEnable()
+    private void OnEnable()
     {
-        ItemDatabase = this.GetComponentInParent<Store>().ItemDatabase;
-        StoreItemCategoryButtonsPresenter = StoreFactory.CreateStoreItemCategoryButtonsPresenter(this.transform);
-        StoreItemsListPresenter = StoreFactory.CreateStoreItemsListPresenter(this.transform);
+        Store = GetComponentInParent<Store>();
+        if (StoreItemCategoryButtonsPresenter == null)
+            StoreItemCategoryButtonsPresenter = StoreFactory.CreateStoreItemCategoryButtonsPresenter(this.transform);
+
+        if (StoreItemsListPresenter == null)
+            StoreItemsListPresenter = StoreFactory.CreateStoreItemsListPresenter(this.transform);
+
+
+        UpdatePresenter();
     }
 
-    public void Update()
+
+    public void UpdatePresenter()
     {
-        StoreItemCategoryButtonsPresenter.Update();
-        StoreItemsListPresenter.Update();
-    } 
+        if (StoreItemCategoryButtonsPresenter != null && StoreItemsListPresenter != null)
+        {
+            StoreItemCategoryButtonsPresenter.UpdatePresenter();
+            StoreItemsListPresenter.UpdatePresenter();
+        }
+    }
 }

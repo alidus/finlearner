@@ -4,9 +4,7 @@ using UnityEngine;
 
 public interface IItemsPresenter<T> where T : Item
 {
-    GameObject StoreGameObject { get; }
-    ItemDatabase<T> ItemDatabase {get; }
 
-    void Update();
+    void UpdatePresenter();
 
 }

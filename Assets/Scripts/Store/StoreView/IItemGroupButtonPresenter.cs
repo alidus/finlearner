@@ -5,5 +5,5 @@ using UnityEngine;
 public interface IItemGroupButtonPresenter<T> where T : Item
 {
     ItemGroup<T> ItemGroup { get; set; }
-    void Update();
+    void UpdatePresenter();
 }

@@ -5,5 +5,5 @@ using UnityEngine;
 public interface IItemPresenter<T> where T : Item
 {
      T Item { get; }
-    void Update();
+    void UpdatePresenter();
 }

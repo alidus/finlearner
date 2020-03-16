@@ -4,8 +4,10 @@ using UnityEngine;
 
 public enum FurnitureType { Bed, Table, Chair, Armchair }
 
-
-public class ItemFurniture : ItemObject
+[System.Serializable]
+public class FurnitureItem : ObjectItem
 {
-    public FurnitureType FurnitureType { get; set; }
+    [SerializeField]
+    private FurnitureType furnitureType;
+    public FurnitureType FurnitureType { get => furnitureType; set => furnitureType = value; }
 }

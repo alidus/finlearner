@@ -2,22 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StoreItemCategoryButtonsPresenter : MonoBehaviour, IItemGroupButtonsPresenter<ItemObject>
+[ExecuteInEditMode]
+public class StoreItemCategoryButtonsPresenter : MonoBehaviour, IItemGroupButtonsPresenter<ObjectItem>
 {
-    public List<ItemGroup<ItemObject>> ItemGroups { get; set; }
+    public Store Store { get; set; }
+    public List<ItemGroup<ObjectItem>> ItemGroups { get; set; }
 
-    public void OnEnable()
+    private void OnEnable()
     {
-        ItemGroups = this.GetComponentInParent<Store>().ItemGroups;
+        Store = GetComponentInParent<Store>();
+        
     }
 
-    public void Update() {
-        DeleteAllChildrenOfCategorryButtonsPresenter();
-
-        foreach (ItemGroup<ItemObject> itemGroup in ItemGroups)
+    public void UpdatePresenter() {
+        if (Store)
         {
-            var categoryButton = StoreFactory.CreateStoreItemCategoryButtonPresenter(this.transform);
-            categoryButton.Title = itemGroup.Title;
+            ItemGroups = Store.ItemGroups;
+            if (ItemGroups != null)
+            {
+                DeleteAllChildrenOfCategorryButtonsPresenter();
+
+                foreach (ItemGroup<ObjectItem> itemGroup in ItemGroups)
+                {
+                    StoreFactory.CreateStoreItemCategoryButtonPresenter(itemGroup, this.transform).UpdatePresenter();
+                }
+            }
         }
     }
 

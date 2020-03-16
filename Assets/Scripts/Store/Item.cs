@@ -9,11 +9,6 @@ using static UnityEngine.UI.Button;
 [System.Serializable]
 public class Item
 {
-    public enum ItemType
-    {
-        Object, Job
-    }
-
     [SerializeField]
     private string title;
     public string Title

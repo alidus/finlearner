@@ -36,6 +36,8 @@ public class LaborExchangeManager : MonoBehaviour
     }
     private void Awake()
     {
+        if (GameDataManager.instance.DEBUG)
+            Debug.Log("LaborExchangeManager awake");
         if (instance == null)
         {
             instance = this;

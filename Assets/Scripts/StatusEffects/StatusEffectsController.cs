@@ -8,7 +8,7 @@ public class StatusEffectsController : MonoBehaviour
     public static StatusEffectsController instance;
 
     // Controllers, Managers
-    private GameController gameController;
+    private FreeplayController gameController;
     private GameDataManager gameDataManager;
     
     // Status effects
@@ -24,6 +24,8 @@ public class StatusEffectsController : MonoBehaviour
     public event StatusEffectsChangedAction OnStatusEffectsChanged;
     private void Awake()
     {
+        if (GameDataManager.instance.DEBUG)
+            Debug.Log("StatusEffectsManager awake");
         if (instance == null)
         {
             instance = this;
@@ -50,7 +52,6 @@ public class StatusEffectsController : MonoBehaviour
 
     private void Init()
     {
-        gameController = GameController.instance;
         gameDataManager = GameDataManager.instance;
         // Listen to game controller ticks and execute appropriate modifiers
         gameDataManager.OnNewDayStarted += ExecuteDailyStatusEffects;

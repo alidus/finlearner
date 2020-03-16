@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
+
+public enum GameState
+{
+    MainMenu, InGame
+}
 
 /// <summary>
 /// Manage overall game state
@@ -14,24 +20,25 @@ public class GameManager : MonoBehaviour
     // Managers, Controllers
     private UIManager uiManager;
     private GameDataManager gameDataManager;
-    private GameController gameController;
-    private ItemManager storeManager;
+    private FreeplayController activeController;
+    private InventoryManager inventoryManager;
     private HouseManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
 
-    private PlayMusic playMusic;
+    private MusicPlayer playMusicComponent;
 
     // Action delegates and events
-    public delegate void GameStartedAction(GameMode gameMode);
-    public event GameStartedAction OnGameStarted;
+    public event Action OnLevelLoaded;
+    //public delegate void GameStartedAction(GameMode gameMode);
+    //public event GameStartedAction OnGameStarted;
 
 
     // Misc
     [SerializeField]
     private GameMode gameMode;
     private GameState gameState = GameState.MainMenu;
-    public GameManager.GameState GameStateP
+    public GameState GameState
     {
         get { return gameState; }
         set { gameState = value; }
@@ -41,14 +48,13 @@ public class GameManager : MonoBehaviour
         get { return gameMode; }
         set { gameMode = value; }
     }
-    
-    public enum GameState
-    {
-        MainMenu, InGame
-    }
+
+    public FreeplayController ActiveController { get => activeController; private set => activeController = value; }
 
     private void Awake()
     {
+        if (GameDataManager.instance.DEBUG)
+            Debug.Log("GameManager awake");
         if (instance == null)
         {
             instance = this;
@@ -66,12 +72,19 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameMode = (GameMode)Resources.Load("ScriptableObjects/GameModes/FreePlayGM"); 
+        GameMode = (GameMode)Resources.Load("ScriptableObjects/GameModes/FreePlayGM");
+        GameState = (GameState)SceneManager.GetActiveScene().buildIndex;
     }
 
     private void Start()
     {
         Init();
+        if (GameState == GameState.InGame)
+        {
+            // TODO: Once again make initialization check
+            Init();
+            GameplayLoadedActions();
+        }
     }
 
 
@@ -79,24 +92,20 @@ public class GameManager : MonoBehaviour
     {
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
-        storeManager = ItemManager.instance;
+        inventoryManager = InventoryManager.instance;
         houseManager = HouseManager.instance;
-        gameController = GameController.instance;
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
-
-        
-        uiManager.InitSceneChange(GameStateP);
     }
 
     public void UpdateReferences()
     {
-        playMusic = GameObject.Find("MusicPlayer").GetComponent<PlayMusic>();
+        playMusicComponent = GameObject.Find("MusicPlayer")?.GetComponent<MusicPlayer>() ?? null;
     }
 
     public void OpenMainMenu()
     {
-        if (GameStateP == GameState.InGame)
+        if (GameState == GameState.InGame)
         {
             StartCoroutine("LoadLevel", "MainMenu");
         }
@@ -116,41 +125,61 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator LoadLevel(string sceneName)
     {
-        uiManager.SetUIState(UIManager.UIState.Loading);
+        uiManager.ShowLoadingScreen();
         var gameplayScene = SceneManager.LoadSceneAsync(sceneName);
         while (!gameplayScene.isDone)
         {
             yield return 1;
         }
-          
     }
 
     private void OnLevelWasLoaded(int level)
     {
-        GameStateP = (GameState)level;        
-
-        switch (GameStateP)
+        GameState = (GameState)level;        
+        switch (GameState)
         {
             case GameState.MainMenu:
-                playMusic.Play(playMusic.MainMenuMusicPlayer);
+                MainMenuLoadedActions();
                 break;
             case GameState.InGame:
-                playMusic.Play(playMusic.GameplayMusicPlayer);
-                storeManager.UpdateReferences();
-                houseManager.UpdateReferences();
-                statusEffectsManager.UpdateReferences();
-                houseManager.UpdateFlatAppearance();
-                OnGameStarted(gameMode);
+                GameplayLoadedActions();
                 break;
             default:
                 break;
         }
 
-        uiManager.InitSceneChange(GameStateP);
-
+        uiManager.AdaptUIToScene();
         uiManager.UpdateUI();
+        uiManager.HideLoadingScreen();
+        OnLevelLoaded();
+    }
 
-        playMusic.Play(playMusic.MainMenuMusicPlayer);
+    private void MainMenuLoadedActions()
+    {
+        playMusicComponent.Play(playMusicComponent.MainMenuMusicPlaylist);
+    }
+    private void GameplayLoadedActions()
+    {
+        // TODO: implement observer pattern
+        gameDataManager.LoadGamemodeData(GameMode);
+        if (playMusicComponent)
+            playMusicComponent.Play(playMusicComponent.GameplayMusicPlaylist);
+        inventoryManager.UpdateReferences();
+        houseManager.UpdateReferences();
+        statusEffectsManager.UpdateReferences();
+        houseManager.UpdateFlatAppearance();
+        ActiveController = GetComponent<FreeplayController>() ?? gameObject.AddComponent<FreeplayController>();
+        ActiveController.Init();
+        ActiveController.IsPlayerController = true;
+    }
+    
+
+    public void CheckIfPauseInput()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Pause();
+        }
     }
 
     public void PlayButtonOnClick(int gameModeIndex)
