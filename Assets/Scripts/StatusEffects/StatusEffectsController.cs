@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class StatusEffectsController : MonoBehaviour
@@ -58,9 +60,14 @@ public class StatusEffectsController : MonoBehaviour
         gameDataManager.OnNewWeekStarted += ExecuteWeeklyStatusEffects;
         gameDataManager.OnNewMonthStarted += ExecuteMonthlyStatusEffects;
         gameDataManager.OnNewYearStarted += ExecuteYearlyStatusEffects;
+        SceneManager.sceneLoaded += SceneLoadedHandling;
     }
 
-    
+    private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
+    {
+        Debug.Log(this.GetType().ToString() + "scene loaded handled");
+
+    }
 
     private void ExecuteDailyStatusEffects()
     {

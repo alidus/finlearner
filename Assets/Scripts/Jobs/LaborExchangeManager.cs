@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class LaborExchangeManager : MonoBehaviour
@@ -9,7 +8,7 @@ public class LaborExchangeManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private StatusEffectsController statusEffectsController;
-    private HouseManager houseManager;
+    private EnvironmentManager houseManager;
 
     // Events, Delegates
     public delegate void LaborExchangeStateChangedAction();
@@ -68,10 +67,10 @@ public class LaborExchangeManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         statusEffectsController = StatusEffectsController.instance;
-        houseManager = HouseManager.instance;
+        houseManager = EnvironmentManager.instance;
         uiManager = UIManager.instance;
 
-        GlobalJobsPool = (Resources.Load("ScriptableObjects/Jobs/JobListSO") as JobList).Jobs;
+        GlobalJobsPool = (Resources.Load("ScriptableObjects/Jobs/JobPool") as JobList).Jobs;
     }
 
     public List<Job> GetAllJobsOfCategory(JobCategory category)

@@ -14,7 +14,7 @@ public class FreeplayController : MonoBehaviour
     private GameDataManager gameDataManager;
     private UIManager uiManager;
     private InventoryManager storeManager;
-    private HouseManager houseManager;
+    private EnvironmentManager houseManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
     private LaborExchangeManager laborExchangeManager;
@@ -53,11 +53,10 @@ public class FreeplayController : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         uiManager = UIManager.instance;
-        houseManager = HouseManager.instance;
+        houseManager = EnvironmentManager.instance;
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
         laborExchangeManager = LaborExchangeManager.instance;
-
 
         //gameDataManager.OnNewDayStarted += TickDay;
         //gameDataManager.OnNewWeekStarted += TickWeek;
@@ -126,4 +125,6 @@ public class FreeplayController : MonoBehaviour
         activeCredits.Add(loan);
         statusEffectsManager.AddStatusEffects(loan.StatusEffects);
     }
+
+    
 }

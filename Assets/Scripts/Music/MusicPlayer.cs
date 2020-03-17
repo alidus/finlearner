@@ -29,12 +29,12 @@ public class MusicPlayer : MonoBehaviour
 
     public void Play(MusicPlaylist musicPlaylist)
     {
-        musicPlaylist.Play(GetComponent<AudioSource>());
+        musicPlaylist?.Play(GetComponent<AudioSource>());
     }
 
     public void Pause(MusicPlaylist musicPlaylist)
     {
-        musicPlaylist.Pause(GetComponent<AudioSource>());
+        musicPlaylist?.Pause(GetComponent<AudioSource>());
     }
 
     public void NextTrack(MusicPlaylist musicPlaylist)

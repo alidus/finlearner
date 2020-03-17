@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Contains list of Item objects and methods to manipulate with them (Similar to Database, but used in cases where you need list of somehow-related objects
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class ItemGroup<T> : IEnumerable<T> where T:Item
 {
 

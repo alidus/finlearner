@@ -482,11 +482,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 547512780}
     - target: {fileID: 6617314556004121480, guid: 8cc03f5fcea3af04c8deff82e4422074,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
+      value: StartGame
       objectReference: {fileID: 0}
     - target: {fileID: 6617314556004121480, guid: 8cc03f5fcea3af04c8deff82e4422074,
         type: 3}
@@ -1102,6 +1102,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 522625657}
   m_CullTransparentMesh: 0
+--- !u!114 &547512780 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2858777947960785610, guid: 25d95b59b759ea248be48ecc53ddfc77,
+    type: 3}
+  m_PrefabInstance: {fileID: 2858777948755299634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12423286d780ea74890bcf8e1de989c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &567243396 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5185576291654826164, guid: 9e5828be833eb364990d2f606cf95be5,
@@ -1593,7 +1605,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.047169805, g: 0.047169805, b: 0.047169805, a: 1}
+  m_Color: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1877,9 +1889,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a201ed8f244f8546ae3d6ba9bdb2947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenuMusicPlayer: {fileID: 11400000, guid: da82f58112303c34ca573f552b681d65,
+  mainMenuMusicPlaylist: {fileID: 11400000, guid: da82f58112303c34ca573f552b681d65,
     type: 2}
-  gameplayMusicPlayer: {fileID: 11400000, guid: a73795e30b90a994984da721a00d6676,
+  gameplayMusicPlaylist: {fileID: 11400000, guid: a73795e30b90a994984da721a00d6676,
     type: 2}
 --- !u!82 &1584486912
 AudioSource:

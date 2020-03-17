@@ -10,6 +10,9 @@ using static UnityEngine.UI.Button;
 public class Item
 {
     [SerializeField]
+    private int id;
+    public int Id { get => id; set => id = value; }
+    [SerializeField]
     private string title;
     public string Title
     {
@@ -30,4 +33,5 @@ public class Item
         get { return price; }
         set { price = value; }
     }
+
 }

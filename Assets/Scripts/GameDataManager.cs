@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameDataManager : MonoBehaviour
 {
@@ -40,6 +41,25 @@ public class GameDataManager : MonoBehaviour
 		}
 
 		DontDestroyOnLoad(gameObject);
+	}
+
+	private void Start()
+	{
+		Init();
+	}
+
+	private void Init()
+	{
+		gameManager = GameManager.instance;
+		SceneManager.sceneLoaded += SceneLoadedHandling;
+	}
+
+	private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
+	{
+		LoadGamemodeData(gameManager.GameMode);
+		Debug.Log(this.GetType().ToString() + "scene loaded handled");
+
+
 	}
 
 	private bool isRecordingIncome;
@@ -131,6 +151,7 @@ public class GameDataManager : MonoBehaviour
 
 	private DateTime birthdayDate = DateTime.Now.AddDays(200);
 	private float dayProgress;
+	private GameManager gameManager;
 
 	public System.DateTime BirthdayDate
 	{

@@ -6,6 +6,10 @@ TagManager:
   tags:
   - GameLogic
   - MusicPlayer
+  - Bed
+  - Chair
+  - Armchair
+  - Table
   layers:
   - Default
   - TransparentFX

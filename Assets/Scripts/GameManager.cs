@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.Events;
 
 public enum GameState
 {
@@ -22,17 +23,16 @@ public class GameManager : MonoBehaviour
     private GameDataManager gameDataManager;
     private FreeplayController activeController;
     private InventoryManager inventoryManager;
-    private HouseManager houseManager;
+    private EnvironmentManager environmentManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
 
     private MusicPlayer playMusicComponent;
 
     // Action delegates and events
-    public event Action OnLevelLoaded;
     //public delegate void GameStartedAction(GameMode gameMode);
     //public event GameStartedAction OnGameStarted;
-
+    public Action OnLevelInitialized;
 
     // Misc
     [SerializeField]
@@ -65,8 +65,6 @@ public class GameManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
-
-        UpdateReferences();
     }
 
 
@@ -79,11 +77,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Init();
+        // TODO: improve this block to support different game modes like cards
         if (GameState == GameState.InGame)
         {
-            // TODO: Once again make initialization check
-            Init();
-            GameplayLoadedActions();
+            if (ActiveController == null)
+            {
+                ActiveController = this.gameObject.AddComponent<FreeplayController>();
+            } 
         }
     }
 
@@ -93,9 +93,39 @@ public class GameManager : MonoBehaviour
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
         inventoryManager = InventoryManager.instance;
-        houseManager = HouseManager.instance;
+        environmentManager = EnvironmentManager.instance;
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
+        SceneManager.sceneLoaded += SceneLoadedHandling;
+        SceneManager.activeSceneChanged += delegate (Scene s1, Scene s2) { Debug.Log("Scene shanged"); };
+        SceneManager.sceneLoaded += delegate (Scene s1, LoadSceneMode lsm) { Debug.Log("Scene loaded"); };
+
+        OnLevelInitialized += OnLevelLoadedAndInitialized;
+    }
+
+    private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
+    {
+        UpdateReferences();
+        Debug.Log(this.GetType().ToString() + "scene loaded handled");
+    }
+
+    private void OnLevelLoadedAndInitialized()
+    {
+        Debug.Log("Scene loaded and managers are initialized. Activating controller...");
+        switch ((GameState)GameState)
+        {
+            case GameState.MainMenu:
+                break;
+            case GameState.InGame:
+                ActivateFreeplayController();
+                break;
+            default:
+                break;
+        }
+
+        uiManager.UpdateReferencedAndButtonMappings();
+        uiManager.UpdateUI();
+        uiManager.HideLoadingScreen();
     }
 
     public void UpdateReferences()
@@ -126,6 +156,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator LoadLevel(string sceneName)
     {
         uiManager.ShowLoadingScreen();
+        GameState = GameState.InGame;
         var gameplayScene = SceneManager.LoadSceneAsync(sceneName);
         while (!gameplayScene.isDone)
         {
@@ -133,41 +164,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void OnLevelWasLoaded(int level)
-    {
-        GameState = (GameState)level;        
-        switch (GameState)
-        {
-            case GameState.MainMenu:
-                MainMenuLoadedActions();
-                break;
-            case GameState.InGame:
-                GameplayLoadedActions();
-                break;
-            default:
-                break;
-        }
+    
 
-        uiManager.AdaptUIToScene();
-        uiManager.UpdateUI();
-        uiManager.HideLoadingScreen();
-        OnLevelLoaded();
-    }
-
-    private void MainMenuLoadedActions()
-    {
-        playMusicComponent.Play(playMusicComponent.MainMenuMusicPlaylist);
-    }
-    private void GameplayLoadedActions()
+    public void ActivateFreeplayController()
     {
         // TODO: implement observer pattern
-        gameDataManager.LoadGamemodeData(GameMode);
-        if (playMusicComponent)
-            playMusicComponent.Play(playMusicComponent.GameplayMusicPlaylist);
-        inventoryManager.UpdateReferences();
-        houseManager.UpdateReferences();
-        statusEffectsManager.UpdateReferences();
-        houseManager.UpdateFlatAppearance();
         ActiveController = GetComponent<FreeplayController>() ?? gameObject.AddComponent<FreeplayController>();
         ActiveController.Init();
         ActiveController.IsPlayerController = true;

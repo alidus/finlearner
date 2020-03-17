@@ -39,6 +39,7 @@ public class UIManager : MonoBehaviour
     private GameObject pauseMenuPanel;
 
     // Store
+    [HideInInspector]
     public GameObject storeContainer;
     // Labor exchange
     private GameObject laborExchangeContainer;
@@ -94,8 +95,6 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
-        gameManager = GameManager.instance;
-        UpdateReferences();
     }
 
     private void UpdateReferences()
@@ -165,7 +164,7 @@ public class UIManager : MonoBehaviour
     }
 
     // TODO: implement as event from gameManager
-    internal void AdaptUIToScene()
+    internal void UpdateReferencedAndButtonMappings()
     {
         UpdateReferences();
         
@@ -202,10 +201,15 @@ public class UIManager : MonoBehaviour
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
         gameDataManager.OnDayProgressChanged += UpdateDayProgressBar;
         statusEffectsController.OnStatusEffectsChanged += UpdateStatusEffectsView;
-        gameManager.OnLevelLoaded += HideLoadingScreen;
-        UpdateButtonsClickActionsAfterSceneLoad();
-        UpdateUI();
-        //laborExchangeManager.OnLaborExchangeStateChanged += UpdateLaborExchangeView;
+        SceneManager.sceneLoaded += SceneLoadedHandling;
+        // Scene fully loaded and managers are initialized, notify game manager about this
+    }
+
+    private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
+    {
+        UpdateReferencedAndButtonMappings();
+        Debug.Log(this.GetType().ToString() + "scene loaded handled");
+        gameManager.OnLevelInitialized();
     }
 
 

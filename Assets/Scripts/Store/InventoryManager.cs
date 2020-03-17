@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -15,7 +16,7 @@ public class InventoryManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private StatusEffectsController statusEffectsController;
-    private HouseManager houseManager;
+    private EnvironmentManager houseManager;
     private UIManager uiManager;
 
     // Events, delegates
@@ -65,8 +66,16 @@ public class InventoryManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         statusEffectsController = StatusEffectsController.instance;
-        houseManager = HouseManager.instance;
+        houseManager = EnvironmentManager.instance;
         uiManager = UIManager.instance;
+        SceneManager.sceneLoaded += SceneLoadedHandling;
+    }
+
+    private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
+    {
+        UpdateReferences();
+        Debug.Log(this.GetType().ToString() + "scene loaded handled");
+
     }
 
     public void InstantiateHomeStore(Transform storeContainerTransform)
