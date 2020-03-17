@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: MainMenuMusicPlaylist
   m_EditorClassIdentifier: 
   playlist:
-  - {fileID: 8300000, guid: 6d505097c9a616842b38a66d39bb27ae, type: 3}
+  - {fileID: 8300000, guid: 2a9bc23704f18fa42ae147401e533ef9, type: 3}
+  - {fileID: 8300000, guid: f1e0c7a3a587a2b4291944777e606e52, type: 3}

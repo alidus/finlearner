@@ -11,7 +11,6 @@ public class GameLogicVerifier
     static void RunObjectsCheck()
     {
         VerifyObject("GameLogic");
-        VerifyObject("MusicPlayer");
     }
 
     static void VerifyObject(string objectName)

@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: GamePlayMusicPlaylist
   m_EditorClassIdentifier: 
   playlist:
+  - {fileID: 8300000, guid: a992f79a70d16914c82de1e410611330, type: 3}
   - {fileID: 8300000, guid: 3183c475ea955cb47be7494d3819dce1, type: 3}
+  - {fileID: 8300000, guid: 6d505097c9a616842b38a66d39bb27ae, type: 3}

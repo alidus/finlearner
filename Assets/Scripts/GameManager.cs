@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     private EnvironmentManager environmentManager;
     private StatusEffectsController statusEffectsManager;
     private HintsManager hintsManager;
+    private MusicPlayer musicPlayer;
 
     private MusicPlayer playMusicComponent;
 
@@ -53,8 +54,6 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (GameDataManager.instance.DEBUG)
-            Debug.Log("GameManager awake");
         if (instance == null)
         {
             instance = this;
@@ -63,7 +62,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
+        UpdateReferences();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -77,6 +76,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Init();
+
+        musicPlayer?.Play(musicPlayer?.MainMenuMusicPlaylist);
         // TODO: improve this block to support different game modes like cards
         if (GameState == GameState.InGame)
         {
@@ -96,11 +97,12 @@ public class GameManager : MonoBehaviour
         environmentManager = EnvironmentManager.instance;
         statusEffectsManager = StatusEffectsController.instance;
         hintsManager = HintsManager.instance;
+        musicPlayer = MusicPlayer.instance;
         SceneManager.sceneLoaded += SceneLoadedHandling;
         SceneManager.activeSceneChanged += delegate (Scene s1, Scene s2) { Debug.Log("Scene shanged"); };
         SceneManager.sceneLoaded += delegate (Scene s1, LoadSceneMode lsm) { Debug.Log("Scene loaded"); };
-
-        OnLevelInitialized += OnLevelLoadedAndInitialized;
+        UpdateReferences();
+        OnLevelInitialized += LevelLoadedAndInitialized;
     }
 
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
@@ -109,8 +111,9 @@ public class GameManager : MonoBehaviour
         Debug.Log(this.GetType().ToString() + "scene loaded handled");
     }
 
-    private void OnLevelLoadedAndInitialized()
+    private void LevelLoadedAndInitialized()
     {
+        uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized. Activating controller...");
         switch ((GameState)GameState)
         {
@@ -125,6 +128,7 @@ public class GameManager : MonoBehaviour
 
         uiManager.UpdateReferencedAndButtonMappings();
         uiManager.UpdateUI();
+        musicPlayer?.Play(musicPlayer?.GameplayMusicPlaylist);
         uiManager.HideLoadingScreen();
     }
 
@@ -150,21 +154,36 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        StartCoroutine("LoadLevel", "GameplayScene");
+        StartCoroutine(StartingGameCoroutine());
     }
+
+    public IEnumerator StartingGameCoroutine()
+    {
+        yield return uiManager.ShowLoadingScreen();
+        yield return LoadLevel("GameplayScene");
+    }
+
+
+
+    
 
     public IEnumerator LoadLevel(string sceneName)
     {
-        uiManager.ShowLoadingScreen();
+        
+
         GameState = GameState.InGame;
+        Debug.Log("Starting scene loading with scene manager");
+
         var gameplayScene = SceneManager.LoadSceneAsync(sceneName);
         while (!gameplayScene.isDone)
         {
-            yield return 1;
+            yield return null;
         }
+        Debug.Log("Scene load method from GameManager is done");
+
     }
 
-    
+
 
     public void ActivateFreeplayController()
     {
@@ -209,7 +228,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    public void Unpause()
+    public void UnPause()
     {
         uiManager.HidePauseMenu();
         Time.timeScale = 1;

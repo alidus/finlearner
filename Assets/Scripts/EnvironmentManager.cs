@@ -26,8 +26,6 @@ public class EnvironmentManager : MonoBehaviour
 
     private void Awake()
     {
-        if (GameDataManager.instance.DEBUG)
-            Debug.Log("HouseManager awake");
         if (instance == null)
         {
             instance = this;

@@ -29,8 +29,7 @@ public class GameDataManager : MonoBehaviour
 
 	private void Awake()
 	{
-		if (DEBUG)
-			Debug.Log("GameDataManager awake");
+
 		if (instance == null)
 		{
 			instance = this;

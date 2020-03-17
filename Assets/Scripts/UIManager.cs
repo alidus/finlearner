@@ -94,13 +94,12 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
         DontDestroyOnLoad(gameObject);
     }
 
     private void UpdateReferences()
     {
-        if (GameDataManager.instance.DEBUG)
-            Debug.Log("UIManager awake");
         loadingCanvas = GameObject.Find("LoadingCanvas");
         DontDestroyOnLoad(loadingCanvas);
         loadingScreenCanvasGroup = loadingCanvas?.transform.Find("LoadingPanel")?.GetComponent<CanvasGroup>() ?? null;
@@ -201,6 +200,7 @@ public class UIManager : MonoBehaviour
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
         gameDataManager.OnDayProgressChanged += UpdateDayProgressBar;
         statusEffectsController.OnStatusEffectsChanged += UpdateStatusEffectsView;
+        UpdateReferences();
         SceneManager.sceneLoaded += SceneLoadedHandling;
         // Scene fully loaded and managers are initialized, notify game manager about this
     }
@@ -237,7 +237,7 @@ public class UIManager : MonoBehaviour
             infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);
 
             pauseMenuResumeButton.onClick.RemoveAllListeners();
-            pauseMenuResumeButton.onClick.AddListener(gameManager.Unpause);
+            pauseMenuResumeButton.onClick.AddListener(gameManager.UnPause);
 
             pauseMenuSettingsButton.onClick.RemoveAllListeners();
             pauseMenuSettingsButton.onClick.AddListener(delegate { print("Open settings..."); });
@@ -501,22 +501,34 @@ public class UIManager : MonoBehaviour
         pauseMenuPanel.SetActive(false);
     }
 
-    public void ShowLoadingScreen()
+    public IEnumerator ShowLoadingScreen()
     {
         if (loadingScreenCanvasGroup)
         {
-            loadingScreenCanvasGroup.gameObject.GetComponent<Animator>()?.Play("LoadingPanel_FadeIn");
-        }
-            
+            Animator animator = loadingScreenCanvasGroup.gameObject.GetComponent<Animator>();
+            if (animator)
+            {
+                Debug.Log("Starting loading screen animation");
 
-        
+                animator.Play("LoadingPanel_FadeIn");
+                var t1 = Time.time;
+                yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+                var t2 = Time.time;
+                Debug.Log("Loading screen animation finished. Duration: " + (t2 - t1).ToString());
+
+            }
+        }
     }
 
     public void HideLoadingScreen()
     {
         if (loadingScreenCanvasGroup)
         {
-            loadingScreenCanvasGroup.gameObject.GetComponent<Animator>()?.Play("LoadingPanel_FadeOut");
+            Animator animator = loadingScreenCanvasGroup.gameObject.GetComponent<Animator>();
+            if (animator)
+            {
+                animator.Play("LoadingPanel_FadeOut");
+            }
         }
     }
 }

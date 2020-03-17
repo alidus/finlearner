@@ -34,8 +34,6 @@ public class InventoryManager : MonoBehaviour
 
     private void Awake()
     {
-        if (GameDataManager.instance.DEBUG)
-            Debug.Log("ItemManager awake");
         if (instance == null)
         {
             instance = this;

@@ -26,8 +26,6 @@ public class StatusEffectsController : MonoBehaviour
     public event StatusEffectsChangedAction OnStatusEffectsChanged;
     private void Awake()
     {
-        if (GameDataManager.instance.DEBUG)
-            Debug.Log("StatusEffectsManager awake");
         if (instance == null)
         {
             instance = this;
