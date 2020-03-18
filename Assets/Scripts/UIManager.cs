@@ -202,6 +202,8 @@ public class UIManager : MonoBehaviour
         statusEffectsController.OnStatusEffectsChanged += UpdateStatusEffectsView;
         UpdateReferences();
         SceneManager.sceneLoaded += SceneLoadedHandling;
+        gameManager.LevelLoadedAndInitialized();
+
         // Scene fully loaded and managers are initialized, notify game manager about this
     }
 
@@ -209,7 +211,7 @@ public class UIManager : MonoBehaviour
     {
         UpdateReferencedAndButtonMappings();
         Debug.Log(this.GetType().ToString() + "scene loaded handled");
-        gameManager.OnLevelInitialized();
+        gameManager.LevelLoadedAndInitialized();
     }
 
 

@@ -24,11 +24,7 @@ public class FreeplayController : MonoBehaviour
 
     // Tutorial
     private bool showTutorial = true;
-    private bool isPlayerController;
 
-    public bool IsPlayerController { 
-        get => isPlayerController; 
-        set { isPlayerController = value; if (isPlayerController) { hintsManager.ShowHint("Добро пожаловать в свободный режим", "Активирован свободный режим..."); } } }
 
     private void Awake()
     {
@@ -68,7 +64,7 @@ public class FreeplayController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsPlayerController)
+        if (gameManager.ActiveController == this)
         {
             if (gameManager.GameState == GameState.InGame)
             {

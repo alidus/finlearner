@@ -17,6 +17,8 @@ public class ObjectItem : Item, IClickable, IPurchasable, IEquipable, IDrawable
     public bool CanBePurchased { get; set; }
     public bool IsPurchased { get; private set; }
 
+    public float Price { get; set; } = 200;
+
     public Sprite Sprite { get => sprite; set => sprite = value; }
 
 

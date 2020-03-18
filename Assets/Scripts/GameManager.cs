@@ -33,7 +33,6 @@ public class GameManager : MonoBehaviour
     // Action delegates and events
     //public delegate void GameStartedAction(GameMode gameMode);
     //public event GameStartedAction OnGameStarted;
-    public Action OnLevelInitialized;
 
     // Misc
     [SerializeField]
@@ -102,7 +101,6 @@ public class GameManager : MonoBehaviour
         SceneManager.activeSceneChanged += delegate (Scene s1, Scene s2) { Debug.Log("Scene shanged"); };
         SceneManager.sceneLoaded += delegate (Scene s1, LoadSceneMode lsm) { Debug.Log("Scene loaded"); };
         UpdateReferences();
-        OnLevelInitialized += LevelLoadedAndInitialized;
     }
 
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
@@ -111,7 +109,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(this.GetType().ToString() + "scene loaded handled");
     }
 
-    private void LevelLoadedAndInitialized()
+    public void LevelLoadedAndInitialized()
     {
         uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized. Activating controller...");
@@ -190,7 +188,6 @@ public class GameManager : MonoBehaviour
         // TODO: implement observer pattern
         ActiveController = GetComponent<FreeplayController>() ?? gameObject.AddComponent<FreeplayController>();
         ActiveController.Init();
-        ActiveController.IsPlayerController = true;
     }
     
 

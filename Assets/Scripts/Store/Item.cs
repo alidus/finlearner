@@ -26,12 +26,6 @@ public class Item
         get { return desc; }
         set { desc = value; }
     }
-    [SerializeField]
-    private int price;
-    public int Price
-    {
-        get { return price; }
-        set { price = value; }
-    }
+
 
 }
