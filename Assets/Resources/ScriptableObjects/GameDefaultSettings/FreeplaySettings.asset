@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2a8dce9f48cb304498ea9e8ebbf0f25, type: 3}
-  m_Name: FreePlayGM
+  m_Name: FreeplaySettings
   m_EditorClassIdentifier: 
   title: "\u0421\u0432\u043E\u0431\u043E\u0434\u043D\u0430\u044F \u0438\u0433\u0440\u0430"
   type: 0
   money: 5000
   mood: 100
-  dayDuration: 1
   age: 19
+  hoursPerSecond: 24

@@ -6,7 +6,6 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-[ExecuteInEditMode]
 public class StoreItemCategoryButtonPresenter : MonoBehaviour, IItemGroupButtonPresenter<ObjectItem>
 {
     public GameObject StoreCategoryPanel { get; private set; }

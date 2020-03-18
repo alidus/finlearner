@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class StatusEffectsController : MonoBehaviour
+public class StatusEffectsManager : MonoBehaviour
 {
-    public static StatusEffectsController instance;
+    public static StatusEffectsManager instance;
 
     // Controllers, Managers
     private FreeplayController gameController;
@@ -54,7 +54,7 @@ public class StatusEffectsController : MonoBehaviour
     {
         gameDataManager = GameDataManager.instance;
         // Listen to game controller ticks and execute appropriate modifiers
-        gameDataManager.OnNewDayStarted += ExecuteDailyStatusEffects;
+        gameDataManager.OnDayStarted += ExecuteDailyStatusEffects;
         gameDataManager.OnNewWeekStarted += ExecuteWeeklyStatusEffects;
         gameDataManager.OnNewMonthStarted += ExecuteMonthlyStatusEffects;
         gameDataManager.OnNewYearStarted += ExecuteYearlyStatusEffects;

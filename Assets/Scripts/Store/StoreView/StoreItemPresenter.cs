@@ -5,7 +5,6 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-[ExecuteInEditMode]
 public class StoreItemPresenter : MonoBehaviour, IItemPresenter<ObjectItem>
 {
 
@@ -16,7 +15,7 @@ public class StoreItemPresenter : MonoBehaviour, IItemPresenter<ObjectItem>
     public Image OwnageIndicatorImageComponent { get; set; }
 
     public Image EqiupHighlgihtImageComponent { get; set; }
-    public  ButtonClickedEvent OnClick { get => ButtonComponent.onClick; set => ButtonComponent.onClick = value; }
+
 
     public ObjectItem Item { get; set; }
 
@@ -43,6 +42,7 @@ public class StoreItemPresenter : MonoBehaviour, IItemPresenter<ObjectItem>
         {
             EqiupHighlgihtImageComponent = equipHightlightTransform.GetComponent<Image>();
         }
+        
         
     }
 

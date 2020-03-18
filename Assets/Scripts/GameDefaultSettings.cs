@@ -5,11 +5,12 @@ using UnityEngine;
 public enum GameModeType { FreePlay, Card}
 
 [CreateAssetMenu(menuName = "ScriptableObjects/GameMode")]
-public class GameMode : ScriptableObject
+public class GameDefaultSettings : ScriptableObject
 {
     public string title;
     public GameModeType type;
     public int money;
     public int mood;
     public int age;
+    public float hoursPerSecond;
 }

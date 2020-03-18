@@ -7,7 +7,7 @@ public class LaborExchangeManager : MonoBehaviour
     private UIManager uiManager;
     private GameManager gameManager;
     private GameDataManager gameDataManager;
-    private StatusEffectsController statusEffectsController;
+    private StatusEffectsManager statusEffectsController;
     private EnvironmentManager houseManager;
 
     // Events, Delegates
@@ -64,7 +64,7 @@ public class LaborExchangeManager : MonoBehaviour
     {
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
-        statusEffectsController = StatusEffectsController.instance;
+        statusEffectsController = StatusEffectsManager.instance;
         houseManager = EnvironmentManager.instance;
         uiManager = UIManager.instance;
 

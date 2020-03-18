@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -16,7 +17,7 @@ public class UIManager : MonoBehaviour
     private GameManager gameManager;
     private GameDataManager gameDataManager;
     private InventoryManager inventoryManager;
-    private StatusEffectsController statusEffectsController;
+    private StatusEffectsManager statusEffectsManager;
     private LaborExchangeManager laborExchangeManager;
 
     // UI elements
@@ -67,8 +68,11 @@ public class UIManager : MonoBehaviour
 
 
     // Colors
-    Color passedDayColor = new Color(1, 1, 1, 1);
-    Color presentDayColor = new Color(1, 1, 1, 0.3f);
+    [SerializeField]
+    Color dayLightColor = new Color(1, 1, 1, 0.3f);
+    [SerializeField]
+    Color dayWeekendLightColor = new Color(1, 1, 1, 0.3f);
+
     Color emptyDayColor = new Color(1, 1, 1, .0f);
 
     // Other
@@ -162,8 +166,12 @@ public class UIManager : MonoBehaviour
 
     }
 
-    // TODO: implement as event from gameManager
-    internal void UpdateReferencedAndButtonMappings()
+    internal void OpenCardSelection()
+    {
+        SetUIState(UIState.CardSelection);
+    }
+
+    private void UpdateReferencesAndButtonMappings()
     {
         UpdateReferences();
         
@@ -192,16 +200,18 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         inventoryManager = InventoryManager.instance;
-        statusEffectsController = StatusEffectsController.instance;
+        statusEffectsManager = StatusEffectsManager.instance;
         laborExchangeManager = LaborExchangeManager.instance;
 
-        gameDataManager.OnNewDayStarted += UpdateDayOfWeekProgressBar;
         gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
         gameDataManager.OnDayProgressChanged += UpdateDayProgressBar;
-        statusEffectsController.OnStatusEffectsChanged += UpdateStatusEffectsView;
-        UpdateReferences();
+        statusEffectsManager.OnStatusEffectsChanged += UpdateStatusEffectsView;
+        gameDataManager.OnDayStarted += UpdateInfoPanel;
+        gameDataManager.OnDayStarted += UpdateWeekProgressBar;
+
         SceneManager.sceneLoaded += SceneLoadedHandling;
+        UpdateReferencesAndButtonMappings();
         gameManager.LevelLoadedAndInitialized();
 
         // Scene fully loaded and managers are initialized, notify game manager about this
@@ -209,7 +219,7 @@ public class UIManager : MonoBehaviour
 
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
     {
-        UpdateReferencedAndButtonMappings();
+        UpdateReferencesAndButtonMappings();
         Debug.Log(this.GetType().ToString() + "scene loaded handled");
         gameManager.LevelLoadedAndInitialized();
     }
@@ -254,7 +264,7 @@ public class UIManager : MonoBehaviour
     /// Set UI state and manipulate related UI elements accordingly (like close mod info upon store opening, etc)
     /// </summary>
     /// <param name="state"></param>
-    public void SetUIState(UIState state)
+    private void SetUIState(UIState state)
     {
         // TODO: improve alg
         switch (state)
@@ -273,27 +283,22 @@ public class UIManager : MonoBehaviour
                 overlaysContainerPanel.SetActive(true);
                 statusEffectsPanel.SetActive(false);
                 laborExchangeContainer.SetActive(false);
-                storeContainer.SetActive(false);
                 UpdateStoreView();
                 break;
             case UIState.Store:
                 UpdateStoreView();
                 overlaysContainerPanel.SetActive(true);
                 statusEffectsPanel.SetActive(false);
-                storeContainer.SetActive(true);
                 laborExchangeContainer.SetActive(false);
-                storeContainer.SetActive(true);
                 break;
             case UIState.ModifiersInfo:
 
                 statusEffectsPanel.SetActive(true);
-                storeContainer.SetActive(false);
                 laborExchangeContainer.SetActive(false);
                 break;
             case UIState.LaborExchange:
 
                 statusEffectsPanel.SetActive(false);
-                storeContainer.SetActive(true);
                 laborExchangeContainer.SetActive(true);
                 break;
             default:
@@ -308,14 +313,16 @@ public class UIManager : MonoBehaviour
         UpdateInfoPanel();
         UpdateStoreView();
 
-        UpdateDayOfWeekProgressBar();
+        UpdateWeekProgressBar();
     }
 
     private void UpdateStoreView()
     {
         if (inventoryManager.Store != null)
         {
+            float time1 = Time.time;
             inventoryManager.Store.UpdateAll();
+            Debug.Log("Store update took " + (Time.time - time1).ToString() + " seconds");
         }
     }
 
@@ -382,32 +389,55 @@ public class UIManager : MonoBehaviour
 
 
 
-    public void UpdateDayOfWeekProgressBar()
+    public void UpdateWeekProgressBar()
     {
         if (weekProgressBar)
         {
+            // Day of week index ranged from 0 to 6
             int normalDayOfWeekIndex = ((int)gameDataManager.CurrentDateTime.DayOfWeek == 0) ? 6 : (int)gameDataManager.CurrentDateTime.DayOfWeek - 1;
-            // Clear each day indicator
-            foreach (Image image in weekProgressBar.GetComponentsInChildren<Image>())
+
+            foreach (Transform weekDayIndicatorTransfrom in weekProgressBar.transform)
             {
-                // Paint only fill image
-                if (image.gameObject.name == "DayRBFill")
+                int weekDayIndicatorIndex = weekDayIndicatorTransfrom.GetSiblingIndex();
+                Image fillImage = weekDayIndicatorTransfrom.Find("DayFill").GetComponent<Image>();
+                Light2D light = weekDayIndicatorTransfrom.GetComponentInChildren<Light2D>();
+                Animator animator = weekDayIndicatorTransfrom.GetComponent<Animator>();
+
+                if (weekDayIndicatorIndex > 4)
                 {
-                    image.color = emptyDayColor;
+                    light.color = dayWeekendLightColor;
+                    fillImage.color = dayWeekendLightColor;
+                } else
+                {
+                    light.color = dayLightColor;
+                    fillImage.color = dayLightColor;
                 }
-
+                if (fillImage)
+                {
+                    if (weekDayIndicatorIndex < normalDayOfWeekIndex)
+                    {
+                        // Passed day
+                        animator.SetBool("IsPassedDay", true);
+                        animator.SetBool("IsPresentDay", false);
+                        animator.SetBool("IsFutureDay", false);
+                    }
+                    else if (weekDayIndicatorIndex == normalDayOfWeekIndex)
+                    {
+                        // Present day
+                        animator.SetBool("IsPassedDay", false);
+                        animator.SetBool("IsPresentDay", true);
+                        animator.SetBool("IsFutureDay", false);
+                    }
+                    else
+                    {
+                        // Future day
+                        animator.SetBool("IsPassedDay", false);
+                        animator.SetBool("IsPresentDay", false);
+                        animator.SetBool("IsFutureDay", true);
+                    }
+                }
             }
-
-            // Fill previous days with solid color
-            for (int i = 0; i < normalDayOfWeekIndex; i++)
-            {
-                weekProgressBar.transform.Find("DayRB (" + i.ToString() + ")").Find("DayRBFill").GetComponent<Image>().color = passedDayColor;
-            }
-
-            // Fill present day with transparent color
-            weekProgressBar.transform.Find("DayRB (" + normalDayOfWeekIndex.ToString() + ")").Find("DayRBFill").GetComponent<Image>().color = presentDayColor;
         }
-
     }
 
 
@@ -425,7 +455,7 @@ public class UIManager : MonoBehaviour
                 Destroy(transform.gameObject);
             }
             // Iterate through status effects list and create status effects panel
-            foreach (StatusEffect statusEffect in statusEffectsController.StatusEffects)
+            foreach (StatusEffect statusEffect in statusEffectsManager.StatusEffects)
             {
                 GameObject panel = Instantiate(statusEffectPanelPrefab);
                 if (statusEffect.Type == StatusEffectType.Money)
@@ -446,21 +476,15 @@ public class UIManager : MonoBehaviour
    
     
 
-    public void ShowStorePanel(bool state)
-    {
-        if (state)
-        {
-            SetUIState(UIState.Store);
-        }
-        else
-        {
-            SetUIState(UIState.House);
-        }
-    }
+    
 
     public void ToggleStorePanel()
     {
-        ShowStorePanel(!storeContainer.activeSelf);
+        Animator animator = storeContainer?.GetComponent<Animator>();
+        if (animator)
+        {
+            animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
+        }
     }
 
     public void UpdateDayProgressBar()

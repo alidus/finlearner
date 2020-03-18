@@ -15,7 +15,7 @@ public class InventoryManager : MonoBehaviour
     // Controllers, Managers
     private GameManager gameManager;
     private GameDataManager gameDataManager;
-    private StatusEffectsController statusEffectsController;
+    private StatusEffectsManager statusEffectsController;
     private EnvironmentManager houseManager;
     private UIManager uiManager;
 
@@ -24,10 +24,8 @@ public class InventoryManager : MonoBehaviour
     public event StoreStateChangedAction OnStoreStateChanged;
 
 
-    private StoreItemDatabases storeItemDatabase;
 
     public Store Store { get; set; }
-    public StoreItemDatabases StoreItemDatabases { get => storeItemDatabase; set => storeItemDatabase = value; }
 
     private StatusEffect dafaultStoreItemStatusEffect = new StatusEffect("Покупка в магазине", 20, StatusEffectType.Mood, StatusEffectFrequency.OneShot);
     
@@ -63,7 +61,7 @@ public class InventoryManager : MonoBehaviour
     {
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
-        statusEffectsController = StatusEffectsController.instance;
+        statusEffectsController = StatusEffectsManager.instance;
         houseManager = EnvironmentManager.instance;
         uiManager = UIManager.instance;
         SceneManager.sceneLoaded += SceneLoadedHandling;
@@ -78,8 +76,6 @@ public class InventoryManager : MonoBehaviour
 
     public void InstantiateHomeStore(Transform storeContainerTransform)
     {
-        StoreItemDatabases = ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/Store/StoreItemDatabases")) as StoreItemDatabases;
-        // TODO: Redundant, improve logic of singletons initialization to evade this crap
         uiManager = UIManager.instance;
         if (uiManager.storeContainer)
         {

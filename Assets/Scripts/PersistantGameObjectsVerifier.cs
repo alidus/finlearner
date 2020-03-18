@@ -11,6 +11,8 @@ public class GameLogicVerifier
     static void RunObjectsCheck()
     {
         VerifyObject("GameLogic");
+
+        Application.targetFrameRate = 60;
     }
 
     static void VerifyObject(string objectName)

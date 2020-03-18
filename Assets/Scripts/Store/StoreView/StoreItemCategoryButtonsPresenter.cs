@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class StoreItemCategoryButtonsPresenter : MonoBehaviour, IItemGroupButtonsPresenter<ObjectItem>
 {
     public Store Store { get; set; }
@@ -11,7 +10,6 @@ public class StoreItemCategoryButtonsPresenter : MonoBehaviour, IItemGroupButton
     private void OnEnable()
     {
         Store = GetComponentInParent<Store>();
-        
     }
 
     public void UpdatePresenter() {

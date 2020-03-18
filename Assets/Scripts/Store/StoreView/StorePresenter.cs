@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class StorePresenter : MonoBehaviour, IItemsPresenter<ObjectItem>
 {
 

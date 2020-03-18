@@ -79,6 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storeContainer: {fileID: 0}
+  dayLightColor: {r: 0.1760413, g: 0.8679245, b: 0.24473897, a: 1}
+  dayWeekendLightColor: {r: 0.8584906, g: 0.19032574, b: 0.19032574, a: 1}
 --- !u!114 &2858777947960785614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,3 +153,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a201ed8f244f8546ae3d6ba9bdb2947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainMenuMusicPlaylist: {fileID: 0}
+  gameplayMusicPlaylist: {fileID: 0}

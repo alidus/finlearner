@@ -21,14 +21,14 @@ public class GameManager : MonoBehaviour
     // Managers, Controllers
     private UIManager uiManager;
     private GameDataManager gameDataManager;
-    private FreeplayController activeController;
+    private AbstractController activeController;
     private InventoryManager inventoryManager;
     private EnvironmentManager environmentManager;
-    private StatusEffectsController statusEffectsManager;
+    private StatusEffectsManager statusEffectsManager;
     private HintsManager hintsManager;
     private MusicPlayer musicPlayer;
-
     private MusicPlayer playMusicComponent;
+
 
     // Action delegates and events
     //public delegate void GameStartedAction(GameMode gameMode);
@@ -36,20 +36,20 @@ public class GameManager : MonoBehaviour
 
     // Misc
     [SerializeField]
-    private GameMode gameMode;
+    private GameDefaultSettings gameMode;
     private GameState gameState = GameState.MainMenu;
     public GameState GameState
     {
         get { return gameState; }
         set { gameState = value; }
     }
-    public GameMode GameMode
+    public GameDefaultSettings GameSettings
     {
         get { return gameMode; }
         set { gameMode = value; }
     }
 
-    public FreeplayController ActiveController { get => activeController; private set => activeController = value; }
+    public AbstractController ActiveController { get => activeController; private set => activeController = value; }
 
     private void Awake()
     {
@@ -68,9 +68,10 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameMode = (GameMode)Resources.Load("ScriptableObjects/GameModes/FreePlayGM");
+        GameSettings = (GameDefaultSettings)Resources.Load("ScriptableObjects/GameDefaultSettings/FreeplaySettings");
         GameState = (GameState)SceneManager.GetActiveScene().buildIndex;
     }
+
 
     private void Start()
     {
@@ -86,15 +87,13 @@ public class GameManager : MonoBehaviour
             } 
         }
     }
-
-
     private void Init()
     {
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
         inventoryManager = InventoryManager.instance;
         environmentManager = EnvironmentManager.instance;
-        statusEffectsManager = StatusEffectsController.instance;
+        statusEffectsManager = StatusEffectsManager.instance;
         hintsManager = HintsManager.instance;
         musicPlayer = MusicPlayer.instance;
         SceneManager.sceneLoaded += SceneLoadedHandling;
@@ -113,6 +112,7 @@ public class GameManager : MonoBehaviour
     {
         uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized. Activating controller...");
+        gameDataManager.SetGameSettings(GameSettings);
         switch ((GameState)GameState)
         {
             case GameState.MainMenu:
@@ -124,7 +124,6 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
-        uiManager.UpdateReferencedAndButtonMappings();
         uiManager.UpdateUI();
         musicPlayer?.Play(musicPlayer?.GameplayMusicPlaylist);
         uiManager.HideLoadingScreen();
@@ -147,7 +146,7 @@ public class GameManager : MonoBehaviour
     public void OpenCardSelection()
     {
         hintsManager.ShowHint("Выбор уровня кампании", "В игре будет представлен режим кампании с набором отдельных миссий, в каждой из которых перед игроком будет стоять определенная задача в рамках сложившихся обстоятельств.", new HoveringMessageHintPresenter(true, true));
-        uiManager.SetUIState(UIManager.UIState.CardSelection);
+        uiManager.OpenCardSelection();
     }
 
     public void StartGame()

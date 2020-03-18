@@ -6,43 +6,43 @@ using UnityEngine;
 /// Store component managing its view and logic 
 /// </summary>
 
-    [ExecuteInEditMode]
 public class Store : MonoBehaviour
 {
     public StoreItemDatabases storeItemDatabases;
 
     [SerializeField]
     private ItemDatabase<ObjectItem> itemDatabase = new ItemDatabase<ObjectItem>();
+    [SerializeField]
+    private StorePresenter storePresenter;
 
     public List<ItemGroup<ObjectItem>> ItemGroups { get; set; }
     public ItemDatabase<ObjectItem> ItemDatabase { get => itemDatabase; set => itemDatabase = value; }
-    public StorePresenter StorePresenter { get; private set; }
+    public StorePresenter StorePresenter { get => storePresenter; private set => storePresenter = value; }
     public ItemGroup<ObjectItem> SelectedItemGroup { get; internal set; }
 
     private void OnEnable()
     {
+        storeItemDatabases = ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/Store/StoreItemDatabases")) as StoreItemDatabases;
+
         if (storeItemDatabases)
         {
             ItemDatabase = storeItemDatabases.GetAllObjectItemsDatabase();
             ItemGroups = GetObjectItemGroups();
             if (ItemGroups.Count > 0)
                 SelectedItemGroup = ItemGroups[0];
-        } else
-        {
-            storeItemDatabases = InventoryManager.instance.StoreItemDatabases;
         }
-        if (StorePresenter)
+        foreach (Transform child in gameObject.transform)
         {
-            DestroyImmediate(StorePresenter.gameObject);
+            Destroy(child.gameObject);
         }
         StorePresenter = StoreFactory.CreateStorePresenter(this.transform);
     }
 
     private void OnDisable()
     {
-        if (StorePresenter)
+        foreach (Transform child in gameObject.transform)
         {
-            DestroyImmediate(StorePresenter.gameObject);
+            Destroy(child.gameObject);
         }
     }
 
@@ -50,7 +50,7 @@ public class Store : MonoBehaviour
 
     public void SelectItemGroup(ItemGroup<ObjectItem> itemGroup)
     {
-        SelectedItemGroup = ItemGroups.Find(group => itemGroup == group) ?? SelectedItemGroup; 
+        SelectedItemGroup = ItemGroups.Find(group => itemGroup == group) ?? SelectedItemGroup;
     }
 
     public void UpdateAll()
@@ -59,7 +59,7 @@ public class Store : MonoBehaviour
         {
             StorePresenter.UpdatePresenter();
         }
-        
+
     }
 
     public List<ItemGroup<ObjectItem>> GetObjectItemGroups()
@@ -71,13 +71,14 @@ public class Store : MonoBehaviour
             {
                 if (result.Count > 0)
                 {
-                   var k = result[0].GetType().GetGenericTypeDefinition();
+                    var k = result[0].GetType().GetGenericTypeDefinition();
                 }
                 var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
                 if (groupOfType != null)
                 {
                     groupOfType.Add(item);
-                } else
+                }
+                else
                 {
                     var newGroup = new ItemGroup<ObjectItem>();
                     newGroup.Title = "Мебель";

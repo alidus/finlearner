@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[ExecuteInEditMode]
 public class StoreItemListPresenter : MonoBehaviour, IItemListPresenter<ObjectItem>
 {
     public Store Store { get; set; }
@@ -29,7 +28,7 @@ public class StoreItemListPresenter : MonoBehaviour, IItemListPresenter<ObjectIt
             {
                 foreach (Transform child in ScrollViewContentTransform)
                 {
-                    GameObject.DestroyImmediate(child.gameObject);
+                    Destroy(child.gameObject);
                 }
                 foreach (ObjectItem item in ItemGroup)
                 {

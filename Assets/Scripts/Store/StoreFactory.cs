@@ -26,6 +26,36 @@ public static class StoreFactory
     {
         StoreItemPresenter storeItemPresenterComponent = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/StoreItemPresenter") as GameObject, parentTransform).AddComponent<StoreItemPresenter>(); ;
         storeItemPresenterComponent.Item = item;
+        var buttonComponent = storeItemPresenterComponent.GetComponent<Button>();
+        var animator = storeItemPresenterComponent.GetComponent<Animator>();
+        if (buttonComponent)
+        {
+            buttonComponent.onClick.AddListener(storeItemPresenterComponent.Item.OnClick);
+            // Play animation
+
+            storeItemPresenterComponent.Item.OnBuy += delegate {
+                if (animator)
+                {
+                    animator.SetTrigger("Buy");
+                }
+                GameDataManager.instance.Money -= storeItemPresenterComponent.Item.Price;
+                 };
+            storeItemPresenterComponent.Item.OnEquip += delegate
+            {
+                if (animator)
+                {
+                    animator.SetTrigger("Equip");
+                }
+            };
+            storeItemPresenterComponent.Item.OnUnEquip += delegate
+            {
+                if (animator)
+                {
+                    animator.SetTrigger("UnEquip");
+                }
+            };
+        }
+
         return storeItemPresenterComponent;
     }
     
