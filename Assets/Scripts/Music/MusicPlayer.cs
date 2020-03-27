@@ -45,11 +45,12 @@ public class MusicPlayer : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
-        if (!GetComponent<AudioSource>())
+        if (audioSource == null)
         {
-            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource = gameObject.GetComponent<AudioSource>();
         }
-        audioSource.volume = 0;
+        if (audioSource)
+            audioSource.volume = 0;
     }
 
     void Update()

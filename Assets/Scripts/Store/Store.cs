@@ -89,7 +89,6 @@ public class Store : MonoBehaviour
         }
         string log = "Store item groups: ";
         result.ForEach(item => log += (item.ToString() + ", "));
-        Debug.Log(log);
         return result;
     }
 }

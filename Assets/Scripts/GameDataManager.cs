@@ -143,7 +143,7 @@ public class GameDataManager : MonoBehaviour
 		private set { currentDateTime = value; }
 	}
 
-	private DateTime birthdayDate = DateTime.Now.AddDays(200);
+	private DateTime birthdayDate = DateTime.Now.AddDays(5);
 	private float dayProgress;
 	private GameManager gameManager;
 
@@ -181,24 +181,24 @@ public class GameDataManager : MonoBehaviour
 		if ((int)currentDateTime.DayOfWeek == 0)
 		{
 			WeeklyIncome = 0;
-			OnNewWeekStarted();
+			OnNewWeekStarted?.Invoke();
 		}
 		if ((int)currentDateTime.Month != currentMonth)
 		{
 			MonthlyIncome = 0;
-			OnNewMonthStarted();
+			OnNewMonthStarted?.Invoke();
 		}
 		if ((int)currentDateTime.Year != currentYear)
 		{
 			YearlyIncome = 0;
-			OnNewYearStarted();
+			OnNewYearStarted?.Invoke();
 		}
 
 		if (currentDateTime.Date == birthdayDate.Date)
 		{
 			// Happy birthday
 			Age++;
-			OnBirthday();
+			OnBirthday?.Invoke();
 		}
 		DayProgress -= 1;
 		OnDayStarted();

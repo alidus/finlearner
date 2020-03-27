@@ -102,6 +102,10 @@ public class UIManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// Update references to every controlled UI element (for ex. on scene transition)
+    /// TODO: Break this into more scene-specific components to reduce complexity
+    /// </summary>
     private void UpdateReferences()
     {
         loadingCanvas = GameObject.Find("LoadingCanvas");

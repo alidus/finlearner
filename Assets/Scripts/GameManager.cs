@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour
     public void LevelLoadedAndInitialized()
     {
         uiManager.HideLoadingScreen();
-        Debug.Log("Scene loaded and managers are initialized. Activating controller...");
+        Debug.Log("Scene loaded and managers are initialized");
         gameDataManager.SetGameSettings(GameSettings);
         switch ((GameState)GameState)
         {
