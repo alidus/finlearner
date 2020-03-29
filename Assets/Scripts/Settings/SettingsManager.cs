@@ -7,16 +7,19 @@ namespace UnityEngine
     public class SettingsManager : MonoBehaviour
     {
         public static SettingsManager instance;
-        
+
+        // Managers, Controllers
+        SettingsManager settingsManager;
+
         // UI elements
         private GameObject uiCanvas;
         private GameObject settingMenuPanel;
         
         // Sliders
-        private Slider globalVolumeSlider;
+        private Slider masterVolumeSlider;
         
         // Counters
-        private Text globalVolumeCounter;
+        private Text masterVolumeValueText;
 
         // Volume fields
         private float globalVolume;
@@ -39,9 +42,31 @@ namespace UnityEngine
         public void UpdateReferences()
         {
             uiCanvas = GameObject.Find("UICanvas");
-            settingMenuPanel = uiCanvas.transform.Find("SettingsMenuPanel").gameObject;
-            globalVolumeSlider = settingMenuPanel.transform.Find("GlobalVolumeSlider").GetComponent<Slider>();
-            globalVolumeCounter = settingMenuPanel.transform.Find("GlobalVolumeCounter").GetComponent<Text>();
+            if (uiCanvas != null)
+            {
+                Transform settingMenuPanelTransform = uiCanvas.transform.Find("SettingsMenuPanel");
+                if (settingMenuPanelTransform != null)
+                {
+                    Transform volumeSlidersPanelTransform = settingMenuPanelTransform.transform.Find("VolumeSlidersPanel");
+                    if (volumeSlidersPanelTransform)
+                    {
+                        Transform masterVolumeTransform = volumeSlidersPanelTransform.transform.Find("MasterVolume");
+                        if (masterVolumeTransform != null)
+                        {
+                            Transform masterVolumeSliderTransform = masterVolumeTransform.transform.Find("Slider");
+                            if (masterVolumeSliderTransform)
+                            {
+                                masterVolumeSlider = masterVolumeSliderTransform.GetComponent<Slider>();
+                            }
+                            Transform masterVolumeValueTextTransform = masterVolumeTransform.transform.Find("ValueText");
+                            if (masterVolumeValueTextTransform != null)
+                            {
+                                masterVolumeValueText = masterVolumeValueTextTransform.GetComponent<Text>();
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         private void Start()
@@ -51,35 +76,35 @@ namespace UnityEngine
 
         void Init()
         {
-            SettingsManager settingsManager = SettingsManager.instance;
+            settingsManager = SettingsManager.instance;
             globalVolume = 0.5f;
-            SetGlobalVolumeSliderPosition();
-            SetGlobalVolumeCounterText();
+            UpdateGlobalVolumeSliderValue();
+            UpdateGlobalVolumeText();
         }
 
         public void SetGlobalVolume(float globalVolume)
         {
-            instance.globalVolume = globalVolume;
-            SetGlobalVolumeSliderPosition();
-            SetGlobalVolumeCounterText();
+            this.globalVolume = globalVolume;
+            UpdateGlobalVolumeSliderValue();
+            UpdateGlobalVolumeText();
             AudioListener.volume = globalVolume;
             Debug.Log(globalVolume);
         }
 
         public float GetGlobalVolume()
         {
-            return instance.globalVolume;
+            return globalVolume;
         }
 
-        public void SetGlobalVolumeCounterText()
+        private void UpdateGlobalVolumeText()
         {
-            instance.globalVolumeCounter.text = Convert.ToInt32(globalVolume * 100)
+            instance.masterVolumeValueText.text = Convert.ToInt32(globalVolume * 100)
                                                     .ToString(CultureInfo.InvariantCulture) + "%";
         }
         
-        public void SetGlobalVolumeSliderPosition()
+        private void UpdateGlobalVolumeSliderValue()
         {
-            instance.globalVolumeSlider.value = globalVolume;
+            instance.masterVolumeSlider.value = globalVolume;
         }
     }
 }
