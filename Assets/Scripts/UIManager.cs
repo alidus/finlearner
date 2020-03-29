@@ -38,6 +38,9 @@ public class UIManager : MonoBehaviour
     private GameObject moodStatusEffectsContentPanel;
     // Pause menu
     private GameObject pauseMenuPanel;
+    
+    // Settings menu
+    private GameObject settingsMenuPanel;
 
     // Store
     [HideInInspector]
@@ -59,6 +62,7 @@ public class UIManager : MonoBehaviour
 
     private Button mainMenuCampaignButton;
     private Button mainMenuFreePlayButton;
+    private Button mainMenuSettingsButton;
     // Prefabs
     private GameObject statusEffectPanelPrefab;
     private GameObject jobCategoryPanelPrefab;
@@ -117,9 +121,11 @@ public class UIManager : MonoBehaviour
         {
             mainMenuPanel = uiCanvas.transform.Find("MainMenuPanel").gameObject;
             cardSelectionPanel = uiCanvas.transform.Find("CardSelectionPanel").gameObject;
+            settingsMenuPanel = uiCanvas.transform.Find("SettingsMenuPanel").gameObject;
             Transform mainMenuButtonsContainer = mainMenuPanel.transform.Find("ButtonsContainer").transform;
             mainMenuCampaignButton = mainMenuButtonsContainer.transform.Find("CampaignButton").GetComponent<Button>();
             mainMenuFreePlayButton = mainMenuButtonsContainer.transform.Find("FreePlayButton").GetComponent<Button>();
+            mainMenuSettingsButton = mainMenuButtonsContainer.transform.Find("SettingsButton").GetComponent<Button>();
         }
         else if (gameManager.GameState == GameState.InGame)
         {
@@ -241,6 +247,10 @@ public class UIManager : MonoBehaviour
 
             mainMenuFreePlayButton.onClick.RemoveAllListeners();
             mainMenuFreePlayButton.onClick.AddListener(gameManager.StartGame);
+            
+            mainMenuSettingsButton.onClick.RemoveAllListeners();
+            mainMenuSettingsButton.onClick.AddListener(instance.ShowSettingsMenu);
+            
         } else if (GameManager.instance.GameState == GameState.InGame)
         {
             laborExchangeButton.onClick.RemoveAllListeners();
@@ -560,5 +570,15 @@ public class UIManager : MonoBehaviour
                 animator.Play("LoadingPanel_FadeOut");
             }
         }
+    }
+
+    public void ShowSettingsMenu()
+    {
+        settingsMenuPanel.SetActive(true);
+    }
+    
+    public void HideSettingsMenu()
+    {
+        settingsMenuPanel.SetActive(false);
     }
 }
