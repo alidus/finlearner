@@ -44,13 +44,17 @@ public class TimeDeposit
             timeDeposit.depositValue = value;
             return this;
         }
-        public TimeDepositBuilder AddStatusEffect(StatusEffect statusEffect)
+        private TimeDepositBuilder AddStatusEffect(StatusEffect statusEffect)
         {
             timeDeposit.StatusEffects.Add(statusEffect);
             return this;
         }
         public TimeDeposit Build()
         {
+            AddStatusEffect(new StatusEffect("Time Deposit", 
+                timeDeposit.depositValue, 
+                StatusEffectType.Money, 
+                StatusEffectFrequency.Monthly));
             return timeDeposit;
         }
     }

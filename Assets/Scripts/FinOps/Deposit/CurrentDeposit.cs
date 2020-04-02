@@ -45,13 +45,17 @@ namespace FinOps.Deposit
                 currentDeposit.depositValue = value;
                 return this;
             }
-            public CurrentDepositBuilder AddStatusEffect(StatusEffect statusEffect)
+            private CurrentDepositBuilder AddStatusEffect(StatusEffect statusEffect)
             {
                 currentDeposit.StatusEffects.Add(statusEffect);
                 return this;
             }
             public CurrentDeposit Build()
             {
+                AddStatusEffect(new StatusEffect("Current Deposit", 
+                    currentDeposit.depositValue, 
+                    StatusEffectType.Money, 
+                    StatusEffectFrequency.Monthly));
                 return currentDeposit;
             }
         }
