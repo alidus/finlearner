@@ -88,7 +88,7 @@ namespace UnityEngine
             UpdateGlobalVolumeSliderValue();
             UpdateGlobalVolumeText();
             AudioListener.volume = globalVolume;
-            Debug.Log(globalVolume);
+            // Debug.Log(globalVolume);
         }
 
         public float GetGlobalVolume()
