@@ -153,25 +153,31 @@ public class GameDataManager : MonoBehaviour
 		set { birthdayDate = value; }
 	}
 
-	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged(); }  }
+	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged?.Invoke(); }  }
 	/// <summary>
 	/// How much hours pass per second
 	/// </summary>
 	public float HoursPerSecond { get; internal set; } = 6;
 
 	public bool DEBUG { get; set; } = true;
-	public void SetGameSettings(GameDefaultSettings gameSettings)
+	public void SetValuesToGameModeSpecified(GameMode gameMode)
 	{
-		if (gameSettings != null)
+		if (gameMode != null)
 		{
-			HoursPerSecond = gameSettings.hoursPerSecond;
-			Money = gameSettings.money;
-			Mood = gameSettings.mood;
-			Age = gameSettings.age;
-			IsRecordingIncome = true;
+			Money = gameMode.Money;
+			Mood = gameMode.Mood;
+			Age = gameMode.Age;
+			StartRecordingIncomeStatistics();
+			gameMode.SetupWinCondition(this);
 		}
 	}
-	public void AddDay()
+
+	void StartRecordingIncomeStatistics()
+	{
+        IsRecordingIncome = true;
+    }
+
+    public void AddDay()
 	{
 		DailyIncome = 0;
 		int currentMonth = currentDateTime.Month;

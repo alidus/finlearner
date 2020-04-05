@@ -10,7 +10,6 @@ public class StatusEffectsManager : MonoBehaviour
     public static StatusEffectsManager instance;
 
     // Controllers, Managers
-    private FreeplayController gameController;
     private GameDataManager gameDataManager;
     
     // Status effects

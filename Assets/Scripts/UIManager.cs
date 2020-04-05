@@ -14,70 +14,49 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     // Managers, Controllers
-    private GameManager gameManager;
-    private GameDataManager gameDataManager;
-    private InventoryManager inventoryManager;
-    private StatusEffectsManager statusEffectsManager;
-    private LaborExchangeManager laborExchangeManager;
+    GameManager gameManager;
+    GameDataManager gameDataManager;
+    StatusEffectsManager statusEffectsManager;
+    LaborExchangeManager laborExchangeManager;
 
     // UI elements
-    private GameObject mainMenuPanel;
-    private GameObject cardSelectionPanel;
-    private CanvasGroup loadingScreenCanvasGroup;
-    private GameObject infoPanel;
-    private GameObject statusEffectsPanel;
-    private GameObject moneyPanel;
-    private GameObject moodPanel;
-    private GameObject weekProgressBar;
-    private GameObject dayProgressBar;
-    private GameObject uiCanvas;
-    private GameObject loadingCanvas;
-    private GameObject gameplayHUDPanel;
-    private GameObject overlaysContainerPanel;
-    private GameObject moneyStatusEffectsContentPanel;
-    private GameObject moodStatusEffectsContentPanel;
+    CanvasGroup loadingScreenCanvasGroup;
+    GameObject statusEffectsPanel;
+    GameObject persCanvas;
+
+    GameObject overlayCanvas;
+    GameObject moneyStatusEffectsContentPanel;
+    GameObject moodStatusEffectsContentPanel;
+
     // Pause menu
-    private GameObject pauseMenuPanel;
+    GameObject pauseMenuPanel;
     
     // Settings menu
-    private GameObject settingsMenuPanel;
+    private GameObject settingsPanel;
 
     // Store
     [HideInInspector]
     public GameObject storeContainer;
+
     // Labor exchange
-    private GameObject laborExchangeContainer;
-    private GameObject jobsShowcasePanel;
-    private GameObject jobCategoriesPanel;
+    GameObject laborExchangeContainer;
+    GameObject jobsShowcasePanel;
+    GameObject jobCategoriesPanel;
 
     // Buttons
-    private Button storeButton;
-    private Button infoPanelButton;
-    private Button getCreditButtonTEST;
+    Button laborExchangeButton;
+    Button pauseMenuResumeButton;
+    Button pauseMenuSettingsButton;
+    Button pauseMenuMainMenuButton;
 
-    private Button laborExchangeButton;
-    private Button pauseMenuResumeButton;
-    private Button pauseMenuSettingsButton;
-    private Button pauseMenuMainMenuButton;
-
-    private Button mainMenuCampaignButton;
-    private Button mainMenuFreePlayButton;
-    private Button mainMenuSettingsButton;
     // Prefabs
-    private GameObject statusEffectPanelPrefab;
-    private GameObject jobCategoryPanelPrefab;
-    private GameObject jobPanelPrefab;
+    GameObject statusEffectPanelPrefab;
 
-    private Image dayProgressBarFillImage;
+    Image dayProgressBarFillImage;
 
-
-    // Colors
-    [SerializeField]
-    Color dayLightColor = new Color(1, 1, 1, 0.3f);
-    [SerializeField]
-    Color dayWeekendLightColor = new Color(1, 1, 1, 0.3f);
-
-    Color emptyDayColor = new Color(1, 1, 1, .0f);
+    Store store;
+    HUD hud;
+    
 
     // Other
     Dictionary<StatusEffect, GameObject> modifiersPanelDictionary = new Dictionary<StatusEffect, GameObject>();
@@ -112,35 +91,23 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void UpdateReferences()
     {
-        loadingCanvas = GameObject.Find("LoadingCanvas");
-        DontDestroyOnLoad(loadingCanvas);
-        loadingScreenCanvasGroup = loadingCanvas?.transform.Find("LoadingPanel")?.GetComponent<CanvasGroup>() ?? null;
-        uiCanvas = GameObject.Find("UICanvas");
+        persCanvas = GameObject.Find("PersCanvas");
+        DontDestroyOnLoad(persCanvas);
+        loadingScreenCanvasGroup = persCanvas?.transform.Find("LoadingPanel")?.GetComponent<CanvasGroup>() ?? null;
+        settingsPanel = persCanvas?.transform.Find("Settings").gameObject;
         // Update references to UI elements based on game state
-        if (gameManager.GameState == GameState.MainMenu)
+        if (gameManager.GameState == GameState.InGame)
         {
-            mainMenuPanel = uiCanvas.transform.Find("MainMenuPanel").gameObject;
-            cardSelectionPanel = uiCanvas.transform.Find("CardSelectionPanel").gameObject;
-            settingsMenuPanel = uiCanvas.transform.Find("SettingsMenuPanel").gameObject;
-            Transform mainMenuButtonsContainer = mainMenuPanel.transform.Find("ButtonsContainer").transform;
-            mainMenuCampaignButton = mainMenuButtonsContainer.transform.Find("CampaignButton").GetComponent<Button>();
-            mainMenuFreePlayButton = mainMenuButtonsContainer.transform.Find("FreePlayButton").GetComponent<Button>();
-            mainMenuSettingsButton = mainMenuButtonsContainer.transform.Find("SettingsButton").GetComponent<Button>();
-        }
-        else if (gameManager.GameState == GameState.InGame)
-        {
-            gameplayHUDPanel = GameObject.Find("GameplayHUDPanel");
-            overlaysContainerPanel = gameplayHUDPanel.transform.Find("OverlaysContainerPanel").gameObject;
-            storeContainer = overlaysContainerPanel.transform.Find("StoreContainer").gameObject;
+            overlayCanvas = GameObject.Find("OverlayCanvas");
+            storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;
             if (storeContainer)
             {
-                // TODO: Implement initialization check
-                inventoryManager = InventoryManager.instance;
-                inventoryManager.InstantiateHomeStore(storeContainer.transform);
+                store = storeContainer.GetComponent<Store>();
             }
-            laborExchangeContainer = overlaysContainerPanel.transform.Find("LaborExchangeContainer").gameObject;
-            statusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel").gameObject;
-            pauseMenuPanel = overlaysContainerPanel.transform.Find("PauseMenuPanel").gameObject;
+            laborExchangeContainer = overlayCanvas.transform.Find("LaborExchangeContainer").gameObject;
+            pauseMenuPanel = overlayCanvas.transform.Find("PauseMenuPanel").gameObject;
+            statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel").gameObject;
+
             foreach (Transform transform in statusEffectsPanel.transform.GetComponentsInChildren<Transform>())
             {
                 if (transform.gameObject.name == "MoneyStatusEffectsContentPanel")
@@ -152,28 +119,19 @@ public class UIManager : MonoBehaviour
                     moodStatusEffectsContentPanel = transform.gameObject;
                 }
             }
-            infoPanel = GameObject.Find("InfoPanel");
-            statusEffectsPanel = overlaysContainerPanel.transform.Find("StatusEffectsPanel")?.gameObject;
-            moneyPanel = GameObject.Find("MoneyPanel");
-            moodPanel = GameObject.Find("MoodPanel");
-            weekProgressBar = GameObject.Find("WeekProgressBar");
-            dayProgressBar = GameObject.Find("DayProgressBar");
+            statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel")?.gameObject;
 
-            dayProgressBarFillImage = GameObject.Find("DayProgressBarFillImage")?.GetComponent<Image>();
             // Prefabs references
             statusEffectPanelPrefab = Resources.Load("Prefabs/StatusEffects/StatusEffectPanel") as GameObject;
-            jobCategoryPanelPrefab = Resources.Load("Prefabs/Jobs/JobCategoryPanel") as GameObject;
-            jobPanelPrefab = Resources.Load("Prefabs/Jobs/JobPanel") as GameObject;
-            storeButton = GameObject.Find("StoreButton")?.GetComponent<Button>();
             laborExchangeButton = GameObject.Find("LaborExchangeButton")?.GetComponent<Button>();
-            infoPanelButton = GameObject.Find("InfoPanel")?.GetComponent<Button>();
-            getCreditButtonTEST = GameObject.Find("GetCreditButton")?.GetComponent<Button>();
+
             Transform pauseMenuButtonsContainerTrans = pauseMenuPanel.transform.Find("ButtonsContainer");
             pauseMenuResumeButton = pauseMenuButtonsContainerTrans.Find("PauseMenuButton_Resume")?.GetComponent<Button>();
             pauseMenuSettingsButton = pauseMenuButtonsContainerTrans.Find("PauseMenuButton_Settings")?.GetComponent<Button>();
             pauseMenuMainMenuButton = pauseMenuButtonsContainerTrans.Find("PauseMenuButton_MainMenu")?.GetComponent<Button>();
         }
-
+        
+        hud = GameObject.Find("HUDCanvas")?.GetComponent<HUD>();
     }
 
     internal void OpenCardSelection()
@@ -209,16 +167,9 @@ public class UIManager : MonoBehaviour
     {
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
-        inventoryManager = InventoryManager.instance;
         statusEffectsManager = StatusEffectsManager.instance;
-        laborExchangeManager = LaborExchangeManager.instance;
 
-        gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
-        gameDataManager.OnMoodValueChanged += UpdateMoodPanel;
-        gameDataManager.OnDayProgressChanged += UpdateDayProgressBar;
         statusEffectsManager.OnStatusEffectsChanged += UpdateStatusEffectsView;
-        gameDataManager.OnDayStarted += UpdateInfoPanel;
-        gameDataManager.OnDayStarted += UpdateWeekProgressBar;
 
         SceneManager.sceneLoaded += SceneLoadedHandling;
         UpdateReferencesAndButtonMappings();
@@ -230,6 +181,7 @@ public class UIManager : MonoBehaviour
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
     {
         UpdateReferencesAndButtonMappings();
+        hud.Init();
         Debug.Log(this.GetType().ToString() + "scene loaded handled");
         gameManager.LevelLoadedAndInitialized();
     }
@@ -240,27 +192,10 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void UpdateButtonsClickActionsAfterSceneLoad()
     {
-        if (GameManager.instance.GameState == GameState.MainMenu)
-        {
-            mainMenuCampaignButton.onClick.RemoveAllListeners();
-            mainMenuCampaignButton.onClick.AddListener(gameManager.OpenCardSelection);
-
-            mainMenuFreePlayButton.onClick.RemoveAllListeners();
-            mainMenuFreePlayButton.onClick.AddListener(gameManager.StartGame);
-            
-            mainMenuSettingsButton.onClick.RemoveAllListeners();
-            mainMenuSettingsButton.onClick.AddListener(instance.ShowSettingsMenu);
-            
-        } else if (GameManager.instance.GameState == GameState.InGame)
+        if (gameManager.GameState == GameState.InGame)
         {
             laborExchangeButton.onClick.RemoveAllListeners();
             laborExchangeButton.onClick.AddListener(gameManager.ToggleLaborExchange);
-
-            storeButton.onClick.RemoveAllListeners();
-            storeButton.onClick.AddListener(gameManager.ToggleStoreMenu);
-
-            infoPanelButton.onClick.RemoveAllListeners();
-            infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);
 
             pauseMenuResumeButton.onClick.RemoveAllListeners();
             pauseMenuResumeButton.onClick.AddListener(gameManager.UnPause);
@@ -271,7 +206,7 @@ public class UIManager : MonoBehaviour
             pauseMenuMainMenuButton.onClick.RemoveAllListeners();
             pauseMenuMainMenuButton.onClick.AddListener(gameManager.OpenMainMenu);
         }
-        
+
     }
 
     /// <summary>
@@ -284,24 +219,22 @@ public class UIManager : MonoBehaviour
         switch (state)
         {
             case UIState.MainMenu:
-                mainMenuPanel.SetActive(true);
-                cardSelectionPanel.SetActive(false);
+
 
                 break;
             case UIState.CardSelection:
-                mainMenuPanel.SetActive(false);
-                cardSelectionPanel.SetActive(true);
+
                 break;
             case UIState.House:
 
-                overlaysContainerPanel.SetActive(true);
+                overlayCanvas.SetActive(true);
                 statusEffectsPanel.SetActive(false);
                 laborExchangeContainer.SetActive(false);
-                UpdateStoreView();
+                UpdateStore();
                 break;
             case UIState.Store:
-                UpdateStoreView();
-                overlaysContainerPanel.SetActive(true);
+                UpdateStore();
+                overlayCanvas.SetActive(true);
                 statusEffectsPanel.SetActive(false);
                 laborExchangeContainer.SetActive(false);
                 break;
@@ -322,57 +255,18 @@ public class UIManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        UpdateMoneyPanel();
-        UpdateMoodPanel();
-        UpdateInfoPanel();
-        UpdateStoreView();
-
-        UpdateWeekProgressBar();
-    }
-
-    private void UpdateStoreView()
-    {
-        if (inventoryManager.Store != null)
+        if (gameManager.GameState == GameState.InGame)
         {
-            float time1 = Time.time;
-            inventoryManager.Store.UpdateAll();
-            Debug.Log("Store update took " + (Time.time - time1).ToString() + " seconds");
+            hud.UpdateHUD();
+            UpdateStore();
         }
     }
 
-    public void UpdateInfoPanel()
+    private void UpdateStore()
     {
-        if (infoPanel)
+        if (store)
         {
-            infoPanel.transform.Find("Date").GetComponent<Text>().text = gameDataManager.CurrentDateTime.ToString("dd/MM/yyyy");
-            infoPanel.transform.Find("Age").GetComponent<Text>().text = gameDataManager.Age.ToString() + " лет";
-            infoPanel.transform.Find("Day").GetComponent<Text>().text = "День года: " + gameDataManager.CurrentDateTime.DayOfYear.ToString();
-            infoPanel.transform.Find("Income").GetComponent<Text>().text = "Доход:\n" +
-               "$" + gameDataManager.DailyIncome.ToString() + " за день\n" +
-              "$" + gameDataManager.WeeklyIncome.ToString() + " за неделю\n" +
-               "$" + gameDataManager.MonthlyIncome.ToString() + " за месяц\n" +
-               "$" + gameDataManager.YearlyIncome.ToString() + " за год\n";
-        }
-    }
-
-    public void UpdateMoneyPanel()
-    {
-        if (moneyPanel)
-        {
-            moneyPanel.GetComponentInChildren<Text>().text = "$" + gameDataManager.Money.ToString();
-        }
-    }
-
-    public void UpdateMoodPanel()
-    {
-        if (moodPanel)
-        {
-            moodPanel.GetComponentInChildren<Text>().text = gameDataManager.Mood.ToString();
-            if (gameDataManager.Mood > 0)
-            {
-                float coef = (float)gameDataManager.Mood / 100;
-                moodPanel.GetComponentInChildren<Text>().color = new Color(1, coef, coef, 1);
-            }
+            store.UpdateAll();
         }
     }
 
@@ -403,56 +297,7 @@ public class UIManager : MonoBehaviour
 
 
 
-    public void UpdateWeekProgressBar()
-    {
-        if (weekProgressBar)
-        {
-            // Day of week index ranged from 0 to 6
-            int normalDayOfWeekIndex = ((int)gameDataManager.CurrentDateTime.DayOfWeek == 0) ? 6 : (int)gameDataManager.CurrentDateTime.DayOfWeek - 1;
-
-            foreach (Transform weekDayIndicatorTransfrom in weekProgressBar.transform)
-            {
-                int weekDayIndicatorIndex = weekDayIndicatorTransfrom.GetSiblingIndex();
-                Image fillImage = weekDayIndicatorTransfrom.Find("DayFill").GetComponent<Image>();
-                Light2D light = weekDayIndicatorTransfrom.GetComponentInChildren<Light2D>();
-                Animator animator = weekDayIndicatorTransfrom.GetComponent<Animator>();
-
-                if (weekDayIndicatorIndex > 4)
-                {
-                    light.color = dayWeekendLightColor;
-                    fillImage.color = dayWeekendLightColor;
-                } else
-                {
-                    light.color = dayLightColor;
-                    fillImage.color = dayLightColor;
-                }
-                if (fillImage)
-                {
-                    if (weekDayIndicatorIndex < normalDayOfWeekIndex)
-                    {
-                        // Passed day
-                        animator.SetBool("IsPassedDay", true);
-                        animator.SetBool("IsPresentDay", false);
-                        animator.SetBool("IsFutureDay", false);
-                    }
-                    else if (weekDayIndicatorIndex == normalDayOfWeekIndex)
-                    {
-                        // Present day
-                        animator.SetBool("IsPassedDay", false);
-                        animator.SetBool("IsPresentDay", true);
-                        animator.SetBool("IsFutureDay", false);
-                    }
-                    else
-                    {
-                        // Future day
-                        animator.SetBool("IsPassedDay", false);
-                        animator.SetBool("IsPresentDay", false);
-                        animator.SetBool("IsFutureDay", true);
-                    }
-                }
-            }
-        }
-    }
+    
 
 
     public void UpdateStatusEffectsView()
@@ -487,10 +332,6 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-   
-    
-
-    
 
     public void ToggleStorePanel()
     {
@@ -501,13 +342,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateDayProgressBar()
-    {
-        if (dayProgressBarFillImage)
-        {
-            dayProgressBarFillImage.fillAmount = gameDataManager.DayProgress;
-        }
-    }
+    
 
     
 
