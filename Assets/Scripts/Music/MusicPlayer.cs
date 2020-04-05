@@ -5,7 +5,7 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Component that play music with Playlists
+/// Component that plays music using Playlists
 /// </summary>
 public class MusicPlayer : MonoBehaviour
 {

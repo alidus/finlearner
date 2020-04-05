@@ -22,34 +22,32 @@ public class GameManager : MonoBehaviour
     private UIManager uiManager;
     private GameDataManager gameDataManager;
     private AbstractController activeController;
-    private InventoryManager inventoryManager;
     private EnvironmentManager environmentManager;
     private StatusEffectsManager statusEffectsManager;
     private HintsManager hintsManager;
     private MusicPlayer musicPlayer;
     private MusicPlayer playMusicComponent;
 
-
-    // Action delegates and events
-    //public delegate void GameStartedAction(GameMode gameMode);
-    //public event GameStartedAction OnGameStarted;
+    GameSettings gameSettings;
 
     // Misc
     [SerializeField]
-    private GameDefaultSettings gameMode;
+    private GameMode gameMode;
     private GameState gameState = GameState.MainMenu;
     public GameState GameState
     {
         get { return gameState; }
         set { gameState = value; }
     }
-    public GameDefaultSettings GameSettings
+    public GameMode GameMode
     {
         get { return gameMode; }
         set { gameMode = value; }
     }
 
-    public AbstractController ActiveController { get => activeController; private set => activeController = value; }
+    public GameSettings GameSettings { get => gameSettings; set => gameSettings = value; }
+
+    private bool isPlaying;
 
     private void Awake()
     {
@@ -68,7 +66,6 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameSettings = (GameDefaultSettings)Resources.Load("ScriptableObjects/GameDefaultSettings/FreeplaySettings");
         GameState = (GameState)SceneManager.GetActiveScene().buildIndex;
     }
 
@@ -79,27 +76,36 @@ public class GameManager : MonoBehaviour
 
         musicPlayer?.Play(musicPlayer?.MainMenuMusicPlaylist);
         // TODO: improve this block to support different game modes like cards
-        if (GameState == GameState.InGame)
-        {
-            if (ActiveController == null)
-            {
-                ActiveController = this.gameObject.AddComponent<FreeplayController>();
-            } 
-        }
     }
     private void Init()
     {
         uiManager = UIManager.instance;
         gameDataManager = GameDataManager.instance;
-        inventoryManager = InventoryManager.instance;
         environmentManager = EnvironmentManager.instance;
         statusEffectsManager = StatusEffectsManager.instance;
         hintsManager = HintsManager.instance;
         musicPlayer = MusicPlayer.instance;
+        GameSettings = GameObject.Find("PersCanvas")?.transform.Find("Settings")?.GetComponent<GameSettings>();
+        if (GameMode == null)
+        {
+            GameMode = ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/GameModes/GM_Freeplay") as GameMode);
+        }
         SceneManager.sceneLoaded += SceneLoadedHandling;
-        SceneManager.activeSceneChanged += delegate (Scene s1, Scene s2) { Debug.Log("Scene shanged"); };
-        SceneManager.sceneLoaded += delegate (Scene s1, LoadSceneMode lsm) { Debug.Log("Scene loaded"); };
         UpdateReferences();
+    }
+
+    void FixedUpdate()
+    {
+        if (GameState == GameState.InGame)
+        {
+            gameDataManager.DayProgress += Time.deltaTime * (gameDataManager.HoursPerSecond / 24);
+
+            if (gameDataManager.DayProgress >= 1)
+            {
+                gameDataManager.AddDay();
+            }
+        }
+        CheckIfPauseInput();
     }
 
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
@@ -112,13 +118,14 @@ public class GameManager : MonoBehaviour
     {
         uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized");
-        gameDataManager.SetGameSettings(GameSettings);
+        gameDataManager.SetValuesToGameModeSpecified(GameMode);
         switch ((GameState)GameState)
         {
             case GameState.MainMenu:
+                isPlaying = false;
                 break;
             case GameState.InGame:
-                ActivateFreeplayController();
+                isPlaying = true;
                 break;
             default:
                 break;
@@ -143,18 +150,13 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void OpenCardSelection()
+    public void StartGame(GameMode gameMode)
     {
-        hintsManager.ShowHint("Выбор уровня кампании", "В игре будет представлен режим кампании с набором отдельных миссий, в каждой из которых перед игроком будет стоять определенная задача в рамках сложившихся обстоятельств.", new HoveringMessageHintPresenter(true, true));
-        uiManager.OpenCardSelection();
-    }
-
-    public void StartGame()
-    {
+        GameMode = ScriptableObject.Instantiate(gameMode);
         StartCoroutine(StartingGameCoroutine());
     }
 
-    public IEnumerator StartingGameCoroutine()
+    private IEnumerator StartingGameCoroutine()
     {
         yield return uiManager.ShowLoadingScreen();
         yield return LoadLevel("GameplayScene");
@@ -179,16 +181,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("Scene load method from GameManager is done");
 
     }
-
-
-
-    public void ActivateFreeplayController()
-    {
-        // TODO: implement observer pattern
-        ActiveController = GetComponent<FreeplayController>() ?? gameObject.AddComponent<FreeplayController>();
-        ActiveController.Init();
-    }
-    
 
     public void CheckIfPauseInput()
     {

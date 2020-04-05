@@ -12,7 +12,7 @@ public class GameLogicVerifier
     {
         VerifyObject("GameLogic");
         VerifyObject("MusicPlayer");
-
+        VerifyObject("PersCanvas");
 
         Application.targetFrameRate = 165;
     }

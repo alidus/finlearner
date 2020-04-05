@@ -13,11 +13,13 @@ public class Store : MonoBehaviour
     [SerializeField]
     private ItemDatabase<ObjectItem> itemDatabase = new ItemDatabase<ObjectItem>();
     [SerializeField]
-    private StorePresenter storePresenter;
+    private StoreView storePresenter;
+    [SerializeField]
+    private Object storePresenterObject;
 
     public List<ItemGroup<ObjectItem>> ItemGroups { get; set; }
     public ItemDatabase<ObjectItem> ItemDatabase { get => itemDatabase; set => itemDatabase = value; }
-    public StorePresenter StorePresenter { get => storePresenter; private set => storePresenter = value; }
+    public StoreView StorePresenter { get => storePresenter; private set => storePresenter = value; }
     public ItemGroup<ObjectItem> SelectedItemGroup { get; internal set; }
 
     private void OnEnable()
@@ -31,11 +33,15 @@ public class Store : MonoBehaviour
             if (ItemGroups.Count > 0)
                 SelectedItemGroup = ItemGroups[0];
         }
-        foreach (Transform child in gameObject.transform)
+        if (storePresenterObject == null)
         {
-            Destroy(child.gameObject);
+            storePresenterObject = Resources.Load("Prefabs/Store/Views/StoreView");
         }
-        StorePresenter = StoreFactory.CreateStorePresenter(this.transform);
+
+        if (transform.childCount == 0)
+        {
+            StorePresenter = PresenterFactory.CreateBasePresenter(storePresenterObject, this.transform);
+        }
     }
 
     private void OnDisable()
@@ -57,7 +63,7 @@ public class Store : MonoBehaviour
     {
         if (StorePresenter != null)
         {
-            StorePresenter.UpdatePresenter();
+            StorePresenter.UpdateView();
         }
 
     }
@@ -90,6 +96,19 @@ public class Store : MonoBehaviour
         string log = "Store item groups: ";
         result.ForEach(item => log += (item.ToString() + ", "));
         return result;
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+    public void Toggle()
+    {
+        gameObject.SetActive(!gameObject.activeSelf);
     }
 }
 
