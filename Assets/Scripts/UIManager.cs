@@ -406,14 +406,4 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-
-    public void ShowSettingsMenu()
-    {
-        settingsMenuPanel.SetActive(true);
-    }
-    
-    public void HideSettingsMenu()
-    {
-        settingsMenuPanel.SetActive(false);
-    }
 }

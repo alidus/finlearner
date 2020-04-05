@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2a8dce9f48cb304498ea9e8ebbf0f25, type: 3}
+  m_Script: {fileID: 11500000, guid: a211829211ef34b42bcc866a8bcfcab4, type: 3}
   m_Name: GM_Card2
   m_EditorClassIdentifier: 
-  title: "\u0425\u043E\u0447\u0435\u0442\u0441\u044F \u043C\u0430\u0448\u0438\u043D\u0443"
+  title: "\u041F\u043E\u043A\u0443\u043F\u043A\u0430 \u043F\u0435\u0440\u0432\u043E\u0439
+    \u043C\u0430\u0448\u0438\u043D\u044B"
   type: 0
   goalType: 0
   money: 0

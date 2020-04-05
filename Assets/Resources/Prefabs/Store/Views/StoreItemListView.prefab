@@ -697,8 +697,9 @@ GameObject:
   - component: {fileID: 174373022443094656}
   - component: {fileID: 3019959311997267336}
   - component: {fileID: 3671197237100435315}
+  - component: {fileID: -5946494198806344689}
   m_Layer: 5
-  m_Name: StoreItemsListPresenter
+  m_Name: StoreItemListView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -781,6 +782,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 6
   m_LayoutPriority: 1
+--- !u!114 &-5946494198806344689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8465256259497687282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2055d1d91af4696489cd7071d1ffb757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPresenterObject: {fileID: 0}
 --- !u!1 &8753969538542571822
 GameObject:
   m_ObjectHideFlags: 0

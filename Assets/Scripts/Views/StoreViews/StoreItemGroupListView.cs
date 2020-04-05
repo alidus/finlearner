@@ -26,7 +26,7 @@ public class StoreItemGroupListView : View
 
                 foreach (ItemGroup<ObjectItem> itemGroup in ItemGroups)
                 {
-                    PresenterFactory.CreateItemGroupPresenter(itemGroupObject, itemGroup, this.transform).UpdateView();
+                    ViewFactory.CreateItemGroupPresenter(itemGroupObject, itemGroup, this.transform).UpdateView();
                 }
             }
         }

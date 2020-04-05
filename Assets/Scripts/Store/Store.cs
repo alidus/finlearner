@@ -15,11 +15,11 @@ public class Store : MonoBehaviour
     [SerializeField]
     private StoreView storePresenter;
     [SerializeField]
-    private Object storePresenterObject;
+    private Object storeViewObject;
 
     public List<ItemGroup<ObjectItem>> ItemGroups { get; set; }
     public ItemDatabase<ObjectItem> ItemDatabase { get => itemDatabase; set => itemDatabase = value; }
-    public StoreView StorePresenter { get => storePresenter; private set => storePresenter = value; }
+    public StoreView StoreView { get => storePresenter; private set => storePresenter = value; }
     public ItemGroup<ObjectItem> SelectedItemGroup { get; internal set; }
 
     private void OnEnable()
@@ -33,14 +33,17 @@ public class Store : MonoBehaviour
             if (ItemGroups.Count > 0)
                 SelectedItemGroup = ItemGroups[0];
         }
-        if (storePresenterObject == null)
+        if (storeViewObject == null)
         {
-            storePresenterObject = Resources.Load("Prefabs/Store/Views/StoreView");
+            storeViewObject = Resources.Load("Prefabs/Store/Views/StoreView");
         }
 
         if (transform.childCount == 0)
         {
-            StorePresenter = PresenterFactory.CreateBasePresenter(storePresenterObject, this.transform);
+            StoreView = ViewFactory.CreateBaseView(storeViewObject, this.transform);
+        } else
+        {
+            StoreView = transform.GetChild(0)?.GetComponent<StoreView>();
         }
     }
 
@@ -61,9 +64,9 @@ public class Store : MonoBehaviour
 
     public void UpdateAll()
     {
-        if (StorePresenter != null)
+        if (StoreView != null)
         {
-            StorePresenter.UpdateView();
+            StoreView.UpdateView();
         }
 
     }

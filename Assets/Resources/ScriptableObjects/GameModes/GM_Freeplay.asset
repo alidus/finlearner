@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2a8dce9f48cb304498ea9e8ebbf0f25, type: 3}
+  m_Script: {fileID: 11500000, guid: a211829211ef34b42bcc866a8bcfcab4, type: 3}
   m_Name: GM_Freeplay
   m_EditorClassIdentifier: 
   title: "\u0421\u0432\u043E\u0431\u043E\u0434\u043D\u0430\u044F \u0438\u0433\u0440\u0430"
   type: 0
   goalType: 0
-  money: 1000
-  mood: 90
+  money: 1001
+  mood: 95
   age: 18

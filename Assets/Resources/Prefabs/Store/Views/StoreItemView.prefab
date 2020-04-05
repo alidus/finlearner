@@ -350,8 +350,9 @@ GameObject:
   - component: {fileID: 2631920948536360929}
   - component: {fileID: 8236808994488780744}
   - component: {fileID: 6962571137210589693}
+  - component: {fileID: -175558612876340694}
   m_Layer: 5
-  m_Name: StoreItemPresenter
+  m_Name: StoreItemView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -542,6 +543,18 @@ MonoBehaviour:
   - {x: 150, y: 200, z: 0}
   - {x: 150, y: -200, z: 0}
   - {x: -150, y: -200, z: 0}
+--- !u!114 &-175558612876340694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6448784097537142342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b80e30822e400b94b92fdd43f6b3fcc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7294450516004389098
 GameObject:
   m_ObjectHideFlags: 0

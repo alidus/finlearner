@@ -21,8 +21,8 @@ public class StoreView : View
             itemGroupsPresenterObject = Resources.Load("Prefabs/Store/Views/StoreItemGroupListView");
         if (itemListPresenterObject == null)
             itemListPresenterObject = Resources.Load("Prefabs/Store/Views/StoreItemListView");
-        StoreItemCategoryButtonsPresenter = PresenterFactory.CreateGroupListPresenter(itemGroupsPresenterObject, this.transform);
-        StoreItemsListPresenter = PresenterFactory.CreateItemListPresenter(itemListPresenterObject, this.transform);
+        StoreItemCategoryButtonsPresenter = ViewFactory.CreateGroupListPresenter(itemGroupsPresenterObject, this.transform);
+        StoreItemsListPresenter = ViewFactory.CreateItemListPresenter(itemListPresenterObject, this.transform);
 
         UpdateView();
     }

@@ -38,7 +38,7 @@ public class StoreItemListView : View
                 foreach (ObjectItem item in ItemGroup)
                 {
                     // TODO: optimize not to clear entire array of gameObjects on every update but based on changes made
-                    PresenterFactory.CreateItemPresenter(itemPresenterObject, item, ScrollViewContentTransform).UpdateView();
+                    ViewFactory.CreateItemPresenter(itemPresenterObject, item, ScrollViewContentTransform).UpdateView();
                 }
             } else
             {
