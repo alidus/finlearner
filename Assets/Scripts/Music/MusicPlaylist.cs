@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Playlists for MusicPlayer
 /// </summary>
-[CreateAssetMenu(menuName = "ScriptableObjects/Music/MusicPlaylist", fileName = "MusicPlaylist")]
+[CreateAssetMenu(menuName = "SO/Music/Playlists", fileName = "Playlist")]
 public class MusicPlaylist : ScriptableObject
 {
 	[SerializeField]

@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour
     GameManager gameManager;
     GameDataManager gameDataManager;
     StatusEffectsManager statusEffectsManager;
-    LaborExchangeManager laborExchangeManager;
+    JobExchange laborExchangeManager;
 
     // UI elements
     CanvasGroup loadingScreenCanvasGroup;
@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
     public GameObject storeContainer;
 
     // Labor exchange
-    GameObject laborExchangeContainer;
+    GameObject jobExchangeContainer;
     GameObject jobsShowcasePanel;
     GameObject jobCategoriesPanel;
 
@@ -104,7 +104,7 @@ public class UIManager : MonoBehaviour
             {
                 store = storeContainer.GetComponent<Store>();
             }
-            laborExchangeContainer = overlayCanvas.transform.Find("LaborExchangeContainer").gameObject;
+            jobExchangeContainer = overlayCanvas.transform.Find("JobExchangeContainer").gameObject;
             pauseMenuPanel = overlayCanvas.transform.Find("PauseMenuPanel").gameObject;
             statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel").gameObject;
 
@@ -136,7 +136,6 @@ public class UIManager : MonoBehaviour
 
     internal void OpenCardSelection()
     {
-        SetUIState(UIState.CardSelection);
     }
 
     private void UpdateReferencesAndButtonMappings()
@@ -146,10 +145,8 @@ public class UIManager : MonoBehaviour
         switch (GameManager.instance.GameState)
         {
             case GameState.MainMenu:
-                SetUIState(UIManager.UIState.MainMenu);
                 break;
             case GameState.InGame:
-                SetUIState(UIManager.UIState.House);
                 break;
             default:
                 break;
@@ -209,50 +206,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Set UI state and manipulate related UI elements accordingly (like close mod info upon store opening, etc)
-    /// </summary>
-    /// <param name="state"></param>
-    private void SetUIState(UIState state)
-    {
-        // TODO: improve alg
-        switch (state)
-        {
-            case UIState.MainMenu:
-
-
-                break;
-            case UIState.CardSelection:
-
-                break;
-            case UIState.House:
-
-                overlayCanvas.SetActive(true);
-                statusEffectsPanel.SetActive(false);
-                laborExchangeContainer.SetActive(false);
-                UpdateStore();
-                break;
-            case UIState.Store:
-                UpdateStore();
-                overlayCanvas.SetActive(true);
-                statusEffectsPanel.SetActive(false);
-                laborExchangeContainer.SetActive(false);
-                break;
-            case UIState.ModifiersInfo:
-
-                statusEffectsPanel.SetActive(true);
-                laborExchangeContainer.SetActive(false);
-                break;
-            case UIState.LaborExchange:
-
-                statusEffectsPanel.SetActive(false);
-                laborExchangeContainer.SetActive(true);
-                break;
-            default:
-                break;
-        }
-    }
-
     public void UpdateUI()
     {
         if (gameManager.GameState == GameState.InGame)
@@ -266,7 +219,7 @@ public class UIManager : MonoBehaviour
     {
         if (store)
         {
-            store.UpdateAll();
+            store.UpdateShowcase();
         }
     }
 
@@ -274,11 +227,9 @@ public class UIManager : MonoBehaviour
     {
         if (state)
         {
-            SetUIState(UIState.ModifiersInfo);
         }
         else
         {
-            SetUIState(UIState.House);
         }
         statusEffectsPanel.SetActive(state);
     }
@@ -350,17 +301,15 @@ public class UIManager : MonoBehaviour
     {
         if (state)
         {
-            SetUIState(UIState.LaborExchange);
         }
         else
         {
-            SetUIState(UIState.House);
         }
     }
 
     public void ToggleLaborExchange()
     {
-        ShowLaborExchangePanel(!laborExchangeContainer.activeSelf);
+        ShowLaborExchangePanel(!jobExchangeContainer.activeSelf);
     }
 
     public void ShowPauseMenu()

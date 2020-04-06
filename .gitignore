@@ -64,6 +64,3 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-*.meta
-*.meta
-Assets/Scripts/Settings/GameSettings.cs.meta

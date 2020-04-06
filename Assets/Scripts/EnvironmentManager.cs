@@ -62,7 +62,7 @@ public class EnvironmentManager : MonoBehaviour
         House = Environment?.transform.Find("House")?.gameObject;
     }
 
-    public void EquipFurniture(FurnitureItem item)
+    public void EquipFurniture(Furniture item)
     {
         if (EquippedFurniture.ContainsKey(item.FurnitureType))
         {
@@ -109,8 +109,8 @@ public class EnvironmentManager : MonoBehaviour
 
 public struct HomeFurnitureSettings
 {
-    public static FurnitureItem Bed { get; set; }
-    public static FurnitureItem Chair { get; set; }
-    public static FurnitureItem Armchair { get; set; }
-    public static FurnitureItem Table { get; set; }
+    public static Furniture Bed { get; set; }
+    public static Furniture Chair { get; set; }
+    public static Furniture Armchair { get; set; }
+    public static Furniture Table { get; set; }
 }

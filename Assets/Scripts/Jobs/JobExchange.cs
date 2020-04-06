@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class LaborExchangeManager : MonoBehaviour
+public class JobExchange : Showcase<Job>
 {
     private UIManager uiManager;
     private GameManager gameManager;
@@ -9,59 +10,75 @@ public class LaborExchangeManager : MonoBehaviour
     private StatusEffectsManager statusEffectsController;
     private EnvironmentManager houseManager;
 
+    DefaultShowcaseViewFactory<Job> factory;
+
     // Events, Delegates
     public delegate void LaborExchangeStateChangedAction();
     public event LaborExchangeStateChangedAction OnLaborExchangeStateChanged;
 
-    private List<Job> globalJobsPool = new List<Job>();
-    private List<Job> activeJobs = new List<Job>();
-    public System.Collections.Generic.List<Job> ActiveJobs
+
+    private void OnEnable()
     {
-        get { return activeJobs; }
-        private set { activeJobs = value; }
-    }
-    public System.Collections.Generic.List<Job> GlobalJobsPool
-    {
-        get { return globalJobsPool; }
-       private set { globalJobsPool = value; }
+        // Load all jobs from assets
+        foreach (Object job in Resources.LoadAll("ScriptableObjects/Jobs"))
+        {
+            ItemDatabase.Add(ScriptableObject.Instantiate(job) as Job);
+        }
+
+        // Setup groups
+        if (ItemDatabase.Count > 0)
+        {
+            ItemGroups = GetItemGroups();
+            if (ItemGroups.Count > 0)
+                SelectedItemGroup = ItemGroups[0];
+        }
+
+        if (factory == null)
+        {
+            factory = new DefaultShowcaseViewFactory<Job>(
+                this,
+                Resources.Load("Prefabs/JobExchange/Views/JobExchangeView"),
+                Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemGroupListView"),
+                Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemGroupView"),
+                Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemListView"),
+                Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemView"));
+        }
+
+        if (transform.childCount == 0)
+        {
+            RootView = factory.CreateRootView(this.transform);
+        }
+        else
+        {
+            RootView = transform.GetChild(0)?.GetComponent<StoreView>();
+        }
     }
 
-    private JobCategory selectedCategory;
-    public JobCategory SelectedCategory
+    public override void UpdateShowcase()
     {
-        get { return selectedCategory; }
-        set { if (selectedCategory != value) { selectedCategory = value; OnLaborExchangeStateChanged(); };  }
-    }
-    private void Awake()
-    {
-        UpdateReferences();
+        if (RootView != null)
+        {
+            RootView.UpdateView();
+        }
     }
 
-    public void UpdateReferences()
+    protected override List<ItemGroup<Job>> GetItemGroups()
     {
-
+        throw new System.NotImplementedException();
     }
 
-    private void Start()
+    private void OnDisable()
     {
-        Init();
-    }
-
-    public void Init()
-    {
-        gameManager = GameManager.instance;
-        gameDataManager = GameDataManager.instance;
-        statusEffectsController = StatusEffectsManager.instance;
-        houseManager = EnvironmentManager.instance;
-        uiManager = UIManager.instance;
-
-        GlobalJobsPool = (Resources.Load("ScriptableObjects/Jobs/JobPool") as JobList).Jobs;
+        foreach (Transform child in gameObject.transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 
     public List<Job> GetAllJobsOfCategory(JobCategory category)
     {
         List<Job> result = new List<Job>();
-        foreach (Job job in GlobalJobsPool)
+        foreach (Job job in ItemDatabase)
         {
             if (job.Category == category)
                 result.Add(job);
@@ -73,7 +90,7 @@ public class LaborExchangeManager : MonoBehaviour
     public List<JobCategory> GetPresentedCategories()
     {
         List<JobCategory> result = new List<JobCategory>();
-        foreach (Job job in GlobalJobsPool)
+        foreach (Job job in ItemDatabase)
         {
             if (!result.Contains(job.Category))
             {
@@ -82,44 +99,5 @@ public class LaborExchangeManager : MonoBehaviour
         }
 
         return result;
-    }
-
-    private void GetJob(Job job)
-    {
-        if (!ActiveJobs.Contains(job))
-        {
-            ActiveJobs.Add(job);
-            statusEffectsController.AddStatusEffects(job.StatusEffects);
-            OnLaborExchangeStateChanged();
-        }
-    }
-
-    private void QuitJob(Job job)
-    {
-        ActiveJobs.Remove(job);
-        statusEffectsController.RemoveStatusEffects(job.StatusEffects);
-        OnLaborExchangeStateChanged();
-    }
-
-    public void AddJobToGlobalPool(Job job)
-    {
-        GlobalJobsPool.Add(job);
-        OnLaborExchangeStateChanged();
-    }
-
-    public bool IsJobActive(Job job)
-    {
-        return ActiveJobs.Contains(job);
-    }
-
-    public void JobPanelClick(Job job)
-    {
-        if (IsJobActive(job))
-        {
-            QuitJob(job);
-        } else
-        {
-            GetJob(job);
-        }
     }
 }

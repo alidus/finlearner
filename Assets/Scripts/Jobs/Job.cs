@@ -4,8 +4,8 @@ using UnityEngine;
 
 public enum JobCategory { IT, Service, Govermant, Art}
 
-[System.Serializable]
-public class Job
+[CreateAssetMenu(menuName = "SO/Items/Job", fileName = "Job")]
+public class Job : Item
 {
     [SerializeField]
     private string title;
@@ -44,12 +44,6 @@ public class Job
         set { statusEffects = value; }
     }
 
-    public Job(JobSOTemplate template)
-    {
-        Title = template.title;
-        Description = template.description;
-        StatusEffects = template.modifiers;
-    }
     private Job()
     {
 

@@ -5,11 +5,10 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-public class StoreItemView : View, IViewTitle, IViewImage, IViewPrice, IViewPurchaseState, IViewEquipState
+public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice, IViewPurchaseState, IViewEquipState
 {
 
     public Button ButtonComponent { get; set; }
-    public Text TitleTextComponent { get; set; }
     public Text PriceTagTextComponent { get; set; }
     public Image IconImageComponent { get; set; }
     public Image OwnageIndicatorImageComponent { get; set; }
@@ -20,7 +19,6 @@ public class StoreItemView : View, IViewTitle, IViewImage, IViewPrice, IViewPurc
 
     public bool IsPurchased { get; set; }
     public bool IsEquipped { get; set; }
-    public string Title { get; set; }
     private void OnEnable()
     {
         Transform iconTransform = this.transform.Find("Icon");
@@ -81,9 +79,4 @@ public class StoreItemView : View, IViewTitle, IViewImage, IViewPrice, IViewPurc
             EqiupHighlgihtImageComponent.enabled =IsEquipped;
     }
 
-    public void UpdateTitle()
-    {
-        if (TitleTextComponent)
-            TitleTextComponent.text = Title;
-    }
 }

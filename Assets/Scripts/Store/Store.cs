@@ -1,95 +1,84 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
 /// Store component managing its view and logic 
 /// </summary>
 
-public class Store : MonoBehaviour
+public class Store : Showcase<StoreItem>
 {
-    public StoreItemDatabases storeItemDatabases;
-
-    [SerializeField]
-    private ItemDatabase<ObjectItem> itemDatabase = new ItemDatabase<ObjectItem>();
-    [SerializeField]
-    private StoreView storePresenter;
-    [SerializeField]
-    private Object storeViewObject;
-
-    public List<ItemGroup<ObjectItem>> ItemGroups { get; set; }
-    public ItemDatabase<ObjectItem> ItemDatabase { get => itemDatabase; set => itemDatabase = value; }
-    public StoreView StoreView { get => storePresenter; private set => storePresenter = value; }
-    public ItemGroup<ObjectItem> SelectedItemGroup { get; internal set; }
+    StoreViewFactory<StoreItem> factory;
 
     private void OnEnable()
     {
-        storeItemDatabases = ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/Store/StoreItemDatabases")) as StoreItemDatabases;
+        // Load store database array containing different StoreItem databases of various item types (like clothing, furniture, etc)
 
-        if (storeItemDatabases)
+        foreach (StoreItem item in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
         {
-            ItemDatabase = storeItemDatabases.GetAllObjectItemsDatabase();
-            ItemGroups = GetObjectItemGroups();
-            if (ItemGroups.Count > 0)
-                SelectedItemGroup = ItemGroups[0];
-        }
-        if (storeViewObject == null)
-        {
-            storeViewObject = Resources.Load("Prefabs/Store/Views/StoreView");
+            ItemDatabase.Add(item);
         }
 
-        if (transform.childCount == 0)
+        ItemGroups = GetItemGroups();
+        if (ItemGroups.Count > 0)
+            SelectedItemGroup = ItemGroups[0];
+
+        if (factory == null)
         {
-            StoreView = ViewFactory.CreateBaseView(storeViewObject, this.transform);
-        } else
-        {
-            StoreView = transform.GetChild(0)?.GetComponent<StoreView>();
+            factory = new StoreViewFactory<StoreItem>(
+                this,
+                Resources.Load("Prefabs/Store/Views/StoreView"),
+                Resources.Load("Prefabs/Store/Views/StoreItemGroupListView"),
+                Resources.Load("Prefabs/Store/Views/StoreItemGroupView"),
+                Resources.Load("Prefabs/Store/Views/StoreItemListView"),
+                Resources.Load("Prefabs/Store/Views/StoreItemView"));
         }
+
+        if (transform.childCount != 0)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+        RootView = factory.CreateRootView(this.transform);
+        
     }
 
-    private void OnDisable()
-    {
-        foreach (Transform child in gameObject.transform)
-        {
-            Destroy(child.gameObject);
-        }
-    }
 
-
-
-    public void SelectItemGroup(ItemGroup<ObjectItem> itemGroup)
+    public void SelectItemGroup(ItemGroup<StoreItem> itemGroup)
     {
         SelectedItemGroup = ItemGroups.Find(group => itemGroup == group) ?? SelectedItemGroup;
     }
 
-    public void UpdateAll()
+    public override void UpdateShowcase()
     {
-        if (StoreView != null)
+        if (RootView != null)
         {
-            StoreView.UpdateView();
+            RootView.UpdateView();
         }
-
     }
 
-    public List<ItemGroup<ObjectItem>> GetObjectItemGroups()
+    protected override List<ItemGroup<StoreItem>> GetItemGroups()
     {
-        List<ItemGroup<ObjectItem>> result = new List<ItemGroup<ObjectItem>>();
-        foreach (ObjectItem item in ItemDatabase)
+        List<ItemGroup<StoreItem>> result = new List<ItemGroup<StoreItem>>();
+        foreach (StoreItem item in ItemDatabase)
         {
-            if (item is FurnitureItem)
+            if (item is Furniture)
             {
                 if (result.Count > 0)
                 {
                     var k = result[0].GetType().GetGenericTypeDefinition();
                 }
-                var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
+                var groupOfType = result.Find(group => group.Items[0] is Furniture);
                 if (groupOfType != null)
                 {
                     groupOfType.Add(item);
                 }
                 else
                 {
-                    var newGroup = new ItemGroup<ObjectItem>();
+                    var newGroup = new ItemGroup<StoreItem>();
                     newGroup.Title = "Мебель";
                     newGroup.Add(item);
                     result.Add(newGroup);
@@ -101,17 +90,6 @@ public class Store : MonoBehaviour
         return result;
     }
 
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
-    public void Show()
-    {
-        gameObject.SetActive(true);
-    }
-    public void Toggle()
-    {
-        gameObject.SetActive(!gameObject.activeSelf);
-    }
+    
 }
 

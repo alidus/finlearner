@@ -3,7 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "ScriptableObjects/GameEvents/GameEvent", fileName = "GameEvent")]
+[CreateAssetMenu(menuName = "SO/GameEvents/GameEvent", fileName = "GameEvent")]
 public class GameEvent : ScriptableObject
 {
     [SerializeField]
