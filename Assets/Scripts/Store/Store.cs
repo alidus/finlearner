@@ -17,7 +17,7 @@ public class Store : Showcase<StoreItem>
 
         foreach (StoreItem item in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
         {
-            ItemDatabase.Add(item);
+            ItemDatabase.Add(ScriptableObject.Instantiate(item) as StoreItem);
         }
 
         ItemGroups = GetItemGroups();
@@ -65,13 +65,13 @@ public class Store : Showcase<StoreItem>
         List<ItemGroup<StoreItem>> result = new List<ItemGroup<StoreItem>>();
         foreach (StoreItem item in ItemDatabase)
         {
-            if (item is Furniture)
+            if (item is FurnitureItem)
             {
                 if (result.Count > 0)
                 {
                     var k = result[0].GetType().GetGenericTypeDefinition();
                 }
-                var groupOfType = result.Find(group => group.Items[0] is Furniture);
+                var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
                 if (groupOfType != null)
                 {
                     groupOfType.Add(item);

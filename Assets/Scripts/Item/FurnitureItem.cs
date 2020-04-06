@@ -5,7 +5,7 @@ using UnityEngine;
 public enum FurnitureType { Bed, Table, Chair, Armchair }
 
 [CreateAssetMenu(menuName = "SO/Items/Furniture", fileName = "Furniture")]
-public class Furniture : StoreItem
+public class FurnitureItem : StoreItem
 {
     [SerializeField]
     private FurnitureType furnitureType;

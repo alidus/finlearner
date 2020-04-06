@@ -43,7 +43,6 @@ public class StoreViewFactory<T> : DefaultShowcaseViewFactory<T> where T : Store
                 {
                     animator.SetTrigger("Buy");
                 }
-                GameDataManager.instance.Money -= item.Price;
                  };
             item.OnEquip += delegate
             {

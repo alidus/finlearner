@@ -21,4 +21,9 @@ MonoBehaviour:
   canBeEquipped: 0
   isEquipped: 0
   isPurchased: 0
+  statusEffects:
+  - name: "\u0412\u044B \u043A\u0443\u043F\u0438\u043B\u0438 \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
+    value: 3
+    freqency: 0
+    type: 1
   furnitureType: 0

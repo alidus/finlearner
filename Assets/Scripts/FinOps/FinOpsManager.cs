@@ -53,6 +53,6 @@ public class FinOpsManager : MonoBehaviour
     {
         gameDataManager.Money += loan.InitialValue;
         activeLoans.Add(loan);
-        statusEffectsManager.AddStatusEffects(loan.StatusEffects);
+        statusEffectsManager.ApplyStatusEffects(loan.StatusEffects);
     }
 }

@@ -5,23 +5,8 @@ using UnityEngine;
 public enum JobCategory { IT, Service, Govermant, Art}
 
 [CreateAssetMenu(menuName = "SO/Items/Job", fileName = "Job")]
-public class Job : Item
-{
-    [SerializeField]
-    private string title;
-    public string Title
-    {
-        get { return title; }
-        set { title = value; }
-    }
-    [SerializeField]
-    private string desc;
-    public string Description
-    {
-        get { return desc; }
-        set { desc = value; }
-    }
-    
+public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable
+{ 
     [SerializeField]
     private JobCategory category;
     public JobCategory Category
@@ -31,9 +16,10 @@ public class Job : Item
     }
 
     [SerializeField]
+    private Sprite sprite;
     public Sprite Sprite
     {
-        get; set;
+        get => sprite; set => sprite = value;
     }
 
     [SerializeField]
@@ -43,6 +29,14 @@ public class Job : Item
         get { return statusEffects; }
         set { statusEffects = value; }
     }
+
+    [SerializeField]
+    private bool canBeEquipped = false;
+    [SerializeField]
+    private bool isEquipped = false;
+
+    public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
+    public bool IsEquipped { get => isEquipped; private set => isEquipped = value; }
 
     private Job()
     {
@@ -81,8 +75,18 @@ public class Job : Item
 
     public bool isValid()
     {
-        
+
         return true;
+    }
+
+    public void Equip()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Uneqip()
+    {
+        throw new System.NotImplementedException();
     }
 
     public class JobBuilder

@@ -18,7 +18,7 @@ public class Item : ScriptableObject
     }
     [SerializeField]
     private string desc;
-    public string Desc
+    public string Description
     {
         get { return desc; }
         set { desc = value; }

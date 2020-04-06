@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 
 [System.Serializable]
-public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable
+public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, IHaveStatusEffect
 {
     [SerializeField]
     private Sprite sprite;
@@ -20,6 +20,8 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable
     private bool isEquipped = false;
     [SerializeField]
     private bool isPurchased = false;
+    [SerializeField]
+    private List<StatusEffect> statusEffects = new List<StatusEffect>();
 
     public UnityAction OnClick { get; set; }
     public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
@@ -28,7 +30,7 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable
     public bool IsPurchased { get => isPurchased; private set => isPurchased = value; }
     public float Price { get => price; set => price = value; }
     public Sprite Sprite { get => sprite; set => sprite = value; }
-
+    public List<StatusEffect> StatusEffects { get => statusEffects; set => statusEffects = value; }
     public event Action OnBuy;
     public event Action OnEquip;
     public event Action OnSell;
@@ -77,6 +79,7 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable
         if (CanBePurchased)
         {
             CanBeEquipped = true;
+            StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
             OnBuy?.Invoke();
         }
     }

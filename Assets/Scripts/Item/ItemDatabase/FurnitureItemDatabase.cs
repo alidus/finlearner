@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class FurnitureItemDatabase : ItemDatabase<Furniture>
+public class FurnitureItemDatabase : ItemDatabase<FurnitureItem>
 {
 
 }
