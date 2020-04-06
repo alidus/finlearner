@@ -5,33 +5,10 @@ namespace FinOps.Deposit
 {
     /* This deposit is for an indefinite amount of time and 5% annual interest rate.
      It can be deposited and withdrawn at any time, interest is paid monthly.*/
-    public class CurrentDeposit
+    public class CurrentDeposit : AbstractDeposit
     {
         private const float Rate = 0.05f;
-        private float depositValue;
-
-        public float DepositValue
-        {
-            get => depositValue;
-            set => depositValue = value;
-        }
-
-        private int daysRemained;
-
-        public int DaysRemained
-        {
-            get => daysRemained;
-            set => daysRemained = value;
-        }
         
-        private List<StatusEffect> statusEffects = new List<StatusEffect>();
-
-        public List<StatusEffect> StatusEffects
-        {
-            get => statusEffects;
-            set => statusEffects = value;
-        }
-
         public CurrentDeposit()
         {
         }
@@ -40,9 +17,9 @@ namespace FinOps.Deposit
         {
             CurrentDeposit currentDeposit = new CurrentDeposit();
 
-            public CurrentDepositBuilder SetCurrentDepositValue(float value)
+            private CurrentDepositBuilder SetCurrentDepositValue(float value)
             {
-                currentDeposit.depositValue = value;
+                currentDeposit.DepositValue = value;
                 return this;
             }
             private CurrentDepositBuilder AddStatusEffect(StatusEffect statusEffect)
@@ -53,9 +30,10 @@ namespace FinOps.Deposit
             public CurrentDeposit Build()
             {
                 AddStatusEffect(new StatusEffect("Current Deposit", 
-                    currentDeposit.depositValue, 
+                    currentDeposit.DepositValue * Rate / 12, 
                     StatusEffectType.Money, 
                     StatusEffectFrequency.Monthly));
+                SetCurrentDepositValue(currentDeposit.DepositValue);
                 return currentDeposit;
             }
         }
