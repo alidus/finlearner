@@ -3,7 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "ScriptableObjects/GameEvents/GameEvent", fileName = "GameEvent")]
+[CreateAssetMenu(menuName = "SO/GameEvents/GameEvent", fileName = "GameEvent")]
 public class GameEvent : ScriptableObject
 {
     [SerializeField]
@@ -22,7 +22,7 @@ public class GameEvent : ScriptableObject
         HintsManager.instance?.ShowHint(title, description);
         foreach (StatusEffect statusEffect in StatusEffects)
         {
-            StatusEffectsManager.instance?.ExecuteOneShotStatusEffect(statusEffect);
+            StatusEffectsManager.instance?.ApplyStatusEffects(statusEffect);
         }
     }
 

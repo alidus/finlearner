@@ -110,26 +110,46 @@ public class StatusEffectsManager : MonoBehaviour
         }
     }
 
-    public void ExecuteOneShotStatusEffect(StatusEffect statusEffect)
+    private void ExecuteOneShot(StatusEffect statusEffect)
     {
-        if (statusEffect.Freqency == StatusEffectFrequency.OneShot)
+        switch (statusEffect.Type)
         {
-            ExecuteStatusEffect(statusEffect);
-        } else
-        {
-            print("Status effect is not one shot");
+            case StatusEffectType.Money:
+                gameDataManager.Money += statusEffect.Value;
+                break;
+            case StatusEffectType.Mood:
+                gameDataManager.Mood += statusEffect.Value;
+                break;
+            default:
+                break;
         }
     }
 
-    public void AddStatusEffects(List<StatusEffect> statusEffects)
+    public void ApplyStatusEffects(List<StatusEffect> statusEffects)
     {
-        this.StatusEffects.AddRange(statusEffects);
+        foreach (StatusEffect statusEffect in statusEffects)
+        {
+            if (statusEffect.Freqency == StatusEffectFrequency.OneShot)
+            {
+                ExecuteOneShot(statusEffect);
+            } else
+            {
+                StatusEffects.Add(statusEffect);
+            }
+        }
         OnStatusEffectsChanged();
     }
 
-    public void AddStatusEffects(StatusEffect statusEffect)
+    public void ApplyStatusEffects(StatusEffect statusEffect)
     {
-        this.StatusEffects.Add(statusEffect);
+        if (statusEffect.Freqency == StatusEffectFrequency.OneShot)
+        {
+            ExecuteOneShot(statusEffect);
+        }
+        else
+        {
+            StatusEffects.Add(statusEffect);
+        }
         OnStatusEffectsChanged();
     }
 
