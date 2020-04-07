@@ -20,6 +20,7 @@ public class HUD : MonoBehaviour
     private Button storeButton;
     private Button infoPanelButton;
     private Button getCreditButtonTEST;
+    private Button jobExchangeButton;
 
     private Image dayProgressBarFillImage;
 
@@ -42,6 +43,7 @@ public class HUD : MonoBehaviour
         weekProgressBar = GameObject.Find("WeekProgressBar");
         dayProgressBar = GameObject.Find("DayProgressBar");
         storeButton = GameObject.Find("StoreButton")?.GetComponent<Button>();
+        jobExchangeButton = GameObject.Find("JobExchangeButton")?.GetComponent<Button>();
         infoPanelButton = GameObject.Find("InfoPanel")?.GetComponent<Button>();
         dayProgressBarFillImage = GameObject.Find("DayProgressBarFillImage")?.GetComponent<Image>();
         getCreditButtonTEST = GameObject.Find("GetCreditButton")?.GetComponent<Button>();
@@ -62,8 +64,13 @@ public class HUD : MonoBehaviour
         storeButton.onClick.RemoveAllListeners();
         storeButton.onClick.AddListener(uiManager.ToggleStorePanel);
 
+        jobExchangeButton.onClick.RemoveAllListeners();
+        jobExchangeButton.onClick.AddListener(uiManager.ToggleJobExchange);
+
         infoPanelButton.onClick.RemoveAllListeners();
         infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);
+
+        
 
         gameDataManager.OnMoneyValueChanged += UpdateMoneyPanel;
         gameDataManager.OnMoodValueChanged += UpdateMoodPanel;

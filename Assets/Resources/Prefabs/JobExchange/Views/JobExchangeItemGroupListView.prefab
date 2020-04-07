@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2215762690196785787}
   - component: {fileID: 4093634429772403618}
   - component: {fileID: 5438512180178787461}
-  - component: {fileID: -2823789789290668084}
   - component: {fileID: 7763128495105947565}
+  - component: {fileID: 8112060548262895722}
   m_Layer: 5
   m_Name: JobExchangeItemGroupListView
   m_TagString: Untagged
@@ -96,19 +96,6 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &-2823789789290668084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8410479503561799992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb9752f31ec728b4f8a90272c10cf455, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemGroupObject: {fileID: 0}
 --- !u!114 &7763128495105947565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,3 +121,15 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &8112060548262895722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8410479503561799992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322d2a42dffdc3a48828fdf6b06604a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

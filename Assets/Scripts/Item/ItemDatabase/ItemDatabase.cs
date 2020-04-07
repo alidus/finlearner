@@ -29,6 +29,11 @@ public class ItemDatabase<T> : IEnumerable where T : Item
 		Items.AddRange(items);
 	}
 
+	public void Clear()
+	{
+		Items.Clear();
+	}
+
 	public IEnumerator GetEnumerator()
 	{
 		return items.GetEnumerator();

@@ -10,7 +10,7 @@ public class JobExchange : Showcase<Job>
     private StatusEffectsManager statusEffectsController;
     private EnvironmentManager houseManager;
 
-    DefaultShowcaseViewFactory<Job> factory;
+    JobExchangeViewFactory<Job> factory;
 
     // Events, Delegates
     public delegate void LaborExchangeStateChangedAction();
@@ -19,6 +19,7 @@ public class JobExchange : Showcase<Job>
 
     private void OnEnable()
     {
+        ItemDatabase.Clear();
         // Load all jobs from assets
         foreach (Object job in Resources.LoadAll("ScriptableObjects/Jobs"))
         {
@@ -35,7 +36,7 @@ public class JobExchange : Showcase<Job>
 
         if (factory == null)
         {
-            factory = new DefaultShowcaseViewFactory<Job>(
+            factory = new JobExchangeViewFactory<Job>(
                 this,
                 Resources.Load("Prefabs/JobExchange/Views/JobExchangeView"),
                 Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemGroupListView"),
@@ -44,14 +45,14 @@ public class JobExchange : Showcase<Job>
                 Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemView"));
         }
 
-        if (transform.childCount == 0)
+        if (transform.childCount != 0)
         {
-            RootView = factory.CreateRootView(this.transform);
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
         }
-        else
-        {
-            RootView = transform.GetChild(0)?.GetComponent<StoreView>();
-        }
+        RootView = factory.CreateRootView(this.transform);
     }
 
     public override void UpdateShowcase()
@@ -64,7 +65,19 @@ public class JobExchange : Showcase<Job>
 
     protected override List<ItemGroup<Job>> GetItemGroups()
     {
-        throw new System.NotImplementedException();
+        var result = new List<ItemGroup<Job>>();
+        foreach (Job job in ItemDatabase)
+        {
+            var itemGroup = result.FirstOrDefault(item => item.Title == job.Category.ToString());
+            if (itemGroup == null)
+            {
+                itemGroup = new ItemGroup<Job>(job.Category.ToString());
+                result.Add(itemGroup);
+            }
+            itemGroup.Add(job);
+        }
+
+        return result;
     }
 
     private void OnDisable()

@@ -4,9 +4,8 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Store component managing its view and logic 
+/// Showcase that displays StoreObject items
 /// </summary>
-
 public class Store : Showcase<StoreItem>
 {
     StoreViewFactory<StoreItem> factory;

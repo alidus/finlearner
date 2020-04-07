@@ -17,9 +17,9 @@ public class ItemGroup<T> : IEnumerable<T> where T:Item
         Items = items.ToList();
     }
 
-    public ItemGroup()
+    public ItemGroup(string title = "ITEM_GROUP_TITLE")
     {
-
+        Title = title;
     }
 
     public IEnumerator<T> GetEnumerator()

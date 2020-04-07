@@ -698,7 +698,7 @@ GameObject:
   - component: {fileID: 174373022443094656}
   - component: {fileID: 3019959311997267336}
   - component: {fileID: 3671197237100435315}
-  - component: {fileID: -5946494198806344689}
+  - component: {fileID: 7873205146150827186}
   m_Layer: 5
   m_Name: JobExchangeItemListView
   m_TagString: Untagged
@@ -780,10 +780,10 @@ MonoBehaviour:
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: 6
+  m_FlexibleWidth: 6
+  m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &-5946494198806344689
+--- !u!114 &7873205146150827186
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -792,10 +792,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8465256259497687282}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2055d1d91af4696489cd7071d1ffb757, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e36045f4736d3a409f5e46518c2bf5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPresenterObject: {fileID: 0}
 --- !u!1 &8753969538542571822
 GameObject:
   m_ObjectHideFlags: 0

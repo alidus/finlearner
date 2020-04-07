@@ -39,6 +39,11 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
 
     public StoreItem()
     {
+        SetupClickAction();
+    }
+
+    private void SetupClickAction()
+    {
         OnClick = delegate
         {
             if (CanBeEquipped)
@@ -79,6 +84,7 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
         if (CanBePurchased)
         {
             CanBeEquipped = true;
+            StatusEffectsManager.instance.ApplyStatusEffects(new StatusEffect("Покупка " + Title, -Price, StatusEffectType.Money, StatusEffectFrequency.OneShot));
             StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
             OnBuy?.Invoke();
         }

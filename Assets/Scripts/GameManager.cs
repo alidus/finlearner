@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
 
     public void ToggleLaborExchange()
     {
-        uiManager.ToggleLaborExchange();
+        uiManager.ToggleJobExchange();
     }
 
     public void Pause()

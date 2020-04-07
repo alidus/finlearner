@@ -40,8 +40,6 @@ public class UIManager : MonoBehaviour
 
     // Labor exchange
     GameObject jobExchangeContainer;
-    GameObject jobsShowcasePanel;
-    GameObject jobCategoriesPanel;
 
     // Buttons
     Button laborExchangeButton;
@@ -55,6 +53,7 @@ public class UIManager : MonoBehaviour
     Image dayProgressBarFillImage;
 
     Store store;
+    JobExchange jobExchange;
     HUD hud;
     
 
@@ -104,7 +103,18 @@ public class UIManager : MonoBehaviour
             {
                 store = storeContainer.GetComponent<Store>();
             }
+            storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;
+            if (storeContainer)
+            {
+                store = storeContainer.GetComponent<Store>();
+            }
+
             jobExchangeContainer = overlayCanvas.transform.Find("JobExchangeContainer").gameObject;
+            if (jobExchangeContainer)
+            {
+                jobExchange = jobExchangeContainer.GetComponent<JobExchange>();
+            }
+
             pauseMenuPanel = overlayCanvas.transform.Find("PauseMenuPanel").gameObject;
             statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel").gameObject;
 
@@ -123,7 +133,6 @@ public class UIManager : MonoBehaviour
 
             // Prefabs references
             statusEffectPanelPrefab = Resources.Load("Prefabs/StatusEffects/StatusEffectPanel") as GameObject;
-            laborExchangeButton = GameObject.Find("LaborExchangeButton")?.GetComponent<Button>();
 
             Transform pauseMenuButtonsContainerTrans = pauseMenuPanel.transform.Find("ButtonsContainer");
             pauseMenuResumeButton = pauseMenuButtonsContainerTrans.Find("PauseMenuButton_Resume")?.GetComponent<Button>();
@@ -191,9 +200,6 @@ public class UIManager : MonoBehaviour
     {
         if (gameManager.GameState == GameState.InGame)
         {
-            laborExchangeButton.onClick.RemoveAllListeners();
-            laborExchangeButton.onClick.AddListener(gameManager.ToggleLaborExchange);
-
             pauseMenuResumeButton.onClick.RemoveAllListeners();
             pauseMenuResumeButton.onClick.AddListener(gameManager.UnPause);
 
@@ -291,25 +297,12 @@ public class UIManager : MonoBehaviour
         {
             animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
         }
-    }
+    } 
 
-    
 
-    
-
-    public void ShowLaborExchangePanel(bool state)
+    public void ToggleJobExchange()
     {
-        if (state)
-        {
-        }
-        else
-        {
-        }
-    }
-
-    public void ToggleLaborExchange()
-    {
-        ShowLaborExchangePanel(!jobExchangeContainer.activeSelf);
+        jobExchange.Toggle();
     }
 
     public void ShowPauseMenu()

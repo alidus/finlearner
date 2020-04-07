@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum JobCategory { IT, Service, Govermant, Art}
 
 [CreateAssetMenu(menuName = "SO/Items/Job", fileName = "Job")]
-public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable
+public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
 { 
     [SerializeField]
     private JobCategory category;
@@ -35,12 +37,35 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable
     [SerializeField]
     private bool isEquipped = false;
 
+    public event Action OnEquip;
+    public event Action OnUnEquip;
+
     public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
     public bool IsEquipped { get => isEquipped; private set => isEquipped = value; }
+    public UnityAction OnClick { get; set; }
 
     private Job()
     {
+        SetupClickAction();
+    }
 
+    private void SetupClickAction()
+    {
+        OnClick = delegate
+        {
+            if (CanBeEquipped)
+            {
+                if (!IsEquipped)
+                {
+                    Equip();
+
+                }
+                else
+                {
+                    Uneqip();
+                }
+            }
+        };
     }
 
     public IncomeData GetIncomeData()
@@ -81,12 +106,14 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable
 
     public void Equip()
     {
-        throw new System.NotImplementedException();
+        IsEquipped = true;
+        OnEquip?.Invoke();
     }
 
     public void Uneqip()
     {
-        throw new System.NotImplementedException();
+        IsEquipped = false;
+        OnUnEquip?.Invoke();
     }
 
     public class JobBuilder
