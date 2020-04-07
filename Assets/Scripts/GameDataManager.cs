@@ -9,19 +9,16 @@ public class GameDataManager : MonoBehaviour
 	public static GameDataManager instance;
 
 	// Events, Delegates
-	public delegate void MoneyValueChangedAction();
-	public event MoneyValueChangedAction OnMoneyValueChanged;
-	public delegate void MoodValueChangedAction();
-	public event MoodValueChangedAction OnMoodValueChanged;
+	public event Action OnMoneyValueChanged;
+	public event Action OnMoodValueChanged;
 
-	public delegate void TimeMilestoneReachedAction();
-	public event TimeMilestoneReachedAction OnNewDayStarted;
-	public event TimeMilestoneReachedAction OnNewWeekStarted;
-	public event TimeMilestoneReachedAction OnNewMonthStarted;
-	public event TimeMilestoneReachedAction OnNewYearStarted;
-	public delegate void BirthdayAction();
-	public event BirthdayAction OnBirthday;
+	public event Action OnDayStarted;
+	public event Action OnNewWeekStarted;
+	public event Action OnNewMonthStarted;
+	public event Action OnNewYearStarted;
+	public event Action OnBirthday;
 	public event Action OnDayProgressChanged;
+
 
 	// Sprites
 	public Sprite placeHolderSprite;
@@ -55,11 +52,9 @@ public class GameDataManager : MonoBehaviour
 
 	private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
 	{
-		LoadGamemodeData(gameManager.GameMode);
 		Debug.Log(this.GetType().ToString() + "scene loaded handled");
-
-
 	}
+
 
 	private bool isRecordingIncome;
 	public bool IsRecordingIncome
@@ -148,7 +143,7 @@ public class GameDataManager : MonoBehaviour
 		private set { currentDateTime = value; }
 	}
 
-	private DateTime birthdayDate = DateTime.Now.AddDays(200);
+	private DateTime birthdayDate = DateTime.Now.AddDays(5);
 	private float dayProgress;
 	private GameManager gameManager;
 
@@ -158,24 +153,33 @@ public class GameDataManager : MonoBehaviour
 		set { birthdayDate = value; }
 	}
 
-	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged(); }  }
+	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged?.Invoke(); }  }
 	/// <summary>
 	/// How much hours pass per second
 	/// </summary>
 	public float HoursPerSecond { get; internal set; } = 6;
 
 	public bool DEBUG { get; set; } = true;
-	public void LoadGamemodeData(GameMode gameMode)
+	public void SetValuesToGameModeSpecified(GameMode gameMode)
 	{
-		Money = gameMode.money;
-		Mood = gameMode.mood;
-		Age = gameMode.age;
-		IsRecordingIncome = true;
+		if (gameMode != null)
+		{
+			Money = gameMode.Money;
+			Mood = gameMode.Mood;
+			Age = gameMode.Age;
+			StartRecordingIncomeStatistics();
+			gameMode.SetupWinCondition(this);
+		}
 	}
-	public void AddDay()
+
+	void StartRecordingIncomeStatistics()
+	{
+        IsRecordingIncome = true;
+    }
+
+    public void AddDay()
 	{
 		DailyIncome = 0;
-		OnNewDayStarted();
 		int currentMonth = currentDateTime.Month;
 		int currentYear = currentDateTime.Year;
 		CurrentDateTime = currentDateTime.AddDays(1);
@@ -183,24 +187,26 @@ public class GameDataManager : MonoBehaviour
 		if ((int)currentDateTime.DayOfWeek == 0)
 		{
 			WeeklyIncome = 0;
-			OnNewWeekStarted();
+			OnNewWeekStarted?.Invoke();
 		}
 		if ((int)currentDateTime.Month != currentMonth)
 		{
 			MonthlyIncome = 0;
-			OnNewMonthStarted();
+			OnNewMonthStarted?.Invoke();
 		}
 		if ((int)currentDateTime.Year != currentYear)
 		{
 			YearlyIncome = 0;
-			OnNewYearStarted();
+			OnNewYearStarted?.Invoke();
 		}
 
 		if (currentDateTime.Date == birthdayDate.Date)
 		{
 			// Happy birthday
 			Age++;
-			OnBirthday();
+			OnBirthday?.Invoke();
 		}
+		DayProgress -= 1;
+		OnDayStarted();
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class StoreFactory
+public static class ViewFactory
 {
     public static Store storeComponent;
 
@@ -16,34 +16,70 @@ public static class StoreFactory
     //    return storeComponent;
     //}
 
-    public static StorePresenter CreateStorePresenter(Transform parentTransform)
+    public static StoreView CreateBaseView(UnityEngine.Object presenter, Transform parentTransform)
     {
-        StorePresenter storePresenterComponent = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/StorePresenter") as GameObject, parentTransform).AddComponent<StorePresenter>(); ;
+        StoreView storePresenterComponent = GameObject.Instantiate(presenter as GameObject, parentTransform).GetComponent<StoreView>(); ;
         return storePresenterComponent;
     }
 
-    public static StoreItemPresenter CreateItemPresenter(ObjectItem item, Transform parentTransform)
+    public static StoreItemView CreateItemPresenter(UnityEngine.Object presenter, ObjectItem item, Transform parentTransform)
     {
-        StoreItemPresenter storeItemPresenterComponent = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/StoreItemPresenter") as GameObject, parentTransform).AddComponent<StoreItemPresenter>(); ;
-        storeItemPresenterComponent.Item = item;
+        StoreItemView storeItemPresenterComponent = GameObject.Instantiate(presenter as GameObject, parentTransform).GetComponent<StoreItemView>(); ;
+        
+        storeItemPresenterComponent.Title = item.Title;
+        storeItemPresenterComponent.Price = item.Price;
+        storeItemPresenterComponent.Sprite = item.Sprite;
+        storeItemPresenterComponent.IsPurchased = item.IsPurchased;
+        storeItemPresenterComponent.IsEquipped = item.IsEquipped;
+
+        var buttonComponent = storeItemPresenterComponent.GetComponent<Button>();
+        var animator = storeItemPresenterComponent.GetComponent<Animator>();
+        if (buttonComponent)
+        {
+            buttonComponent.onClick.AddListener(item.OnClick);
+            // Play animation
+
+            item.OnBuy += delegate {
+                if (animator)
+                {
+                    animator.SetTrigger("Buy");
+                }
+                GameDataManager.instance.Money -= item.Price;
+                 };
+            item.OnEquip += delegate
+            {
+                if (animator)
+                {
+                    animator.SetTrigger("Equip");
+                }
+            };
+            item.OnUnEquip += delegate
+            {
+                if (animator)
+                {
+                    animator.SetTrigger("UnEquip");
+                }
+            };
+        }
+
         return storeItemPresenterComponent;
     }
     
-    public static StoreItemCategoryButtonsPresenter CreateStoreItemCategoryButtonsPresenter(Transform parentTransform)
+    public static StoreItemGroupListView CreateGroupListPresenter(UnityEngine.Object presenter, Transform parentTransform)
     {
-        StoreItemCategoryButtonsPresenter storeItemCategoryButtonsPresenterComponent = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/StoreItemCategoryButtonsPresenter") as GameObject, parentTransform).AddComponent<StoreItemCategoryButtonsPresenter>(); ;
+        StoreItemGroupListView storeItemCategoryButtonsPresenterComponent = GameObject.Instantiate(presenter as GameObject, parentTransform).GetComponent<StoreItemGroupListView>(); ;
         return storeItemCategoryButtonsPresenterComponent;
     }
 
-    public static StoreItemListPresenter CreateStoreItemsListPresenter(Transform parentTransform)
+    public static StoreItemListView CreateItemListPresenter(UnityEngine.Object presenter, Transform parentTransform)
     {
-        StoreItemListPresenter storeItemsListPresenterComponent = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/StoreItemsListPresenter") as GameObject, parentTransform).AddComponent<StoreItemListPresenter>();
+        StoreItemListView storeItemsListPresenterComponent = GameObject.Instantiate(presenter as GameObject, parentTransform).GetComponent<StoreItemListView>();
         return storeItemsListPresenterComponent;
     }
 
-    public static StoreItemCategoryButtonPresenter CreateStoreItemCategoryButtonPresenter(ItemGroup<ObjectItem> itemGroup, Transform parentTransform)
+    public static StoreItemGroupView CreateItemGroupPresenter(UnityEngine.Object presenter, ItemGroup<ObjectItem> itemGroup, Transform parentTransform)
     {
-        StoreItemCategoryButtonPresenter storeItemCategoryButtonPresenterComponent = GameObject.Instantiate(Resources.Load("Prefabs/Store/Views/StoreItemCategoryButtonPresenter") as GameObject, parentTransform).AddComponent<StoreItemCategoryButtonPresenter>();
+        StoreItemGroupView storeItemCategoryButtonPresenterComponent = GameObject.Instantiate(presenter as GameObject, parentTransform).GetComponent<StoreItemGroupView>();
         storeItemCategoryButtonPresenterComponent.ItemGroup = itemGroup;
         return storeItemCategoryButtonPresenterComponent;
     }

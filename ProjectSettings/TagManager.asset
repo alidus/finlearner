@@ -10,6 +10,8 @@ TagManager:
   - Chair
   - Armchair
   - Table
+  - WeekDayIndicator
+  - GameEvents
   layers:
   - Default
   - TransparentFX

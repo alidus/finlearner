@@ -6,43 +6,52 @@ using UnityEngine;
 /// Store component managing its view and logic 
 /// </summary>
 
-    [ExecuteInEditMode]
 public class Store : MonoBehaviour
 {
     public StoreItemDatabases storeItemDatabases;
 
     [SerializeField]
     private ItemDatabase<ObjectItem> itemDatabase = new ItemDatabase<ObjectItem>();
+    [SerializeField]
+    private StoreView storePresenter;
+    [SerializeField]
+    private Object storeViewObject;
 
     public List<ItemGroup<ObjectItem>> ItemGroups { get; set; }
     public ItemDatabase<ObjectItem> ItemDatabase { get => itemDatabase; set => itemDatabase = value; }
-    public StorePresenter StorePresenter { get; private set; }
+    public StoreView StoreView { get => storePresenter; private set => storePresenter = value; }
     public ItemGroup<ObjectItem> SelectedItemGroup { get; internal set; }
 
     private void OnEnable()
     {
+        storeItemDatabases = ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/Store/StoreItemDatabases")) as StoreItemDatabases;
+
         if (storeItemDatabases)
         {
             ItemDatabase = storeItemDatabases.GetAllObjectItemsDatabase();
             ItemGroups = GetObjectItemGroups();
             if (ItemGroups.Count > 0)
                 SelectedItemGroup = ItemGroups[0];
+        }
+        if (storeViewObject == null)
+        {
+            storeViewObject = Resources.Load("Prefabs/Store/Views/StoreView");
+        }
+
+        if (transform.childCount == 0)
+        {
+            StoreView = ViewFactory.CreateBaseView(storeViewObject, this.transform);
         } else
         {
-            storeItemDatabases = InventoryManager.instance.StoreItemDatabases;
+            StoreView = transform.GetChild(0)?.GetComponent<StoreView>();
         }
-        if (StorePresenter)
-        {
-            DestroyImmediate(StorePresenter.gameObject);
-        }
-        StorePresenter = StoreFactory.CreateStorePresenter(this.transform);
     }
 
     private void OnDisable()
     {
-        if (StorePresenter)
+        foreach (Transform child in gameObject.transform)
         {
-            DestroyImmediate(StorePresenter.gameObject);
+            Destroy(child.gameObject);
         }
     }
 
@@ -50,16 +59,16 @@ public class Store : MonoBehaviour
 
     public void SelectItemGroup(ItemGroup<ObjectItem> itemGroup)
     {
-        SelectedItemGroup = ItemGroups.Find(group => itemGroup == group) ?? SelectedItemGroup; 
+        SelectedItemGroup = ItemGroups.Find(group => itemGroup == group) ?? SelectedItemGroup;
     }
 
     public void UpdateAll()
     {
-        if (StorePresenter != null)
+        if (StoreView != null)
         {
-            StorePresenter.UpdatePresenter();
+            StoreView.UpdateView();
         }
-        
+
     }
 
     public List<ItemGroup<ObjectItem>> GetObjectItemGroups()
@@ -71,13 +80,14 @@ public class Store : MonoBehaviour
             {
                 if (result.Count > 0)
                 {
-                   var k = result[0].GetType().GetGenericTypeDefinition();
+                    var k = result[0].GetType().GetGenericTypeDefinition();
                 }
                 var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
                 if (groupOfType != null)
                 {
                     groupOfType.Add(item);
-                } else
+                }
+                else
                 {
                     var newGroup = new ItemGroup<ObjectItem>();
                     newGroup.Title = "Мебель";
@@ -88,8 +98,20 @@ public class Store : MonoBehaviour
         }
         string log = "Store item groups: ";
         result.ForEach(item => log += (item.ToString() + ", "));
-        Debug.Log(log);
         return result;
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+    public void Toggle()
+    {
+        gameObject.SetActive(!gameObject.activeSelf);
     }
 }
 

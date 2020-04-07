@@ -5,45 +5,31 @@ using UnityEngine;
 public class GameLogicVerifier
 {
     /// <summary>
-    /// Non-Component script running after game started and verifing that GameLogic object containing Manager/Controller components is presented in scene
+    /// Non-Component script running after game started and verifying that some objects are presented in scene
     /// </summary>
     [RuntimeInitializeOnLoadMethod]
     static void RunObjectsCheck()
     {
         VerifyObject("GameLogic");
+        VerifyObject("MusicPlayer");
+        VerifyObject("PersCanvas");
+
+        Application.targetFrameRate = 165;
     }
 
-    static void VerifyObject(string objectName)
+    static void VerifyObject(string objectTag)
     {
-        GameObject[] objects = GameObject.FindGameObjectsWithTag(objectName);
+        GameObject[] objects = GameObject.FindGameObjectsWithTag(objectTag);
         if (objects.Length == 0)
         {
-            Debug.Log(objectName +" object was not found. Instantiating it now... (Consider add it to the scene in advance)");
-            GameObject.Instantiate(Resources.Load("Prefabs/GameLogic"));
+            Debug.Log(objectTag + " tagged object was not found. Instantiating it now... (Consider add it to the scene in advance)");
+            GameObject.Instantiate(Resources.Load("Prefabs/" + objectTag));
         } else if (objects.Length > 1)
         {
-            Debug.Log("More than one " + objectName + " object were found. Destroying every one except first. (Consider remove multiplications in advance)");
+            Debug.Log("More than one " + objectTag + " tagged object were found. Destroying every one except first. (Consider remove multiplications in advance)");
             for (int i = 1; i < objects.Length; i++)
             {
                 GameObject.Destroy(objects[i]);
-            }
-        }
-    }
-
-    static void VerifyMusicPlayerObject()
-    {
-        GameObject[] gameLogicObjects = GameObject.FindGameObjectsWithTag("MusicPlayer");
-        if (gameLogicObjects.Length == 0)
-        {
-            Debug.Log("GameLogic object was not found. Instantiating it now... (Consider add it to the scene in advance)");
-            GameObject.Instantiate(Resources.Load("Prefabs/MusicPlayer"));
-        }
-        else if (gameLogicObjects.Length > 1)
-        {
-            Debug.Log("More than one GameLogic object were found. Destroying every one except first. (Consider remove multiplications in advance)");
-            for (int i = 1; i < gameLogicObjects.Length; i++)
-            {
-                GameObject.Destroy(gameLogicObjects[i]);
             }
         }
     }

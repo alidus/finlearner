@@ -14,28 +14,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   furniture:
     items:
-    - title: "\u0417\u0435\u043B\u0435\u043D\u0430\u044F \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
+    - id: 0
+      title: "\u0417\u0435\u043B\u0435\u043D\u0430\u044F \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
       desc: "\u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435 \u043A\u0440\u043E\u0432\u0430\u0442\u0438"
-      price: 250
       sprite: {fileID: 21300000, guid: 86ad4e448a73b3042944ac22717584b6, type: 3}
+      price: 200
+      canBePurchased: 1
+      canBeEquipped: 0
+      isEquipped: 0
+      isPurchased: 0
       furnitureType: 0
-    - title: "\u0427\u0435\u0440\u043D\u044B\u0439 \u0441\u0442\u0443\u043B"
+    - id: 1
+      title: "\u041A\u0440\u0430\u0441\u043D\u0430\u044F \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
       desc: "\u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435 \u043A\u0440\u043E\u0432\u0430\u0442\u0438"
-      price: 230
       sprite: {fileID: 21300000, guid: 67c73cbf193ed144bba380de5d3f969d, type: 3}
-      furnitureType: 2
-    - title: "\u0427\u0435\u0440\u043D\u044B\u0439 \u0441\u0442\u0443\u043B"
+      price: 150
+      canBePurchased: 1
+      canBeEquipped: 0
+      isEquipped: 0
+      isPurchased: 0
+      furnitureType: 0
+    - id: 1
+      title: "\u041A\u0440\u0430\u0441\u043D\u0430\u044F \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
       desc: "\u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435 \u043A\u0440\u043E\u0432\u0430\u0442\u0438"
-      price: 230
       sprite: {fileID: 21300000, guid: 67c73cbf193ed144bba380de5d3f969d, type: 3}
-      furnitureType: 2
-    - title: "\u0427\u0435\u0440\u043D\u044B\u0439 \u0441\u0442\u0443\u043B"
+      price: 150
+      canBePurchased: 1
+      canBeEquipped: 0
+      isEquipped: 0
+      isPurchased: 0
+      furnitureType: 0
+    - id: 1
+      title: "\u041A\u0440\u0430\u0441\u043D\u0430\u044F \u043A\u0440\u043E\u0432\u0430\u0442\u044C"
       desc: "\u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435 \u043A\u0440\u043E\u0432\u0430\u0442\u0438"
-      price: 230
       sprite: {fileID: 21300000, guid: 67c73cbf193ed144bba380de5d3f969d, type: 3}
-      furnitureType: 2
-    - title: "\u0427\u0435\u0440\u043D\u044B\u0439 \u0441\u0442\u0443\u043B"
-      desc: "\u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435 \u043A\u0440\u043E\u0432\u0430\u0442\u0438"
-      price: 230
-      sprite: {fileID: 21300000, guid: 67c73cbf193ed144bba380de5d3f969d, type: 3}
-      furnitureType: 2
+      price: 150
+      canBePurchased: 1
+      canBeEquipped: 0
+      isEquipped: 0
+      isPurchased: 0
+      furnitureType: 0

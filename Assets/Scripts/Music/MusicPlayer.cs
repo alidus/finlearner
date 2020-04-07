@@ -5,7 +5,7 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Component that play music with Playlists
+/// Component that plays music using Playlists
 /// </summary>
 public class MusicPlayer : MonoBehaviour
 {
@@ -45,11 +45,12 @@ public class MusicPlayer : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
-        if (!GetComponent<AudioSource>())
+        if (audioSource == null)
         {
-            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource = gameObject.GetComponent<AudioSource>();
         }
-        audioSource.volume = 0;
+        if (audioSource)
+            audioSource.volume = 0;
     }
 
     void Update()
