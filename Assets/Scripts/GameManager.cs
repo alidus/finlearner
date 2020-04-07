@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
     // Managers, Controllers
     private UIManager uiManager;
     private GameDataManager gameDataManager;
-    private AbstractController activeController;
     private EnvironmentManager environmentManager;
     private StatusEffectsManager statusEffectsManager;
     private HintsManager hintsManager;
