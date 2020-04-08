@@ -13,15 +13,9 @@ public class GameModeEditor : Editor
     EditorGameConditionType LoseConditionAdditionType;
     GameMode gameMode;
 
-    SerializedProperty winConditions;
-    SerializedProperty loseConditions;
-
-
     private void OnEnable()
     {
-        gameMode = (GameMode)target;
-        winConditions = serializedObject.FindProperty("winConditions");
-        loseConditions = serializedObject.FindProperty("loseConditions");
+        gameMode = target as GameMode;
     }
 
     public override void OnInspectorGUI()
@@ -39,12 +33,12 @@ public class GameModeEditor : Editor
 
         GUILayout.Space(50);
 
-        gameMode.WinConditions = DrawConditionsGroup("Win conditions", GameConditionGroup.Win, gameMode.WinConditions);
+        gameMode.WinConditionsContainer = DrawConditionsGroup("Win conditions", GameConditionGroup.Win, gameMode.WinConditionsContainer);
 
         GUILayout.Space(50);
         // Lose conditions array
 
-        gameMode.LoseConditions = DrawConditionsGroup("Lose conditions", GameConditionGroup.Lose, gameMode.LoseConditions);
+        gameMode.LoseConditionsContainer = DrawConditionsGroup("Lose conditions", GameConditionGroup.Lose, gameMode.LoseConditionsContainer);
 
         if (GUI.changed)
         {
@@ -64,13 +58,13 @@ public class GameModeEditor : Editor
         GUILayout.EndHorizontal();
     }
 
-    List<GameCondition> DrawConditionsGroup(string title, GameConditionGroup group, List<GameCondition> gameConditions)
+    GameConditionsContainer DrawConditionsGroup(string title, GameConditionGroup conditionGroup, GameConditionsContainer gameConditionsContainer)
     {
-        EditorGUILayout.LabelField(title + " (Size " + gameConditions.Count.ToString() + "):");
+        EditorGUILayout.LabelField(title + " (Size " + gameConditionsContainer.Count.ToString() + "):");
 
         EditorGUILayout.BeginHorizontal();
         EditorGameConditionType gameConditionType;
-        switch (group)
+        switch (conditionGroup)
         {
             case GameConditionGroup.Win:
                 WinConditionAdditionType = (EditorGameConditionType)EditorGUILayout.EnumPopup(WinConditionAdditionType);
@@ -90,7 +84,8 @@ public class GameModeEditor : Editor
             switch (gameConditionType)
             {
                 case EditorGameConditionType.ValueCondition:
-                    gameMode.AddCondition(new ValueCondition(GameDataManager.instance), group);
+                    Undo.RecordObject(gameMode, "Added win condition");
+                    gameMode.AddCondition(new ValueCondition(GameDataManager.instance), conditionGroup);
                     break;
                 default:
                     break;
@@ -99,26 +94,21 @@ public class GameModeEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         // Goes backward to be able to remove elements without unexpected behavior
-        for (int i = gameConditions.Count - 1; i >= 0; i--)
+        for (int i = gameConditionsContainer.ValueConditions.Count - 1; i >= 0; i--)
         {
-            GameCondition condition = gameConditions[i];
-
+            ValueCondition valueCondition = gameConditionsContainer.ValueConditions[i];
             EditorGUILayout.LabelField("______________________________________________");
-            if (condition is ValueCondition)
-            {
-                DrawValueCondition(condition);
-            }
-
+            DrawValueCondition(valueCondition);
+            EditorGUILayout.LabelField("______________________________________________");
             GUILayout.Space(20);
             if (GUILayout.Button("Remove"))
             {
-                gameMode.RemoveCondition(condition, group);
+                Undo.RecordObject(gameMode, "Removed win condition");
+                gameMode.RemoveCondition(valueCondition, conditionGroup);
             }
-
-            EditorGUILayout.LabelField("______________________________________________");
         }
 
-        return gameConditions;
+        return gameConditionsContainer;
     }
 }
 

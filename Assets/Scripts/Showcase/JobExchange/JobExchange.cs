@@ -11,6 +11,7 @@ public class JobExchange : Showcase<Job>
     private EnvironmentManager houseManager;
 
     JobExchangeViewFactory<Job> factory;
+    Animator animator;
 
     // Events, Delegates
     public delegate void LaborExchangeStateChangedAction();
@@ -19,6 +20,8 @@ public class JobExchange : Showcase<Job>
 
     private void OnEnable()
     {
+        animator = GetComponent<Animator>();
+
         ItemDatabase.Clear();
         // Load all jobs from assets
         foreach (Object job in Resources.LoadAll("ScriptableObjects/Jobs"))
@@ -112,5 +115,13 @@ public class JobExchange : Showcase<Job>
         }
 
         return result;
+    }
+
+    public override void Toggle()
+    {
+        if (animator)
+        {
+            animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
+        }
     }
 }

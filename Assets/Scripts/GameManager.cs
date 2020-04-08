@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
 
     public void ToggleStoreMenu()
     {
-        uiManager.ToggleStorePanel();
+        uiManager.ToggleStore();
     }
 
     public void ToggleModifiersInformation()

@@ -9,9 +9,10 @@ using UnityEngine;
 public class Store : Showcase<StoreItem>
 {
     StoreViewFactory<StoreItem> factory;
-
+    Animator animator;
     private void OnEnable()
     {
+        animator = GetComponent<Animator>();
         // Load store database array containing different StoreItem databases of various item types (like clothing, furniture, etc)
 
         foreach (StoreItem item in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
@@ -89,6 +90,12 @@ public class Store : Showcase<StoreItem>
         return result;
     }
 
-    
+    public override void Toggle()
+    {
+        if (animator)
+        {
+            animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
+        }
+    }
 }
 

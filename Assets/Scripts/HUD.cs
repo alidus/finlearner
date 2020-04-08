@@ -62,7 +62,7 @@ public class HUD : MonoBehaviour
         gameDataManager = GameDataManager.instance;
 
         storeButton.onClick.RemoveAllListeners();
-        storeButton.onClick.AddListener(uiManager.ToggleStorePanel);
+        storeButton.onClick.AddListener(uiManager.ToggleStore);
 
         jobExchangeButton.onClick.RemoveAllListeners();
         jobExchangeButton.onClick.AddListener(uiManager.ToggleJobExchange);

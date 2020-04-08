@@ -290,13 +290,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ToggleStorePanel()
+    public void ToggleStore()
     {
-        Animator animator = storeContainer?.GetComponent<Animator>();
-        if (animator)
-        {
-            animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
-        }
+        store.Toggle();
     } 
 
 

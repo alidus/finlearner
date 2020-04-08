@@ -6,6 +6,7 @@ public enum TargetVariable { Money, Mood }
 
 public enum ValueConditionOperator { Equals, LessThan, GreaterThan, GreaterThanOrEqualsTo, LessThanOrEqualsTo }
 
+[System.Serializable]
 public class ValueCondition : GameCondition
 {
     [SerializeField]
@@ -22,8 +23,9 @@ public class ValueCondition : GameCondition
     public ValueConditionOperator ValueConditionOperator { get => valueConditionOperator; set => valueConditionOperator = value; }
     public float TargetFloatValue { get => targetFloatValue; set => targetFloatValue = value; }
     public int TargetIntValue { get => targetIntValue; set => targetIntValue = value; }
-
+    [SerializeField]
     private int targetIntValue;
+    [SerializeField]
     private float targetFloatValue;
 
     public ValueCondition(GameDataManager gameDataManager) : base(gameDataManager)

@@ -21,29 +21,30 @@ public class JobExchangeViewFactory<T> : DefaultShowcaseViewFactory<T> where T :
         return itemListView;
     }
 
-    public View CreateItemView(Job item, Transform parentTransform)
+    public View CreateItemView(Job job, Transform parentTransform)
     {
         JobExchangeItemView storeItemView = GameObject.Instantiate(itemViewPrefab as GameObject, parentTransform).GetComponent<JobExchangeItemView>();
 
-        storeItemView.Title = item.Title;
-        storeItemView.Sprite = item.Sprite;
-        storeItemView.IsEquipped = item.IsEquipped;
+        storeItemView.Title = job.Title;
+        storeItemView.Sprite = job.Sprite;
+        storeItemView.IsEquipped = job.IsEquipped;
+        storeItemView.Description = job.Description;
 
         var buttonComponent = storeItemView.GetComponent<Button>();
         var animator = storeItemView.GetComponent<Animator>();
         if (buttonComponent)
         {
-            buttonComponent.onClick.AddListener(item.OnClick);
+            buttonComponent.onClick.AddListener(job.OnClick);
             // Play animation
 
-            item.OnEquip += delegate
+            job.OnEquip += delegate
             {
                 if (animator)
                 {
                     animator.SetTrigger("Equip");
                 }
             };
-            item.OnUnEquip += delegate
+            job.OnUnEquip += delegate
             {
                 if (animator)
                 {

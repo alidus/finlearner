@@ -53,24 +53,23 @@ public class GameMode : ScriptableObject
         set { age = value; }
     }
 
-    public List<GameCondition> LoseConditions { get => loseConditions; set => loseConditions = value; }
-    public List<GameCondition> WinConditions { get => winConditions; set => winConditions = value; }
+    public GameConditionsContainer LoseConditionsContainer { get => loseConditionsContainer; set => loseConditionsContainer = value; }
+    public GameConditionsContainer WinConditionsContainer { get => winConditionsContainer; set => winConditionsContainer = value; }
 
     public event UnityAction OnWin;
     public event UnityAction OnLoose;
 
     public event UnityAction OnWinningConditionsChanged;
     public event UnityAction OnLoosingConditionsChanged;
-
-    private List<GameCondition> winConditions = new List<GameCondition>();
-    private List<GameCondition> loseConditions = new List<GameCondition>();
+    [SerializeField]
+    private GameConditionsContainer winConditionsContainer;
+    [SerializeField]
+    private GameConditionsContainer loseConditionsContainer;
 
     private void OnEnable()
     {
-        WinConditions.Clear();
-        LoseConditions.Clear();
-
-        AddLoseCondition(new ValueCondition(GameDataManager.instance));
+        winConditionsContainer.Init();
+        loseConditionsContainer.Init();
     }
 
     public void AddCondition(GameCondition condition, GameConditionGroup group)
@@ -78,10 +77,10 @@ public class GameMode : ScriptableObject
         switch (group)
         {
             case GameConditionGroup.Win:
-                AddWinCondition(condition);
+                winConditionsContainer.AddCondition(condition);
                 break;
             case GameConditionGroup.Lose:
-                AddLoseCondition(condition);
+                loseConditionsContainer.AddCondition(condition);
                 break;
             default:
                 break;
@@ -93,38 +92,18 @@ public class GameMode : ScriptableObject
         switch (group)
         {
             case GameConditionGroup.Win:
-                RemoveWinCondition(condition);
+                winConditionsContainer.RemoveCondition(condition);
                 break;
             case GameConditionGroup.Lose:
-                RemoveLoseCondition(condition);
+                loseConditionsContainer.RemoveCondition(condition);
                 break;
             default:
                 break;
         }
     }
 
-    public void AddWinCondition(GameCondition gameCondition)
-    {
-        WinConditions.Add(gameCondition);
-        OnWinningConditionsChanged?.Invoke();
-    }
-    public void RemoveWinCondition(GameCondition gameCondition)
-    {
-        WinConditions.Remove(gameCondition);
-        OnWinningConditionsChanged?.Invoke();
-    }
-    public void AddLoseCondition(GameCondition gameCondition)
-    {
-        LoseConditions.Add(gameCondition);
-        OnLoosingConditionsChanged?.Invoke();
-    }
-    public void RemoveLoseCondition(GameCondition gameCondition)
-    {
-        LoseConditions.Remove(gameCondition);
-        OnLoosingConditionsChanged?.Invoke();
-    }
 
-    
+
 
     public virtual void SetupWinCondition(GameDataManager gameDataManager)
     {
