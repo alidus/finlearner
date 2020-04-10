@@ -9,7 +9,12 @@ public class Milestones : MonoBehaviour
     GameManager gameManager;
     GameDataManager gameDataManager;
     List<Milestone> milestones = new List<Milestone>();
+    GameObject milestonesWrapper;
 
+    private void OnEnable()
+    {
+        milestonesWrapper = transform.Find("ScrollViewWrapper").Find("ScrollView").Find("Viewport").Find("MilestonesWrapper").gameObject;
+    }
 
     private void Start()
     {
@@ -23,11 +28,11 @@ public class Milestones : MonoBehaviour
 
     void InitMilestones()
     {
-        DestroyChildren();
+        DestroyMilestones();
         milestones.Clear();
         foreach (GameCondition winCondition in gameMode.WinConditionsContainer)
         {
-            GameObject milestoneGO = GameObject.Instantiate(Resources.Load("Prefabs/Milestones/Milestone"), transform) as GameObject;
+            GameObject milestoneGO = GameObject.Instantiate(Resources.Load("Prefabs/Milestones/Milestone"), milestonesWrapper.transform) as GameObject;
             Milestone milestone = milestoneGO.GetComponent<Milestone>();
             milestones.Add(milestone);
             var valueCondition = (ValueCondition)winCondition;
@@ -49,7 +54,7 @@ public class Milestones : MonoBehaviour
                     case TargetVariable.Mood:
                         milestone.updateMilestoneDelegate += delegate
                         {
-                            milestone.textComponent.text = "Ваш уровень счастья" +
+                            milestone.textComponent.text = "Ваш уровень счастья " +
                             gameDataManager.Mood.ToString() + " из " +
                             valueCondition.TargetFloatValue.ToString();
                         };
@@ -76,11 +81,11 @@ public class Milestones : MonoBehaviour
         }
     }
 
-    void DestroyChildren()
+    void DestroyMilestones()
     {
-        for (int i = transform.childCount - 1; i >= 0; i--)
+        for (int i = milestonesWrapper.transform.childCount - 1; i >= 0; i--)
         {
-            Destroy(transform.GetChild(i).gameObject);
+            Destroy(milestonesWrapper.transform.GetChild(i).gameObject);
         }
     }
 }
