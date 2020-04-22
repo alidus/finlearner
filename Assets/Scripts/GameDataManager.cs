@@ -168,7 +168,6 @@ public class GameDataManager : MonoBehaviour
 			Mood = gameMode.Mood;
 			Age = gameMode.Age;
 			StartRecordingIncomeStatistics();
-			gameMode.SetupWinCondition(this);
 		}
 	}
 

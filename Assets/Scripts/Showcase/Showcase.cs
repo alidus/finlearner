@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public abstract class Showcase<T> : MonoBehaviour where T : Item
 {
+    public static Showcase<T> instance;
+
     public ItemDatabase<T> ItemDatabase { get; set; } = new ItemDatabase<T>();
     public List<ItemGroup<T>> ItemGroups { get; set; }
     public ItemGroup<T> SelectedItemGroup { get; set; }
@@ -26,6 +28,19 @@ public abstract class Showcase<T> : MonoBehaviour where T : Item
         {
             Destroy(child.gameObject);
         }
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
     }
 
     public virtual void Hide()

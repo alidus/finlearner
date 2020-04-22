@@ -15,9 +15,14 @@ public class Store : Showcase<StoreItem>
         animator = GetComponent<Animator>();
         // Load store database array containing different StoreItem databases of various item types (like clothing, furniture, etc)
 
-        foreach (StoreItem item in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
+        foreach (StoreItem storeItem in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
         {
-            ItemDatabase.Add(ScriptableObject.Instantiate(item) as StoreItem);
+            var storeItemInstance = ScriptableObject.Instantiate(storeItem) as StoreItem;
+            storeItemInstance.OnBuy += storeItem.NotifyOnInstanceBuy;
+            storeItemInstance.OnSell += storeItem.NotifyOnInstanceBuy;
+
+            // TODO: trigger onBuy of scriptable object when buying instance of it (for inspector-added conditions)
+            ItemDatabase.Add(storeItemInstance);
         }
 
         ItemGroups = GetItemGroups();

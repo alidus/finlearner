@@ -9,6 +9,11 @@ public interface IPurchasable
 
     event Action OnBuy;
     event Action OnSell;
+    event Action OnInstanceBuy;
+    event Action OnInstanceSell;
 
+    void NotifyOnInstanceBuy();
+
+    void NotifyOnInstanceSell();
 
 }

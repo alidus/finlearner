@@ -35,7 +35,18 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
     public event Action OnEquip;
     public event Action OnSell;
     public event Action OnUnEquip;
+    public event Action OnInstanceBuy;
+    public event Action OnInstanceSell;
 
+    public void NotifyOnInstanceBuy()
+    {
+        OnInstanceBuy?.Invoke();
+    }
+
+    public void NotifyOnInstanceSell()
+    {
+        OnInstanceSell?.Invoke();
+    }
 
     public StoreItem()
     {
@@ -83,6 +94,7 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
     {
         if (CanBePurchased)
         {
+            IsPurchased = true;
             CanBeEquipped = true;
             StatusEffectsManager.instance.ApplyStatusEffects(new StatusEffect("Покупка " + Title, -Price, StatusEffectType.Money, StatusEffectFrequency.OneShot));
             StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);

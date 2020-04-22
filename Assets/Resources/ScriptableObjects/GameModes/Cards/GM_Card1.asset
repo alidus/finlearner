@@ -17,4 +17,9 @@ MonoBehaviour:
   goalType: 0
   money: 0
   mood: 0
-  age: 0
+  age: 53
+  gameConditionGroups:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

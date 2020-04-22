@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     GameDataManager gameDataManager;
     StatusEffectsManager statusEffectsManager;
     JobExchange laborExchangeManager;
+    Store store;
+    JobExchange jobExchange;
 
     // UI elements
     CanvasGroup loadingScreenCanvasGroup;
@@ -52,8 +54,6 @@ public class UIManager : MonoBehaviour
 
     Image dayProgressBarFillImage;
 
-    Store store;
-    JobExchange jobExchange;
     HUD hud;
     
 
@@ -99,15 +99,6 @@ public class UIManager : MonoBehaviour
         {
             overlayCanvas = GameObject.Find("OverlayCanvas");
             storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;
-            if (storeContainer)
-            {
-                store = storeContainer.GetComponent<Store>();
-            }
-            storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;
-            if (storeContainer)
-            {
-                store = storeContainer.GetComponent<Store>();
-            }
 
             jobExchangeContainer = overlayCanvas.transform.Find("JobExchangeContainer").gameObject;
             if (jobExchangeContainer)
@@ -174,6 +165,9 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         statusEffectsManager = StatusEffectsManager.instance;
+        store = Store.instance as Store;
+        jobExchange = JobExchange.instance as JobExchange;
+
 
         statusEffectsManager.OnStatusEffectsChanged += UpdateStatusEffectsView;
 

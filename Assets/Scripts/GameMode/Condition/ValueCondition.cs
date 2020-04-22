@@ -9,6 +9,8 @@ public enum ValueConditionOperator { Equals, LessThan, GreaterThan, GreaterThanO
 [System.Serializable]
 public class ValueCondition : GameCondition
 {
+    GameDataManager gameDataManager;
+
     [SerializeField]
     private TargetVariable targetVariable;
     [SerializeField]
@@ -28,29 +30,40 @@ public class ValueCondition : GameCondition
     [SerializeField]
     private float targetFloatValue;
 
-    public ValueCondition(GameDataManager gameDataManager) : base(gameDataManager)
+    public ValueCondition() : base()
     {
-       
+
     }
 
     /// <summary>
     /// Call this when managers are initialized so it will create callback controlling GameCondition's state
     /// </summary>
-    public void Activate()
+    public override void SubscribeToTargetDataChanges()
+    {
+        gameDataManager = GameDataManager.instance;
+        switch (targetVariable)
+        {
+            case TargetVariable.Money:
+                gameDataManager.OnMoneyValueChanged += UpdateState;
+                break;
+            case TargetVariable.Mood:
+                gameDataManager.OnMoodValueChanged += UpdateState;
+                break;
+            default:
+                break;
+        }
+        UpdateState();
+    }
+
+    private void UpdateState()
     {
         switch (targetVariable)
         {
             case TargetVariable.Money:
-                gameDataManager.OnMoneyValueChanged += delegate
-                {
-                    State = CompareValues(gameDataManager.Money, targetFloatValue, valueConditionOperator);
-                };
+                State = CompareValues(gameDataManager.Money, targetFloatValue, valueConditionOperator);
                 break;
             case TargetVariable.Mood:
-                gameDataManager.OnMoodValueChanged += delegate
-                {
-                    State = CompareValues(gameDataManager.Mood, targetFloatValue, valueConditionOperator);
-                };
+                State = CompareValues(gameDataManager.Mood, targetFloatValue, valueConditionOperator);
                 break;
             default:
                 break;

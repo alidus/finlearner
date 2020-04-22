@@ -53,8 +53,7 @@ public class GameMode : ScriptableObject
         set { age = value; }
     }
 
-    public GameConditionsContainer LoseConditionsContainer { get => loseConditionsContainer; set => loseConditionsContainer = value; }
-    public GameConditionsContainer WinConditionsContainer { get => winConditionsContainer; set => winConditionsContainer = value; }
+    public List<GameConditionGroup> GameConditionGroups { get => gameConditionGroups; }
 
     public event UnityAction OnWin;
     public event UnityAction OnLoose;
@@ -62,52 +61,46 @@ public class GameMode : ScriptableObject
     public event UnityAction OnWinningConditionsChanged;
     public event UnityAction OnLoosingConditionsChanged;
     [SerializeField]
-    private GameConditionsContainer winConditionsContainer;
-    [SerializeField]
-    private GameConditionsContainer loseConditionsContainer;
-
+    private List<GameConditionGroup> gameConditionGroups = new List<GameConditionGroup>();
     private void OnEnable()
     {
-        winConditionsContainer.Init();
-        loseConditionsContainer.Init();
+
+    }
+
+    public void SubscribeConditions()
+    {
+        foreach (GameConditionGroup group in gameConditionGroups)
+        {
+            foreach (GameCondition condition in group.GameConditionsContainer)
+            {
+                condition.SubscribeToTargetDataChanges();
+            }
+        }
+    }
+
+    public void ClearGameConditionGroups()
+    {
+        gameConditionGroups.Clear();
+    }
+
+    public void AddConditionGroup(GameConditionGroup group)
+    {
+        gameConditionGroups.Add(group);
+    }
+
+    public void RemoveConditionGroup(GameConditionGroup group)
+    {
+        gameConditionGroups.Remove(group);
     }
 
     public void AddCondition(GameCondition condition, GameConditionGroup group)
     {
-        switch (group)
-        {
-            case GameConditionGroup.Win:
-                winConditionsContainer.AddCondition(condition);
-                break;
-            case GameConditionGroup.Lose:
-                loseConditionsContainer.AddCondition(condition);
-                break;
-            default:
-                break;
-        }
+        group.AddCondition(condition);
     }
 
     public void RemoveCondition(GameCondition condition, GameConditionGroup group) 
     {
-        switch (group)
-        {
-            case GameConditionGroup.Win:
-                winConditionsContainer.RemoveCondition(condition);
-                break;
-            case GameConditionGroup.Lose:
-                loseConditionsContainer.RemoveCondition(condition);
-                break;
-            default:
-                break;
-        }
-    }
-
-
-
-
-    public virtual void SetupWinCondition(GameDataManager gameDataManager)
-    {
-        
+        group.RemoveCondition(condition);
     }
 
     protected virtual void Win()
@@ -119,6 +112,18 @@ public class GameMode : ScriptableObject
     public virtual void SetupLooseCondition(GameDataManager gameDataManager)
     {
 
+    }
+
+    public List<GameConditionGroup> GetGameConditionGroupsWithFlags(GameConditionsGroupFlags flags)
+    {
+        List<GameConditionGroup> result = new List<GameConditionGroup>();
+        foreach (GameConditionGroup group in GameConditionGroups)
+        {
+            if (group.Flags.HasFlag(flags))
+                result.Add(group);
+        }
+
+        return result;
     }
 
     protected virtual void Loose()

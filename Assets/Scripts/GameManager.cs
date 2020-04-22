@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
         UpdateReferences();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (GameState == GameState.InGame)
         {
@@ -103,7 +103,20 @@ public class GameManager : MonoBehaviour
             {
                 gameDataManager.AddDay();
             }
+            // Debug
+            if (Input.GetKeyDown(KeyCode.LeftBracket))
+            {
+                gameDataManager.Money += 50;
+                gameDataManager.Mood += 5;
+
+            }
+            if (Input.GetKeyDown(KeyCode.RightBracket))
+            {
+                gameDataManager.Money -= 50;
+                gameDataManager.Mood -= 5;
+            }
         }
+
         CheckIfPauseInput();
     }
 
@@ -118,6 +131,7 @@ public class GameManager : MonoBehaviour
         uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized");
         gameDataManager.SetValuesToGameModeSpecified(GameMode);
+        gameMode.SubscribeConditions();
         switch ((GameState)GameState)
         {
             case GameState.MainMenu:

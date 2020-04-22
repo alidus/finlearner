@@ -2,26 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 [System.Serializable]
-public struct GameConditionsContainer : IEnumerable
+public class GameConditionsContainer : IEnumerable
 {
     [SerializeField]
-    private List<ValueCondition> valueConditions;
+    private List<ValueCondition> valueConditions = new List<ValueCondition>();
+    [SerializeField]
+    private List<OwnCondition> ownConditions = new List<OwnCondition>();
 
-    public int Count { get { return ValueConditions.Count; } }
+    public int Count { get { return ValueConditions.Count + OwnConditions.Count; } }
 
     public List<ValueCondition> ValueConditions { get => valueConditions; set => valueConditions = value; }
+    public List<OwnCondition> OwnConditions { get => ownConditions; set => ownConditions = value; }
 
-    public void Init()
-    {
-        if (ValueConditions == null)
-            ValueConditions = new List<ValueCondition>();
-    }
 
     public void AddCondition(GameCondition condition)
     {
         if (condition is ValueCondition)
         {
             ValueConditions.Add((ValueCondition)condition);
+        } else if (condition is OwnCondition)
+        {
+            OwnConditions.Add((OwnCondition)condition);
         }
     }
 
@@ -30,6 +31,10 @@ public struct GameConditionsContainer : IEnumerable
         if (condition is ValueCondition)
         {
             ValueConditions.Remove((ValueCondition)condition);
+        }
+        else if (condition is OwnCondition)
+        {
+            OwnConditions.Remove((OwnCondition)condition);
         }
     }
 
@@ -45,7 +50,14 @@ public struct GameConditionsContainer : IEnumerable
             return ValueConditions[index];
         } else
         {
-            return null;
+            index -= ValueConditions.Count;
+            if (index < OwnConditions.Count)
+            {
+                return OwnConditions[index];
+            } else
+            {
+                return null;
+            }
         }
     }
 
