@@ -43,7 +43,7 @@ public class StoreViewFactory<T> : DefaultShowcaseViewFactory<T> where T : Store
                 {
                     animator.SetTrigger("Buy");
                 }
-                 };
+            };
             item.OnEquip += delegate
             {
                 if (animator)
