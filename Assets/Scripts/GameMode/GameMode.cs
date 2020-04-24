@@ -14,6 +14,19 @@ public class GameMode : ScriptableObject
     public string Title { get => title; set => title = value; }
 
     [SerializeField]
+    private string description;
+    public string Description { get => description; set => description = value; }
+
+    [SerializeField]
+    private Sprite sprite;
+    public Sprite Sprite { get => sprite; set => sprite = value; }
+
+    [SerializeField]
+    private bool isCompleted;
+    public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
+
+
+    [SerializeField]
     private GameModeType type;
     public GameModeType Type
     {

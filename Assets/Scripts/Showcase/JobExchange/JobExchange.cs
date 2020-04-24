@@ -17,22 +17,20 @@ public class JobExchange : Showcase<Job>
     public delegate void LaborExchangeStateChangedAction();
     public event LaborExchangeStateChangedAction OnLaborExchangeStateChanged;
 
+    List<Job> activeJobs = new List<Job>();
+    public List<Job> ActiveJobs { get => activeJobs; set => activeJobs = value; }
 
     private void OnEnable()
     {
         animator = GetComponent<Animator>();
 
         ItemDatabase.Clear();
-        // Load all jobs from assets
-        foreach (Object job in Resources.LoadAll("ScriptableObjects/Jobs"))
-        {
-            ItemDatabase.Add(ScriptableObject.Instantiate(job) as Job);
-        }
+        ItemDatabase = LoadAssets();
 
         // Setup groups
         if (ItemDatabase.Count > 0)
         {
-            ItemGroups = GetItemGroups();
+            ItemGroups = FormItemGroups();
             if (ItemGroups.Count > 0)
                 SelectedItemGroup = ItemGroups[0];
         }
@@ -58,6 +56,47 @@ public class JobExchange : Showcase<Job>
         RootView = factory.CreateRootView(this.transform);
     }
 
+    protected override ItemDatabase<Job> LoadAssets()
+    {
+        ItemDatabase<Job> result = new ItemDatabase<Job>();
+        foreach (Job job in Resources.LoadAll("ScriptableObjects/JobExchange/Jobs"))
+        {
+            var jobInstance = ScriptableObject.Instantiate(job) as Job;
+            jobInstance.OnEquipStateChanged += delegate { HandleJobActivationChange(jobInstance); };
+
+            jobInstance.OnEquipStateChanged -= delegate { job.NotifyOnInstanceEquipStateChanged(jobInstance); };
+            jobInstance.OnEquipStateChanged += delegate { job.NotifyOnInstanceEquipStateChanged(jobInstance); };
+
+            jobInstance.OnEquippableStateChanged -= delegate { job.NotifyOnInstanceEquippableStateChanged(jobInstance); };
+            jobInstance.OnEquippableStateChanged += delegate { job.NotifyOnInstanceEquippableStateChanged(jobInstance); };
+            result.Add(jobInstance);
+        }
+
+        return result;
+    }
+
+    void HandleJobActivationChange(Job job)
+    {
+        bool isInActiveList = ActiveJobs.Contains(job);
+            if (job.IsEquipped)
+        {
+            if (!isInActiveList)
+            {
+                // Add to active job list
+                ActiveJobs.Add(job);
+                RegisterJob(job);
+            }
+        } else
+        {
+            if (isInActiveList)
+            {
+                // Remove from active job list
+                ActiveJobs.Remove(job);
+                UnregisterJob(job);
+            }
+        }
+    }
+
     public override void UpdateShowcase()
     {
         if (RootView != null)
@@ -66,21 +105,31 @@ public class JobExchange : Showcase<Job>
         }
     }
 
-    protected override List<ItemGroup<Job>> GetItemGroups()
+    protected override List<ItemGroup<Job>> FormItemGroups()
     {
         var result = new List<ItemGroup<Job>>();
         foreach (Job job in ItemDatabase)
         {
-            var itemGroup = result.FirstOrDefault(item => item.Title == job.Category.ToString());
+            var itemGroup = result.FirstOrDefault(group => group.Title == job.Category.Title);
             if (itemGroup == null)
             {
-                itemGroup = new ItemGroup<Job>(job.Category.ToString());
+                itemGroup = new ItemGroup<Job>(job.Category.Title);
                 result.Add(itemGroup);
             }
             itemGroup.Add(job);
         }
 
         return result;
+    }
+
+    void RegisterJob(Job job)
+    {
+        StatusEffectsManager.instance.ApplyStatusEffects(job.StatusEffects);
+    }
+
+    void UnregisterJob(Job job)
+    {
+        StatusEffectsManager.instance.RemoveStatusEffects(job.StatusEffects);
     }
 
     private void OnDisable()
@@ -122,6 +171,22 @@ public class JobExchange : Showcase<Job>
         if (animator)
         {
             animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
+        }
+    }
+
+    public override void Show()
+    {
+        if (animator)
+        {
+            animator.SetBool("IsOpened", true);
+        }
+    }
+
+    public override void Hide()
+    {
+        if (animator)
+        {
+            animator.SetBool("IsOpened", false);
         }
     }
 }

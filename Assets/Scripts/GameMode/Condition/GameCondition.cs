@@ -10,7 +10,7 @@ public abstract class GameCondition
     public event UnityAction OnStateChanged;
     [SerializeField]
     private bool state;
-    public bool State { get => state; set { state = value; OnStateChanged?.Invoke(); } }
+    public bool State { get => state; set { bool oldState = state; state = value; if (oldState != state) OnStateChanged?.Invoke(); } }
 
 
     public GameCondition()

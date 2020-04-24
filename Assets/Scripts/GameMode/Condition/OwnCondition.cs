@@ -20,18 +20,34 @@ public class OwnCondition : GameCondition
 
 	public override void SubscribeToTargetDataChanges()
 	{
+        // Fulfill condition on item purchase if the item can be purchased, otherwise fulfill on equip
 		var purchasable = (TargetItem as IPurchasable);
-		// In case if target item is concrete instance of purchasable item
-        purchasable.OnBuy -= () => State = true;
-        purchasable.OnBuy += () => State = true;
-		purchasable.OnSell -= () => State = false;
-        purchasable.OnSell += () => State = false;
-		// In case if item is general SO
-		// TODO: make advanced logic of check for another purchased item of target type
-        purchasable.OnInstanceBuy -= () => State = true;
-        purchasable.OnInstanceBuy += () => State = true;
-        purchasable.OnInstanceSell -= () => State = false;
-        purchasable.OnInstanceSell += () => State = false;
+		if (purchasable != null)
+		{
+            // In case if target item is concrete instance of purchasable item
+            purchasable.OnPurchaseStateChanged -= () => State = purchasable.IsPurchased;
+            purchasable.OnPurchaseStateChanged += () => State = purchasable.IsPurchased;
+
+            // In case if item is general SO
+            // TODO: make advanced logic of check for another purchased item of target type
+            purchasable.OnInstancePurchaseStateChanged -= (IPurchasable purchasableInstance) => State = purchasableInstance.IsPurchased;
+            purchasable.OnInstancePurchaseStateChanged += (IPurchasable purchasableInstance) => State = purchasableInstance.IsPurchased;
+        } else
+		{
+			var equippable = (TargetItem as IEquipable);
+			if (equippable != null)
+			{
+                // In case if target item is concrete instance of equippable item
+                equippable.OnEquipStateChanged -= () => State = equippable.IsEquipped;
+                equippable.OnEquipStateChanged += () => State = equippable.IsEquipped;
+
+                // In case if item is general SO
+                // TODO: make advanced logic of check for another purchased item of target type
+                equippable.OnInstanceEquipStateChanged -= (IEquipable equipableInstance) => State = equipableInstance.IsEquipped;
+                equippable.OnInstanceEquipStateChanged += (IEquipable equipableInstance) => State = equipableInstance.IsEquipped;
+            }
+		}
+		
 
     }
 }

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public enum JobCategory { IT, Service, Govermant, Art}
-
 [CreateAssetMenu(menuName = "SO/Items/Job", fileName = "Job")]
 public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
 { 
@@ -25,7 +23,7 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
     }
 
     [SerializeField]
-    private List<StatusEffect> statusEffects;
+    private List<StatusEffect> statusEffects = new List<StatusEffect>();
     public System.Collections.Generic.List<StatusEffect> StatusEffects
     {
         get { return statusEffects; }
@@ -37,11 +35,13 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
     [SerializeField]
     private bool isEquipped = false;
 
-    public event Action OnEquip;
-    public event Action OnUnEquip;
+    public event Action OnEquipStateChanged;
+    public event Action OnEquippableStateChanged;
+    public event EquippableInstanceHandler OnInstanceEquipStateChanged;
+    public event EquippableInstanceHandler OnInstanceEquippableStateChanged;
 
     public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
-    public bool IsEquipped { get => isEquipped; private set => isEquipped = value; }
+    public bool IsEquipped { get => isEquipped; set => isEquipped = value; }
     public UnityAction OnClick { get; set; }
 
     private Job()
@@ -75,7 +75,7 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
         {
             if (statusEffect.Type == StatusEffectType.Money)
             {
-                switch (statusEffect.Freqency)
+                switch (statusEffect.Frequency)
                 {
                     case StatusEffectFrequency.Daily:
                         result.DailyIncome += statusEffect.Value;
@@ -107,14 +107,42 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
     public void Equip()
     {
         IsEquipped = true;
-        OnEquip?.Invoke();
+        OnEquipStateChanged?.Invoke();
     }
 
     public void Uneqip()
     {
         IsEquipped = false;
-        OnUnEquip?.Invoke();
+        OnEquipStateChanged?.Invoke();
     }
+
+    public override string ToString()
+    {
+        string result = "Title: " + Title + "\n";
+        result += "Category: " + Category.ToString() + "\n";
+        result += "Sprite: " + Sprite.ToString() + "\n";
+        result += "Is Available: " + CanBeEquipped.ToString() + "\n";
+        result += "Is Equipped: " + IsEquipped.ToString() + "\n";
+        result += "Status effects: " + "\n";
+        foreach (StatusEffect statusEffect in StatusEffects)
+        {
+            result += "   " + statusEffect.ToString();
+        }
+
+
+        return result;
+    }
+
+    public void NotifyOnInstanceEquipStateChanged(IEquipable equipable)
+    {
+        OnInstanceEquipStateChanged?.Invoke(equipable);
+    }
+
+    public void NotifyOnInstanceEquippableStateChanged(IEquipable equipable)
+    {
+        OnInstanceEquippableStateChanged.Invoke(equipable);
+    }
+
 
     public class JobBuilder
     {

@@ -54,6 +54,7 @@ public class DefaultShowcaseViewFactory<T> where T : Item
     public virtual View CreateItemGroupView(ItemGroup<T> itemGroup, Transform parentTransform)
     {
         DefaultItemGroupView storeItemGroupView = GameObject.Instantiate(itemGroupViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemGroupView>();
+        storeItemGroupView.OnClick.AddListener(delegate { showcase.SelectedItemGroup = itemGroup; });
         storeItemGroupView.Init(itemGroup.Title);
         storeItemGroupView.UpdateView();
         return storeItemGroupView;

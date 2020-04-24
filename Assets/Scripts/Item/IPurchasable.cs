@@ -1,5 +1,7 @@
 ﻿using System;
 
+public delegate void PurchasableInstanceHandler(IPurchasable purchasable);
+
 public interface IPurchasable
 {
     float Price { get; set; }
@@ -7,13 +9,13 @@ public interface IPurchasable
     bool IsPurchased { get; }
     void Buy();
 
-    event Action OnBuy;
-    event Action OnSell;
-    event Action OnInstanceBuy;
-    event Action OnInstanceSell;
+    event Action OnPurchaseStateChanged;
+    event Action OnPurchasableStateChanged;
+    event PurchasableInstanceHandler OnInstancePurchaseStateChanged;
+    event PurchasableInstanceHandler OnInstancePurchasableStateChanged;
 
-    void NotifyOnInstanceBuy();
+    void NotifyOnInstancePurchaseStateChanged(IPurchasable purchasable);
+    void NotifyOnInstancePurchasableStateChanged(IPurchasable purchasable);
 
-    void NotifyOnInstanceSell();
 
 }

@@ -13,7 +13,8 @@ public class Milestone : MonoBehaviour
     protected Animator animator;
     bool state;
     private GameCondition gameCondition;
-    
+
+    public Action OnStateChanged;
 
     public GameCondition GameCondition { get => gameCondition; set => gameCondition = value; }
 
@@ -43,7 +44,11 @@ public class Milestone : MonoBehaviour
     {
         GameCondition.OnStateChanged -= UpdateMilestone;
         GameCondition.OnStateChanged += UpdateMilestone;
+
+        GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
+        GameCondition.OnStateChanged += delegate { OnStateChanged(); };
     }
+
 
     public virtual void UpdateMilestone()
     {

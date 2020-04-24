@@ -20,4 +20,14 @@ public class DefaultItemListView : View
     {
 
     }
+
+    public void DestroyItemViews()
+    {
+        var targetTransform = ScrollViewContentTransform;
+        for (int i = targetTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(targetTransform.GetChild(i).gameObject);
+        }
+    }
+
 }

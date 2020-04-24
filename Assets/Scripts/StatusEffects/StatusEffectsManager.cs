@@ -87,7 +87,7 @@ public class StatusEffectsManager : MonoBehaviour
     {
         foreach (StatusEffect statusEffect in StatusEffects)
         {
-            if (statusEffect.Freqency == frequency)
+            if (statusEffect.Frequency == frequency)
             {
                 ExecuteStatusEffect(statusEffect);
             }
@@ -129,7 +129,7 @@ public class StatusEffectsManager : MonoBehaviour
     {
         foreach (StatusEffect statusEffect in statusEffects)
         {
-            if (statusEffect.Freqency == StatusEffectFrequency.OneShot)
+            if (statusEffect.Frequency == StatusEffectFrequency.OneShot)
             {
                 ExecuteOneShot(statusEffect);
             } else
@@ -142,7 +142,7 @@ public class StatusEffectsManager : MonoBehaviour
 
     public void ApplyStatusEffects(StatusEffect statusEffect)
     {
-        if (statusEffect.Freqency == StatusEffectFrequency.OneShot)
+        if (statusEffect.Frequency == StatusEffectFrequency.OneShot)
         {
             ExecuteOneShot(statusEffect);
         }

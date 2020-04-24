@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-
 [System.Serializable]
 public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, IHaveStatusEffect
 {
@@ -31,22 +30,15 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
     public float Price { get => price; set => price = value; }
     public Sprite Sprite { get => sprite; set => sprite = value; }
     public List<StatusEffect> StatusEffects { get => statusEffects; set => statusEffects = value; }
-    public event Action OnBuy;
-    public event Action OnEquip;
-    public event Action OnSell;
-    public event Action OnUnEquip;
-    public event Action OnInstanceBuy;
-    public event Action OnInstanceSell;
+    public event Action OnEquipStateChanged;
+    public event Action OnEquippableStateChanged;
+    public event EquippableInstanceHandler OnInstanceEquipStateChanged;
+    public event EquippableInstanceHandler OnInstanceEquippableStateChanged;
+    public event Action OnPurchaseStateChanged;
+    public event Action OnPurchasableStateChanged;
+    public event PurchasableInstanceHandler OnInstancePurchaseStateChanged;
+    public event PurchasableInstanceHandler OnInstancePurchasableStateChanged;
 
-    public void NotifyOnInstanceBuy()
-    {
-        OnInstanceBuy?.Invoke();
-    }
-
-    public void NotifyOnInstanceSell()
-    {
-        OnInstanceSell?.Invoke();
-    }
 
     public StoreItem()
     {
@@ -82,12 +74,12 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
     public void Equip()
     {
         IsEquipped = true;
-        OnEquip?.Invoke();
+        OnEquipStateChanged?.Invoke();
     }
     public void Uneqip()
     {
         IsEquipped = false;
-        OnUnEquip?.Invoke();
+        OnEquipStateChanged?.Invoke();
     }
 
     public void Buy()
@@ -98,7 +90,27 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
             CanBeEquipped = true;
             StatusEffectsManager.instance.ApplyStatusEffects(new StatusEffect("Покупка " + Title, -Price, StatusEffectType.Money, StatusEffectFrequency.OneShot));
             StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
-            OnBuy?.Invoke();
+            OnPurchaseStateChanged?.Invoke();
         }
+    }
+
+    public void NotifyOnInstanceEquipStateChanged(IEquipable equipable)
+    {
+        OnInstanceEquipStateChanged.Invoke(equipable);
+    }
+
+    public void NotifyOnInstanceEquippableStateChanged(IEquipable equipable)
+    {
+        OnInstanceEquippableStateChanged.Invoke(equipable);
+    }
+
+    public void NotifyOnInstancePurchaseStateChanged(IPurchasable purchasable)
+    {
+        OnInstancePurchaseStateChanged.Invoke(purchasable);
+    }
+
+    public void NotifyOnInstancePurchasableStateChanged(IPurchasable purchasable)
+    {
+        OnInstancePurchasableStateChanged.Invoke(purchasable);
     }
 }

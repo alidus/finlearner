@@ -30,7 +30,7 @@ public class StoreViewFactory<T> : DefaultShowcaseViewFactory<T> where T : Store
         storeItemView.Price = item.Price;
         storeItemView.Sprite = item.Sprite;
         storeItemView.IsPurchased = item.IsPurchased;
-        storeItemView.IsEquipped = item.IsEquipped;
+        storeItemView.IsActive = item.IsEquipped;
 
         var buttonComponent = storeItemView.GetComponent<Button>();
         var animator = storeItemView.GetComponent<Animator>();
@@ -39,24 +39,29 @@ public class StoreViewFactory<T> : DefaultShowcaseViewFactory<T> where T : Store
             buttonComponent.onClick.AddListener(item.OnClick);
             // Play animation
 
-            item.OnBuy += delegate {
+            item.OnPurchaseStateChanged += delegate {
                 if (animator)
                 {
-                    animator.SetTrigger("Buy");
+                    if (item.IsPurchased)
+                    {
+                        animator.SetTrigger("Buy");
+                    } else
+                    {
+                        // Sell animation
+                    }
                 }
                  };
-            item.OnEquip += delegate
+            item.OnEquipStateChanged += delegate
             {
                 if (animator)
                 {
-                    animator.SetTrigger("Equip");
-                }
-            };
-            item.OnUnEquip += delegate
-            {
-                if (animator)
-                {
-                    animator.SetTrigger("UnEquip");
+                    if (item.IsEquipped)
+                    {
+                        animator.SetTrigger("Equip");
+                    } else
+                    {
+                        animator.SetTrigger("UnEquip");
+                    }
                 }
             };
         }

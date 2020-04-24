@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     private StatusEffectsManager statusEffectsManager;
     private HintsManager hintsManager;
     private MusicPlayer musicPlayer;
-    private MusicPlayer playMusicComponent;
 
     GameSettings gameSettings;
 
@@ -87,7 +86,7 @@ public class GameManager : MonoBehaviour
         GameSettings = GameObject.Find("PersCanvas")?.transform.Find("Settings")?.GetComponent<GameSettings>();
         if (GameMode == null)
         {
-            GameMode = ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/GameModes/GM_Freeplay") as GameMode);
+            GameMode = Resources.Load("ScriptableObjects/GameModes/GM_Freeplay") as GameMode;
         }
         SceneManager.sceneLoaded += SceneLoadedHandling;
         UpdateReferences();
@@ -117,6 +116,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            ToggleConsole();
+        }
+
         CheckIfPauseInput();
     }
 
@@ -130,6 +134,7 @@ public class GameManager : MonoBehaviour
     {
         uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized");
+
         gameDataManager.SetValuesToGameModeSpecified(GameMode);
         gameMode.SubscribeConditions();
         switch ((GameState)GameState)
@@ -139,11 +144,12 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.InGame:
                 isPlaying = true;
+                Milestones.instance.OnGameWin -= WinGame;
+                Milestones.instance.OnGameWin += WinGame;
                 break;
             default:
                 break;
         }
-
         uiManager.UpdateUI();
         musicPlayer?.Play(musicPlayer?.GameplayMusicPlaylist);
         uiManager.HideLoadingScreen();
@@ -151,7 +157,19 @@ public class GameManager : MonoBehaviour
 
     public void UpdateReferences()
     {
-        playMusicComponent = GameObject.Find("MusicPlayer")?.GetComponent<MusicPlayer>() ?? null;
+    }
+
+    public void WinGame()
+    {
+        HintsManager.instance.ShowHint("Победа!", "Вы выполнили все поставленные задачи");
+        GameMode.IsCompleted = true;
+        StartCoroutine(GameEndBackToMenuTransition(1f));
+    }
+
+    IEnumerator GameEndBackToMenuTransition(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        OpenMainMenu();
     }
 
     public void OpenMainMenu()
@@ -165,7 +183,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame(GameMode gameMode)
     {
-        GameMode = ScriptableObject.Instantiate(gameMode);
+        GameMode = gameMode;
         StartCoroutine(StartingGameCoroutine());
     }
 
@@ -176,14 +194,25 @@ public class GameManager : MonoBehaviour
     }
 
 
-
+    public void ToggleConsole()
+    {
+        Console.Toggle();
+    }
     
 
     public IEnumerator LoadLevel(string sceneName)
     {
-        
-
-        GameState = GameState.InGame;
+        switch (sceneName)
+        {
+            case "MainMenu":
+                GameState = GameState.MainMenu;
+                break;
+            case "GameplayScene":
+                GameState = GameState.InGame;
+                break;
+            default:
+                break;
+        }
         Debug.Log("Starting scene loading with scene manager");
 
         var gameplayScene = SceneManager.LoadSceneAsync(sceneName);
@@ -208,19 +237,9 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void ToggleStoreMenu()
-    {
-        uiManager.ToggleStore();
-    }
-
     public void ToggleModifiersInformation()
     {
         uiManager.ToggleModifiersInfoPanel();
-    }
-
-    public void ToggleLaborExchange()
-    {
-        uiManager.ToggleJobExchange();
     }
 
     public void Pause()

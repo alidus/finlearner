@@ -14,20 +14,16 @@ public class Store : Showcase<StoreItem>
     {
         animator = GetComponent<Animator>();
         // Load store database array containing different StoreItem databases of various item types (like clothing, furniture, etc)
+        ItemDatabase.Clear();
+        ItemDatabase = LoadAssets();
 
-        foreach (StoreItem storeItem in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
+        // Setup groups
+        if (ItemDatabase.Count > 0)
         {
-            var storeItemInstance = ScriptableObject.Instantiate(storeItem) as StoreItem;
-            storeItemInstance.OnBuy += storeItem.NotifyOnInstanceBuy;
-            storeItemInstance.OnSell += storeItem.NotifyOnInstanceBuy;
-
-            // TODO: trigger onBuy of scriptable object when buying instance of it (for inspector-added conditions)
-            ItemDatabase.Add(storeItemInstance);
+            ItemGroups = FormItemGroups();
+            if (ItemGroups.Count > 0)
+                SelectedItemGroup = ItemGroups[0];
         }
-
-        ItemGroups = GetItemGroups();
-        if (ItemGroups.Count > 0)
-            SelectedItemGroup = ItemGroups[0];
 
         if (factory == null)
         {
@@ -51,6 +47,27 @@ public class Store : Showcase<StoreItem>
         
     }
 
+    protected override ItemDatabase<StoreItem> LoadAssets()
+    {
+        Console.Print("Loading store catalog...");
+        ItemDatabase<StoreItem> result = new ItemDatabase<StoreItem>();
+        foreach (StoreItem storeItem in Resources.LoadAll("ScriptableObjects/Store/Catalog").ToList().ConvertAll(x => (StoreItem)x))
+        {
+            var storeItemInstance = ScriptableObject.Instantiate(storeItem) as StoreItem;
+            storeItemInstance.OnPurchaseStateChanged += delegate { storeItem.NotifyOnInstancePurchaseStateChanged(storeItemInstance); };
+            storeItemInstance.OnPurchasableStateChanged += delegate { storeItem.NotifyOnInstancePurchasableStateChanged(storeItemInstance); };
+
+            storeItemInstance.OnEquipStateChanged += delegate { storeItem.NotifyOnInstanceEquipStateChanged(storeItemInstance); };
+            storeItemInstance.OnEquippableStateChanged += delegate { storeItem.NotifyOnInstanceEquippableStateChanged(storeItemInstance); };
+
+            // TODO: trigger onBuy of scriptable object when buying instance of it (for inspector-added conditions)
+            result.Add(storeItemInstance);
+            Console.Print("Added store item: " + storeItemInstance.Title);
+        }
+        Console.Print("Store catalog loaded");
+        return result;
+    }
+
 
     public void SelectItemGroup(ItemGroup<StoreItem> itemGroup)
     {
@@ -65,7 +82,7 @@ public class Store : Showcase<StoreItem>
         }
     }
 
-    protected override List<ItemGroup<StoreItem>> GetItemGroups()
+    protected override List<ItemGroup<StoreItem>> FormItemGroups()
     {
         List<ItemGroup<StoreItem>> result = new List<ItemGroup<StoreItem>>();
         foreach (StoreItem item in ItemDatabase)
@@ -100,6 +117,22 @@ public class Store : Showcase<StoreItem>
         if (animator)
         {
             animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
+        }
+    }
+
+    public override void Show()
+    {
+        if (animator)
+        {
+            animator.SetBool("IsOpened", true);
+        }
+    }
+
+    public override void Hide()
+    {
+        if (animator)
+        {
+            animator.SetBool("IsOpened", false);
         }
     }
 }

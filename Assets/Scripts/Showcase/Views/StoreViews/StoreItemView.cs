@@ -18,7 +18,7 @@ public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice
     public Sprite Sprite { get; set; }
 
     public bool IsPurchased { get; set; }
-    public bool IsEquipped { get; set; }
+    public bool IsActive { get; set; }
     private void OnEnable()
     {
         Transform iconTransform = this.transform.Find("Icon");
@@ -76,7 +76,7 @@ public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice
     public void UpdateEquippedState()
     {
         if (EqiupHighlgihtImageComponent)
-            EqiupHighlgihtImageComponent.enabled =IsEquipped;
+            EqiupHighlgihtImageComponent.enabled =IsActive;
     }
 
 }

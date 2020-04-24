@@ -62,10 +62,29 @@ public class HUD : MonoBehaviour
         gameDataManager = GameDataManager.instance;
 
         storeButton.onClick.RemoveAllListeners();
-        storeButton.onClick.AddListener(uiManager.ToggleStore);
+        storeButton.onClick.AddListener(delegate
+        {
+            if (uiManager.State == GameplayUIState.Store)
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.Home);
+            }
+            else
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.Store);
+            }
+        });
 
         jobExchangeButton.onClick.RemoveAllListeners();
-        jobExchangeButton.onClick.AddListener(uiManager.ToggleJobExchange);
+        jobExchangeButton.onClick.AddListener(delegate
+        {
+            if (uiManager.State == GameplayUIState.JobExchange)
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.Home);
+            } else
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.JobExchange);
+            }
+        });
 
         infoPanelButton.onClick.RemoveAllListeners();
         infoPanelButton.onClick.AddListener(gameManager.ToggleModifiersInformation);

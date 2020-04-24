@@ -28,6 +28,7 @@ public class OwnMilestone : Milestone
             if (OwnCondition.TargetItem is FurnitureItem)
             {
                 var furnitureItem = (FurnitureItem)OwnCondition.TargetItem;
+                // TODO: use iDrawable interface if Item 
                 UpdateImage(furnitureItem.Sprite);
                 if (OwnCondition.State)
                 {
@@ -36,6 +37,19 @@ public class OwnMilestone : Milestone
                 else
                 {
                     UpdateText("Вы должны купить " + furnitureItem.Title);
+                }
+                SetState(OwnCondition.State);
+            } else if (OwnCondition.TargetItem is Job)
+            {
+                var job = (Job)OwnCondition.TargetItem;
+                UpdateImage(job.Sprite);
+                if (OwnCondition.State)
+                {
+                    UpdateText("Вы устроились на работу: " + job.Title);
+                }
+                else
+                {
+                    UpdateText("Вы должны устроиться на работу: " + job.Title);
                 }
                 SetState(OwnCondition.State);
             }

@@ -38,11 +38,25 @@ public class GameModeEditorWindow : EditorWindow
             GUILayout.Space(5);
             EditorGUILayout.LabelField("Editing gameMode: " + gameMode.Title);
             GUILayout.Space(10);
+
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Title", GUILayout.MaxWidth(40));
             Undo.RecordObject(gameMode, "Change title");
             gameMode.Title = EditorGUILayout.TextField(gameMode.Title);
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Description", GUILayout.MaxWidth(40));
+            Undo.RecordObject(gameMode, "Change description");
+            gameMode.Description = EditorGUILayout.TextField(gameMode.Description);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Image", GUILayout.MaxWidth(40));
+            Undo.RecordObject(gameMode, "Change description");
+            gameMode.Sprite = EditorGUILayout.ObjectField(gameMode.Sprite, typeof(Sprite), allowSceneObjects: true) as Sprite;
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Age", GUILayout.MaxWidth(30));
             gameMode.Age = EditorGUILayout.IntField(gameMode.Age);
@@ -54,6 +68,7 @@ public class GameModeEditorWindow : EditorWindow
             Undo.RecordObject(gameMode, "Change mood");
             gameMode.Mood = EditorGUILayout.FloatField(gameMode.Mood);
             EditorGUILayout.EndHorizontal();
+
             GUILayout.Space(10);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Conditions group count: " + gameMode.GameConditionGroups.Count);
@@ -89,6 +104,11 @@ public class GameModeEditorWindow : EditorWindow
                 gameMode.AddConditionGroup(new GameConditionGroup(title, flags));
             }
             EditorGUILayout.EndScrollView();
+
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(gameMode);
+            }
         }
     }
 

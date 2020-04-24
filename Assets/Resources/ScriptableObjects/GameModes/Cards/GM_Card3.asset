@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: GM_Card3
   m_EditorClassIdentifier: 
   title: "\u0421\u0442\u0440\u0435\u043C\u0438\u0442\u044C\u0441\u044F \u043A \u0431\u043E\u043B\u044C\u0448\u0435\u043C\u0443"
+  description: Coming soon...
+  sprite: {fileID: 0}
+  isCompleted: 0
   type: 0
   goalType: 0
   money: 0
   mood: 0
   age: 0
-  winConditionsContainer:
-    valueConditions: []
-  loseConditionsContainer:
-    valueConditions: []
+  gameConditionGroups: []

@@ -11,14 +11,14 @@ public abstract class AbstractPresenter : IHintPresenter
     public bool PauseGame { get; set; }
 
     protected GameObject hintPrefab;
-    private GameObject uiCanvas;
+    private GameObject hudCanvas;
     private GameObject hintPanel;
     private GameObject shadeBackgroundPanel;
 
     public AbstractPresenter(bool shadeBackground = false, bool pauseGame = false)
     {
         SetPrefab();
-        uiCanvas = GameObject.Find("UICanvas");
+        hudCanvas = GameObject.Find("HUDCanvas");
         ShadeBackground = shadeBackground;
         PauseGame = pauseGame;
     }
@@ -26,7 +26,7 @@ public abstract class AbstractPresenter : IHintPresenter
 
     public void Show()
     {
-        if (hintPrefab && uiCanvas)
+        if (hintPrefab && hudCanvas)
         {
             if (ShadeBackground)
             {
@@ -35,7 +35,7 @@ public abstract class AbstractPresenter : IHintPresenter
                 shadeBackgroundPanel.AddComponent<CanvasRenderer>();
                 Image shadeBackgroundImageComponent = shadeBackgroundPanel.AddComponent<Image>();
                 shadeBackgroundImageComponent.color = new Color(0, 0, 0, 0.5f);
-                shadeBackgroundPanel.transform.SetParent(uiCanvas.transform);
+                shadeBackgroundPanel.transform.SetParent(hudCanvas.transform);
                 RectTransform shadeBackgroundRectTransform = shadeBackgroundPanel.GetComponent<RectTransform>();
                 CanvasGroup shadeBackgroundCanvasGroup = shadeBackgroundPanel.AddComponent<CanvasGroup>();
                 Animator shadeBackgroundAnimator = shadeBackgroundPanel.AddComponent<Animator>();
@@ -47,7 +47,7 @@ public abstract class AbstractPresenter : IHintPresenter
                 shadeBackgroundRectTransform.localScale = Vector2.one;
                 shadeBackgroundAnimator.Play("FadeInAnimation");
             }
-            hintPanel = GameObject.Instantiate(hintPrefab, uiCanvas.transform);
+            hintPanel = GameObject.Instantiate(hintPrefab, hudCanvas.transform);
             hintPanel.transform.Find("TitlePanel").GetComponentInChildren<Text>().text = Title;
             GameObject bodyPanel = hintPanel.transform.Find("BodyPanel").gameObject;
             bodyPanel.GetComponentInChildren<Text>().text = Message;

@@ -6,8 +6,10 @@ using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum GameplayUIState { Store, JobExchange, Home }
+
 /// <summary>
-/// Singleton object, gets requests from another objects and control UI elements
+/// Control global UI state
 /// </summary>
 public class UIManager : MonoBehaviour
 {
@@ -17,7 +19,6 @@ public class UIManager : MonoBehaviour
     GameManager gameManager;
     GameDataManager gameDataManager;
     StatusEffectsManager statusEffectsManager;
-    JobExchange laborExchangeManager;
     Store store;
     JobExchange jobExchange;
 
@@ -56,18 +57,44 @@ public class UIManager : MonoBehaviour
 
     HUD hud;
     
-
     // Other
     Dictionary<StatusEffect, GameObject> modifiersPanelDictionary = new Dictionary<StatusEffect, GameObject>();
 
-    public enum UIState
+
+    public GameplayUIState State = GameplayUIState.Home;
+    int z = 5;
+
+    //public enum UIState
+    //{
+    //    MainMenu,
+    //    CardSelection,
+    //    House,
+    //    Store,
+    //    ModifiersInfo,
+    //    LaborExchange
+    //}
+
+    public void SetGamplayUIState(GameplayUIState gameplayUIState)
     {
-        MainMenu,
-        CardSelection,
-        House,
-        Store,
-        ModifiersInfo,
-        LaborExchange
+        switch (gameplayUIState)
+        {
+            case GameplayUIState.Store:
+                jobExchange.Hide();
+                store.Show();
+                break;
+            case GameplayUIState.JobExchange:
+                store.Hide();
+                jobExchange.Show();
+                break;
+            case GameplayUIState.Home:
+                store.Hide();
+                jobExchange.Hide();
+                break;
+            default:
+                break;
+        }
+
+        State = gameplayUIState;
     }
 
     private void Awake()
@@ -97,14 +124,12 @@ public class UIManager : MonoBehaviour
         // Update references to UI elements based on game state
         if (gameManager.GameState == GameState.InGame)
         {
+            store = Store.instance as Store;
+            jobExchange = JobExchange.instance as JobExchange;
             overlayCanvas = GameObject.Find("OverlayCanvas");
             storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;
 
             jobExchangeContainer = overlayCanvas.transform.Find("JobExchangeContainer").gameObject;
-            if (jobExchangeContainer)
-            {
-                jobExchange = jobExchangeContainer.GetComponent<JobExchange>();
-            }
 
             pauseMenuPanel = overlayCanvas.transform.Find("PauseMenuPanel").gameObject;
             statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel").gameObject;
@@ -165,8 +190,7 @@ public class UIManager : MonoBehaviour
         gameManager = GameManager.instance;
         gameDataManager = GameDataManager.instance;
         statusEffectsManager = StatusEffectsManager.instance;
-        store = Store.instance as Store;
-        jobExchange = JobExchange.instance as JobExchange;
+
 
 
         statusEffectsManager.OnStatusEffectsChanged += UpdateStatusEffectsView;
@@ -181,7 +205,10 @@ public class UIManager : MonoBehaviour
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
     {
         UpdateReferencesAndButtonMappings();
-        hud.Init();
+        if (gameManager.GameState == GameState.InGame)
+        {
+            hud.Init();
+        }
         Debug.Log(this.GetType().ToString() + "scene loaded handled");
         gameManager.LevelLoadedAndInitialized();
     }
@@ -278,22 +305,12 @@ public class UIManager : MonoBehaviour
                 panel.transform.localScale = new Vector3(1, 1, 1);
                 panel.transform.Find("Info").transform.Find("TopPanel").transform.Find("TitleText").GetComponent<Text>().text = statusEffect.Title;
                 Transform BottomPanelTransform = panel.transform.Find("Info").transform.Find("BottomPanel");
-                BottomPanelTransform.transform.Find("TypePanel").GetComponentInChildren<Text>().text = statusEffect.Freqency.ToString();
+                BottomPanelTransform.transform.Find("TypePanel").GetComponentInChildren<Text>().text = statusEffect.Frequency.ToString();
                 BottomPanelTransform.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (statusEffect.Value > 0 ? "+" : "") + statusEffect.Value;
             }
         }
     }
 
-    public void ToggleStore()
-    {
-        store.Toggle();
-    } 
-
-
-    public void ToggleJobExchange()
-    {
-        jobExchange.Toggle();
-    }
 
     public void ShowPauseMenu()
     {

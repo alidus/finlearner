@@ -1,15 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Milestones : MonoBehaviour
 {
+    public static Milestones instance;
     GameMode gameMode;
     GameManager gameManager;
     GameDataManager gameDataManager;
     List<Milestone> milestones = new List<Milestone>();
     GameObject milestonesWrapper;
+
+    public Action OnGameWin;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void OnEnable()
     {
@@ -52,6 +69,7 @@ public class Milestones : MonoBehaviour
         if (milestone != null)
         {
             milestone.SubscribeToConditionChanges();
+            milestone.OnStateChanged += CheckForGameStateChanged;
             milestones.Add(milestone);
         }
     }
@@ -73,6 +91,15 @@ public class Milestones : MonoBehaviour
     void UpdateGameMode()
     {
         gameMode = gameManager.GameMode;
+    }
+
+    void CheckForGameStateChanged()
+    {
+        if (!milestones.Exists(ms => ms.GetState() == false))
+        {
+            // All milestones completed
+            OnGameWin?.Invoke();
+        }
     }
 
     public void UpdateMilestones()
