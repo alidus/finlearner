@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Showcase.Views.BankViews;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Showcase.Bank
@@ -10,6 +11,7 @@ namespace Showcase.Bank
     public class Bank : Showcase<BankService>
     {
         private BankViewFactory<BankService> factory;
+        private Asset loanAsset;
 
         private void OnEnable()
         {

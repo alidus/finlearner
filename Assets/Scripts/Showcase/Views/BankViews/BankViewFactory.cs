@@ -57,5 +57,17 @@ namespace Showcase.Views.BankViews
             bankServiceView.UpdateView();
             return bankServiceView;
         }
+
+        public View CreateServiceView(Transform parentTransform)
+        {
+            DefaultRootView loanView = GameObject
+                .Instantiate(rootViewPrefab as GameObject, parentTransform)
+                .GetComponent<DefaultRootView>();
+            loanView.Init();
+            loanView.ItemGroupListView = CreateItemGroupListView(loanView.transform);
+            loanView.ItemListView = CreateItemListView(loanView.transform);
+            loanView.UpdateView();
+            return loanView;
+        }
     }
 }

@@ -1,15 +1,22 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(menuName = "SO/Items/BankServices/Loan", fileName = "Loan")]
 public class Loan : BankService
 {
-    private const float RATE = 0.20f;
-    private float debtValue;
-    public float DebtValue { get { return debtValue; } set { debtValue = value; } }
-    private int daysRemained;
-    public int DaysRemained { get { return daysRemained; } set { daysRemained = value; } }
-    [SerializeField] private int totalPeriod;
-    public int TotalPeriod { get => totalPeriod; set => totalPeriod = value; }
+    private static float rate = 0.20f;
+    private bool canBePurchased = true;
+    public float initialValue = 1000f;
+    public string amountTitle = "Размер кредита";
+    public float maxValue = 1000000f;
+    public string buttonText = "Взять";
+    public string amountValueText;
+    public string amountInputFieldPlaceholderText;
+    public string durationLabelText;
+    public List<Dropdown.OptionData> durationDropdownOptions;
+    private List<StatusEffect> statusEffects = new List<StatusEffect>();
+    private int totalPeriod;
 
     private Loan()
     {
@@ -21,7 +28,7 @@ public class Loan : BankService
 
         public LoanBuilder SetRate()
         {
-            loan.Rate = RATE;
+            loan.Rate = rate;
             return this;
         }
         public LoanBuilder SetValue(float value)
@@ -31,7 +38,7 @@ public class Loan : BankService
         }
         public LoanBuilder SetTotalPeriod(int years)
         {
-            loan.TotalPeriod = years;
+            loan.totalPeriod = years;
             return this;
         }
         public LoanBuilder AddStatusEffect(StatusEffect statusEffect)
