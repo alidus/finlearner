@@ -9,6 +9,7 @@ public class TimeConsumerView : View
     Text titleText;
     Image backgroundImage;
     ITimeConsumer timeConsumer;
+    Animator animator;
 
     public Color sleepColor = new Color();
     public Color jobColor = new Color();
@@ -23,6 +24,7 @@ public class TimeConsumerView : View
     {
         titleText = transform.Find("TitlePanel").Find("TitleText").GetComponent<Text>();
         backgroundImage = transform.Find("TitlePanel").GetComponent<Image>();
+        animator = GetComponent<Animator>();
     }
 
     public void Init(ITimeConsumer timeConsumer)
@@ -53,6 +55,18 @@ public class TimeConsumerView : View
     {
         UpdateTitle();
         UpdateBGColor();
+        UpdateAnimator();
+    }
+
+    private void UpdateAnimator()
+    {
+        animator.SetBool("IsShown", true);
+    }
+
+    public void BeginDestroy()
+    {
+        animator.SetBool("IsShown", false);
+        Destroy(gameObject, animator.GetCurrentAnimatorStateInfo(0).length);
     }
 
     private void UpdateBGColor()

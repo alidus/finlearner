@@ -59,7 +59,7 @@ public class TimeManagementView : View
     {
         if (timeConsumerViewsDict.ContainsKey(timeConsumer))
         {
-            Destroy(timeConsumerViewsDict[timeConsumer].gameObject);
+            timeConsumerViewsDict[timeConsumer].BeginDestroy();
             timeConsumerViewsDict.Remove(timeConsumer);
             Debug.Log("Removing time consumer view " + timeConsumer.ToString());
 

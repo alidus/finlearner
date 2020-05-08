@@ -46,9 +46,9 @@ public class ItemGroup<T> : IEnumerable<T>, ISelectable
         Items.Add(item);
     }
 
-    public void Remove(T item)
+    public bool Remove(T item)
     {
-        Items.Remove(item);
+       return Items.Remove(item);
     }
 
     public override string ToString()

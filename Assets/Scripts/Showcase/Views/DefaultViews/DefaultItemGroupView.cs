@@ -19,6 +19,7 @@ public class DefaultItemGroupView<T> : View, IViewTitle where T : Item
 
     public bool IsSelected { get; set; }
 
+
     private void OnEnable()
     {
         ImageComponent = this.GetComponent<Image>();
@@ -60,10 +61,10 @@ public class DefaultItemGroupView<T> : View, IViewTitle where T : Item
     {
         if (IsSelected)
         {
-            ImageComponent.color = new Color(0.44f, 0.08f, 0.14f);
+            ImageComponent.color = GameDataManager.instance.ButtonSelectedColor;
         } else
         {
-            ImageComponent.color = new Color(0.14f, 0.14f, 0.14f);
+            ImageComponent.color = GameDataManager.instance.ButtonDefaultColor;
         }
     }
 

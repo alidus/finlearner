@@ -27,10 +27,13 @@ public class GameDataManager : MonoBehaviour
 	public Sprite placeHolderSprite;
 	public Sprite emptySprite;
 
-	public Color dailySEColor;
-	public Color weeklySEColor;
-	public Color monthlySEColor;
-	public Color yearlySEColor;
+	public Color DailySEColor = new Color(0.07f, 1f, 0.07f, 0.6f);
+	public Color WeeklySEColor = new Color(0.95f, 0.68f, 1f, 0.6f);
+	public Color MonthlySEColor = new Color(0.68f, 0.87f, 1f, 0.6f);
+	public Color YearlySEColor = new Color(1f, 0.68f, 0.72f, 0.6f);
+
+    public Color ButtonDefaultColor = new Color(0.14f, 0.14f, 0.14f);
+	public Color ButtonSelectedColor = new Color(0.44f, 0.08f, 0.14f);
 
 	private void Awake()
 	{
@@ -49,10 +52,7 @@ public class GameDataManager : MonoBehaviour
 
 	private void Start()
 	{
-		dailySEColor = new Color(0.07f, 1f, 0.07f, 0.6f);
-		weeklySEColor = new Color(0.95f, 0.68f, 1f, 0.6f);
-		monthlySEColor = new Color(0.68f, 0.87f, 1f, 0.6f);
-		yearlySEColor = new Color(1f, 0.68f, 0.72f, 0.6f);
+		
 
 		Init();
 	}
@@ -238,7 +238,7 @@ public class GameDataManager : MonoBehaviour
 		{
             sutableStatusEffect = moderateExhaustion;
         }
-
+		
 		if (sutableStatusEffect == null)
 		{
 			statusEffectsManager.RemoveStatusEffects(StatusEffectFlags.Exhaustion);
@@ -307,13 +307,13 @@ public class GameDataManager : MonoBehaviour
 			case StatusEffectFrequency.OneShot:
 				return Color.red;
 			case StatusEffectFrequency.Daily:
-				return dailySEColor;
+				return DailySEColor;
 			case StatusEffectFrequency.Weekly:
-				return weeklySEColor;
+				return WeeklySEColor;
 			case StatusEffectFrequency.Monthly:
-				return monthlySEColor;
+				return MonthlySEColor;
 			case StatusEffectFrequency.Yearly:
-				return yearlySEColor;
+				return YearlySEColor;
 			default:
 				return Color.white;
 		}

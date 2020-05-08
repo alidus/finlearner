@@ -42,6 +42,15 @@ public abstract class Showcase<T, TClass> : MonoBehaviour where T : Item where T
     {
         return ItemGroups.FirstOrDefault(group => group.Title == title);
     }
+    protected ItemGroup<T> FindOrCreateItemGroup(string title)
+    {
+        var itemGroup = FindItemGroup(title);
+        if (itemGroup == null)
+        {
+            itemGroup = new ItemGroup<T>(title);
+        }
+        return itemGroup;
+    }
     private void OnDisable()
     {
         foreach (Transform child in gameObject.transform)

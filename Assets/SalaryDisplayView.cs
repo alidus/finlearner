@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,15 +14,37 @@ public class SalaryDisplayView : View
     public float YearlySalary { get => yearlySalary; set => yearlySalary = value; }
 
     Text dailySalaryTextComponent, weeklySalaryTextComponent, monthlySalaryTextComponent, yearlySalaryTextComponent;
+    Image dailySalaryBackground, weeklySalaryBackground, monthlySalaryBackground, yearlySalaryBackground;
+
 
     private void OnEnable()
     {
         var upperValues = transform.Find("UpperValues");
         dailySalaryTextComponent = upperValues.Find("DailySalary").Find("Value").GetComponent<Text>();
         weeklySalaryTextComponent = upperValues.Find("WeeklySalary").Find("Value").GetComponent<Text>();
+
+        dailySalaryBackground = upperValues.Find("DailySalary").GetComponent<Image>();
+        weeklySalaryBackground = upperValues.Find("WeeklySalary").GetComponent<Image>();
+
         var lowerValues = transform.Find("LowerValues");
         monthlySalaryTextComponent = lowerValues.Find("MonthlySalary").Find("Value").GetComponent<Text>();
         yearlySalaryTextComponent = lowerValues.Find("YearlySalary").Find("Value").GetComponent<Text>();
+
+        monthlySalaryBackground = lowerValues.Find("MonthlySalary").GetComponent<Image>();
+        yearlySalaryBackground = lowerValues.Find("YearlySalary").GetComponent<Image>();
+    }
+
+    private void Start()
+    {
+        UpdateColorScheme();
+    }
+
+    void UpdateColorScheme()
+    {
+        dailySalaryBackground.color = GameDataManager.instance.DailySEColor;
+        weeklySalaryBackground.color = GameDataManager.instance.WeeklySEColor;
+        monthlySalaryBackground.color = GameDataManager.instance.MonthlySEColor;
+        yearlySalaryBackground.color = GameDataManager.instance.YearlySEColor;
     }
 
     public void UpdateValues(Job job)
@@ -33,6 +56,11 @@ public class SalaryDisplayView : View
     }
 
     public override void UpdateView()
+    {
+        UpdateText();
+    }
+
+    private void UpdateText()
     {
         dailySalaryTextComponent.text = DailySalary.ToString();
         weeklySalaryTextComponent.text = WeeklySalary.ToString();

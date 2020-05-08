@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public enum InventoryItemType { Certificate, Furniture }
 
@@ -32,14 +33,24 @@ public class Inventory : Showcase<Item, Inventory>
                 Resources.Load("Prefabs/Inventory/Views/InventoryItemGroupListView"),
                 Resources.Load("Prefabs/Inventory/Views/InventoryItemGroupView"),
                 Resources.Load("Prefabs/Inventory/Views/InventoryCertificateListView"),
-                Resources.Load("Prefabs/Inventory/Views/InventoryItemView"));
+                Resources.Load("Prefabs/Inventory/Views/InventoryItemView"),
+                Resources.Load("Prefabs/Store/Views/StoreItemListView"),
+                Resources.Load("Prefabs/Store/Views/StoreItemView"));
         }
 
         DestroyViews();
 
         RootView = factory.CreateRootView(this.transform);
-        
     }
+
+    private void Start()
+    {
+         foreach (StoreItem item in Store.instance.ItemDatabase)
+        {
+            item.OnPurchaseStateChanged += delegate { if (item.IsPurchased == true) { AddItem(item); } else { RemoveItem(item); } };
+        }
+    }
+
 
     protected override ItemDatabase<Item> LoadAssets()
     {
@@ -97,12 +108,10 @@ public class Inventory : Showcase<Item, Inventory>
 
         if (item is Certificate)
         {
-            var certItemGroup = FindItemGroup("Certificates");
-            if (certItemGroup == null)
-            {
-                certItemGroup = new ItemGroup<Item>("Certificates");
-            }
-            certItemGroup.Add(item);
+            FindOrCreateItemGroup("Certificates").Add(item);
+        } else if (item is FurnitureItem)
+        {
+            FindOrCreateItemGroup("Furniture").Add(item);
         }
     }
 
@@ -111,22 +120,12 @@ public class Inventory : Showcase<Item, Inventory>
 
         if (item is Certificate)
         {
-            var certItemGroup = FindItemGroup("Certificates");
-            if (certItemGroup == null)
-            {
-                return false;
-            }
-            if (certItemGroup.Contains(item))
-            {
-                certItemGroup.Remove(item);
-                ItemDatabase.Remove(item);
-                return true;
-            } else
-            {
-                return false;
-            }
+            return FindItemGroup("Certificates")?.Remove(item) ?? false;
+        } else if (item is FurnitureItem)
+        {
+            return FindItemGroup("Furniture")?.Remove(item) ?? false;
         }
-
+        // Type not supported
         return false;
     }
 }
