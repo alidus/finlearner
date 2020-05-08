@@ -7,7 +7,8 @@ public interface IPurchasable
     float Price { get; set; }
     bool CanBePurchased { get; set; }
     bool IsPurchased { get; }
-    void Buy();
+    void Purchase();
+    void Sell();
 
     event Action OnPurchaseStateChanged;
     event Action OnPurchasableStateChanged;

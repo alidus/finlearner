@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: GM_Freeplay
   m_EditorClassIdentifier: 
   title: "\u0421\u0432\u043E\u0431\u043E\u0434\u043D\u0430\u044F \u0438\u0433\u0440\u0430"
+  description: 
+  sprite: {fileID: 0}
+  isCompleted: 0
   type: 0
   goalType: 0
-  money: 322
+  money: 10000
   mood: 90
   age: 19
-  winConditions:
-  - state: 0
-  loseConditions:
-  - state: 0
+  gameConditionGroups: []

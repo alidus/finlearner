@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
-public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, IHaveStatusEffect
+public class StoreItem : Item, IPurchasable, IEquipable, IDrawable, IHaveStatusEffect
 {
     [SerializeField]
     private Sprite sprite;
@@ -22,7 +22,6 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
     [SerializeField]
     private List<StatusEffect> statusEffects = new List<StatusEffect>();
 
-    public UnityAction OnClick { get; set; }
     public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
     public bool IsEquipped { get => isEquipped; private set => isEquipped = value; }
     public bool CanBePurchased { get => canBePurchased; set => canBePurchased = value; }
@@ -39,36 +38,13 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
     public event PurchasableInstanceHandler OnInstancePurchaseStateChanged;
     public event PurchasableInstanceHandler OnInstancePurchasableStateChanged;
 
+    StatusEffect purchaseStatusEffect;
+    StatusEffect sellStatusEffect;
 
-    public StoreItem()
+    private void OnEnable()
     {
-        SetupClickAction();
-    }
-
-    private void SetupClickAction()
-    {
-        OnClick = delegate
-        {
-            if (CanBeEquipped)
-            {
-                if (!IsEquipped)
-                {
-                    Equip();
-
-                }
-                else
-                {
-                    Uneqip();
-                }
-            }
-            else if (CanBePurchased)
-            {
-                if (!IsPurchased)
-                {
-                    Buy();
-                }
-            }
-        };
+        purchaseStatusEffect = new StatusEffect("Покупка " + Title, -Price, StatusEffectType.Money, StatusEffectFrequency.OneShot);
+        sellStatusEffect = new StatusEffect("Продажа " + Title, Price / 2, StatusEffectType.Money, StatusEffectFrequency.OneShot);
     }
 
     public void Equip()
@@ -82,35 +58,41 @@ public class StoreItem : Item, IClickable, IPurchasable, IEquipable, IDrawable, 
         OnEquipStateChanged?.Invoke();
     }
 
-    public void Buy()
+    public void Purchase()
     {
-        if (CanBePurchased)
-        {
-            IsPurchased = true;
-            CanBeEquipped = true;
-            StatusEffectsManager.instance.ApplyStatusEffects(new StatusEffect("Покупка " + Title, -Price, StatusEffectType.Money, StatusEffectFrequency.OneShot));
-            StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
-            OnPurchaseStateChanged?.Invoke();
-        }
+        IsPurchased = true;
+        CanBeEquipped = true;
+        StatusEffectsManager.instance.ApplyStatusEffects(purchaseStatusEffect);
+        StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
+        OnPurchaseStateChanged?.Invoke();
+    }
+
+    public void Sell()
+    {
+        IsPurchased = false;
+        CanBeEquipped = false;
+        StatusEffectsManager.instance.ApplyStatusEffects(sellStatusEffect);
+        StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
+        OnPurchaseStateChanged?.Invoke();
     }
 
     public void NotifyOnInstanceEquipStateChanged(IEquipable equipable)
     {
-        OnInstanceEquipStateChanged.Invoke(equipable);
+        OnInstanceEquipStateChanged?.Invoke(equipable);
     }
 
     public void NotifyOnInstanceEquippableStateChanged(IEquipable equipable)
     {
-        OnInstanceEquippableStateChanged.Invoke(equipable);
+        OnInstanceEquippableStateChanged?.Invoke(equipable);
     }
 
     public void NotifyOnInstancePurchaseStateChanged(IPurchasable purchasable)
     {
-        OnInstancePurchaseStateChanged.Invoke(purchasable);
+        OnInstancePurchaseStateChanged?.Invoke(purchasable);
     }
 
     public void NotifyOnInstancePurchasableStateChanged(IPurchasable purchasable)
     {
-        OnInstancePurchasableStateChanged.Invoke(purchasable);
+        OnInstancePurchasableStateChanged?.Invoke(purchasable);
     }
 }

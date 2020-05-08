@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -56,6 +57,66 @@ public class Console : MonoBehaviour
             }
         }));
 
+        Commands.Add(new ConsoleCommand("edu", "Show available education entities", delegate
+        {
+            Print();
+            Print("**** Education entities:");
+            Print();
+            var counter = 1;
+            foreach (EducationEntity entity in (EducationHub.instance as EducationHub).ItemDatabase)
+            {
+                Console.Print(counter.ToString() + ") " + entity.ToString());
+                var sertificateCheck = Certificate.SertificateCheck((EducationHub.instance as EducationHub).Certificates, entity);
+                Console.Print("Certificate check: " + sertificateCheck);
+                if (!sertificateCheck)
+                {
+                    Console.Print("__________Demand certificates:");
+                    foreach (Certificate certificate in entity.MandatoryCertificates)
+                    {
+                        Console.Print("______________________(" + ((EducationHub.instance as EducationHub).Certificates.Contains(certificate) ? "✓" : "X") + ") " + certificate.ToString());
+                    }
+                    Console.Print();
+                }
+                counter++;
+            }
+        }));
+
+        Commands.Add(new ConsoleCommand("time", "Show information about time and time management", delegate
+        {
+            Print("Current date: " + GameDataManager.instance.CurrentDateTime);
+            Print();
+            Print("Default free hours in a week: " + GameDataManager.TOTAL_FREE_HOURS_IN_A_WEEK);
+            Print("Current free hours in a week: " + GameDataManager.instance.FreeHoursOfWeekLeft);
+        }));
+
+        Commands.Add(new ConsoleCommand("cert", "Show available and owned certificates", delegate
+        {
+            Print();
+            Print("**** Certificates:");
+            Print();
+            string[] guids = AssetDatabase.FindAssets("t:" + typeof(Certificate).Name);
+            Certificate[] certificates = new Certificate[guids.Length];
+            var counter = 1;
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                certificates[i] = AssetDatabase.LoadAssetAtPath<Certificate>(path);
+            }
+            foreach (Certificate certificate in certificates)
+            {
+                Print(counter.ToString() + ") " + certificate.ToString());
+                counter++;
+            }
+            Print("** Owned by player:");
+            counter = 1;
+            foreach (Certificate certificate in (EducationHub.instance as EducationHub).Certificates)
+            {
+                Print(counter.ToString() + ") " + certificate.ToString());
+                counter++;
+            }
+        }));
+
+        // Jobs
         Commands.Add(new ConsoleCommand("jobs", "Show all jobs from job exchange", delegate
         {
             Print();
@@ -63,9 +124,12 @@ public class Console : MonoBehaviour
             Print();
             if (JobExchange.instance != null)
             {
+                var counter = 1;
                 foreach (Job job in JobExchange.instance.ItemDatabase)
                 {
-                    Print(job.ToString());
+                    Print(counter.ToString() + ") " + job.ToString());
+                    counter++;
+
                 }
                 Print();
                 Print("* Active jobs");
@@ -76,9 +140,12 @@ public class Console : MonoBehaviour
                     Print("None");
                 } else
                 {
+                    counter = 1;
                     foreach (Job job in activeJobs)
                     {
-                        Print(job.ToString());
+                        Print(counter.ToString() + ") " + job.ToString());
+                        counter++;
+
                     }
                 }
                     
@@ -88,18 +155,43 @@ public class Console : MonoBehaviour
                 Print("Job exchange is not instantiated. Are you in playing state?");
             }
         }));
+        Commands.Add(new ConsoleCommand("showhint", "Show hint for debug purposes", delegate
+        {
+            HintsManager.instance.ShowHint("DEBUG HINT", "THIS HINT WAS CREATED BY CONSOLE COMMAND");
+        }));
+
+        Commands.Add(new ConsoleCommand("se", "Show list of active status effects", delegate
+        {
+            Print("*** Status effects:");
+            if (StatusEffectsManager.instance.StatusEffects.Count == 0)
+            {
+                Print("None");
+            } else
+            {
+                foreach (StatusEffect se in StatusEffectsManager.instance.StatusEffects)
+                {
+                    Print(se.ToString());
+                }
+            }
+        }));
     }
 
     public static void Print(string msg)
     {
-        instance.outputTextComponent.text += "\n" + msg;
-        HandleLineLimit();
+        if (instance != null)
+        {
+            instance.outputTextComponent.text += "\n" + msg;
+            HandleLineLimit();
+        }
     }
 
     public static void Print()
     {
-        instance.outputTextComponent.text += "\n";
-        HandleLineLimit();
+        if (instance != null)
+        {
+            instance.outputTextComponent.text += "\n";
+            HandleLineLimit();
+        }
     }
 
     static void HandleLineLimit()
@@ -181,6 +273,13 @@ public class Console : MonoBehaviour
 
         inputFieldComponent.text = "";
         inputFieldComponent.ActivateInputField();
+        StartCoroutine(ResetOutputScrollViewPosition());
+    }
+
+    IEnumerator ResetOutputScrollViewPosition()
+    {
+        yield return null;
+
         instance.outputScrollRect.verticalNormalizedPosition = 0;
     }
 

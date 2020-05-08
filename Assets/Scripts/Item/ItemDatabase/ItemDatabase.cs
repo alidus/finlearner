@@ -29,7 +29,26 @@ public class ItemDatabase<T> : IEnumerable where T : Item
 		Items.AddRange(items);
 	}
 
-	public void Clear()
+	public bool Remove(T item)
+	{
+		return Items.Remove(item);
+    }
+
+    public bool Remove(List<T> items)
+    {
+		var result = true;
+        foreach (T item in items)
+		{
+			if (Items.Remove(item) == false)
+			{
+				result = false;
+			}
+		}
+
+		return result;
+    }
+
+    public void Clear()
 	{
 		Items.Clear();
 	}

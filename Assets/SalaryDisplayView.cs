@@ -26,10 +26,10 @@ public class SalaryDisplayView : View
 
     public void UpdateValues(Job job)
     {
-        DailySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.DailySalary))?.Value ?? 0;
-        WeeklySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.WeeklySalary))?.Value ?? 0;
-        MonthlySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.MonthlySalary))?.Value ?? 0;
-        YearlySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.YearlySalary))?.Value ?? 0;
+        DailySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Daily)?.Value ?? 0;
+        WeeklySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Weekly)?.Value ?? 0;
+        MonthlySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Monthly)?.Value ?? 0;
+        YearlySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Yearly)?.Value ?? 0;
     }
 
     public override void UpdateView()

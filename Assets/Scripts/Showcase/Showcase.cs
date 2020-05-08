@@ -2,23 +2,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
-public abstract class Showcase<T> : MonoBehaviour where T : Item
+public abstract class Showcase<T, TClass> : MonoBehaviour where T : Item where TClass : Component
 {
-    public static Showcase<T> instance;
+    public static Showcase<T, TClass> instance;
     private ItemGroup<T> selectedItemGroup;
 
-    public ItemDatabase<T> ItemDatabase { get; set; } = new ItemDatabase<T>();
-    public List<ItemGroup<T>> ItemGroups { get; set; }
-    public ItemGroup<T> SelectedItemGroup { get => selectedItemGroup; set { selectedItemGroup = value; OnSelectedItemGroupChanged?.Invoke(); } }
+    public ItemDatabase<T> ItemDatabase { get; protected set; } = new ItemDatabase<T>();
+    public List<ItemGroup<T>> ItemGroups { get; set; } = new List<ItemGroup<T>>();
+    public ItemGroup<T> SelectedItemGroup { get => selectedItemGroup; set { 
+            if (selectedItemGroup != value) 
+            { 
+                if (selectedItemGroup != null)
+                {
+                    selectedItemGroup.IsSelected = false;
+                }
+                if (value != null)
+                {
+                    value.IsSelected = true;
+                }
+                selectedItemGroup = value;
+                OnSelectedItemGroupChanged?.Invoke();
+            }  } }
 
-    public event Action OnSelectedItemGroupChanged;
+    public Action OnSelectedItemGroupChanged;
+
+
     public View RootView { get; set; }
-    /// <summary>
-    /// Splits ItemDatabase into different item groups to display in showcase, logic is specified in concrete showcase
-    /// </summary>
-    /// <returns></returns>
-    protected abstract List<ItemGroup<T>> FormItemGroups();
     /// <summary>
     /// Update showcase view
     /// </summary>
@@ -26,6 +37,11 @@ public abstract class Showcase<T> : MonoBehaviour where T : Item
     /// <summary>
     /// Destroy showcase view
     /// </summary>
+    /// 
+    protected ItemGroup<T> FindItemGroup(string title)
+    {
+        return ItemGroups.FirstOrDefault(group => group.Title == title);
+    }
     private void OnDisable()
     {
         foreach (Transform child in gameObject.transform)
@@ -47,6 +63,47 @@ public abstract class Showcase<T> : MonoBehaviour where T : Item
         DontDestroyOnLoad(gameObject);
     }
 
+    protected void DestroyViews()
+    {
+        if (transform.childCount != 0)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+    }
+
+    protected virtual void AddItemsToDatabase(T item)
+    {
+        ItemDatabase.Add(item);
+    }
+
+    protected virtual void AddItemsToDatabase(List<T> items)
+    {
+        foreach (T item in items)
+        {
+            AddItemsToDatabase(item);
+        }
+    }
+
+    protected virtual void RemoveItemsFromDatabase(T item)
+    {
+        ItemDatabase.Remove(item);
+    }
+
+    protected virtual void RemoveItemsFromDatabase(List<T> items)
+    {
+        foreach (T item in items)
+        {
+            RemoveItemsFromDatabase(item);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        Console.Print("Destroying showcase: " + this.ToString());   
+    }
 
     protected abstract ItemDatabase<T> LoadAssets();
 

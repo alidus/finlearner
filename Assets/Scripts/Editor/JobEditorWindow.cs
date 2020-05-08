@@ -35,10 +35,11 @@ public class JobEditorWindow : EditorWindow
         }
 
         job = EditorGUILayout.ObjectField(job, typeof(Job), true) as Job;
-        InitEdtiorSalaryValues(job);
 
         if (job != null)
         {
+            InitEdtiorSalaryValues(job);
+
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Title: ", GUILayout.MaxWidth(80));
             Undo.RecordObject(job, "Edit job title");
@@ -63,13 +64,19 @@ public class JobEditorWindow : EditorWindow
             job.Sprite = (Sprite)EditorGUILayout.ObjectField(job.Sprite, typeof(Sprite), allowSceneObjects: true);
             GUILayout.EndHorizontal();
 
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Time consumption: ", GUILayout.MaxWidth(80));
+            Undo.RecordObject(job, "Edit job time consumption");
+            job.HoursOfWeekToConsume = EditorGUILayout.FloatField(job.HoursOfWeekToConsume);
+            GUILayout.EndHorizontal();
+
             salariesFoldout = EditorGUILayout.Foldout(salariesFoldout, "Salary");
             if (salariesFoldout)
             {
-                DrawSalaryField(ref dailySalary, "Daily: ", "Ежедневная зарплата", StatusEffectFlags.DailySalary);
-                DrawSalaryField(ref weeklySalary, "Weekly: ", "Еженедельная зарплата", StatusEffectFlags.WeeklySalary);
-                DrawSalaryField(ref monthlySalary, "Montly: ", "Ежемесячная зарплата", StatusEffectFlags.MonthlySalary);
-                DrawSalaryField(ref yearlySalary, "Yearly: ", "Ежегодная зарплата", StatusEffectFlags.YearlySalary);
+                DrawSalaryField(ref dailySalary, "Daily: ", "Ежедневная зарплата", StatusEffectFrequency.Daily);
+                DrawSalaryField(ref weeklySalary, "Weekly: ", "Еженедельная зарплата", StatusEffectFrequency.Weekly);
+                DrawSalaryField(ref monthlySalary, "Montly: ", "Ежемесячная зарплата", StatusEffectFrequency.Monthly);
+                DrawSalaryField(ref yearlySalary, "Yearly: ", "Ежегодная зарплата", StatusEffectFrequency.Yearly);
             }
 
             GUILayout.BeginHorizontal();
@@ -96,44 +103,25 @@ public class JobEditorWindow : EditorWindow
 
     void InitEdtiorSalaryValues(Job job)
     {
-        dailySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.DailySalary))?.Value ?? 0;
-        weeklySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.WeeklySalary))?.Value ?? 0;
-        monthlySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.MonthlySalary))?.Value ?? 0;
-        yearlySalary = job.StatusEffects.Find((se) => se.Flags.HasFlag(StatusEffectFlags.YearlySalary))?.Value ?? 0;
+        dailySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Daily)?.Value ?? 0;
+        weeklySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Weekly)?.Value ?? 0;
+        monthlySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Monthly)?.Value ?? 0;
+        yearlySalary = job.StatusEffects.Find((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == StatusEffectFrequency.Yearly)?.Value ?? 0;
     }
 
-    void DrawSalaryField(ref float editorSalaryVariable, string labelText, string seTitlePrefix, StatusEffectFlags targetFlag)
+    void DrawSalaryField(ref float editorSalaryVariable, string labelText, string seTitlePrefix, StatusEffectFrequency frequency)
     {
         GUILayout.BeginHorizontal();
         EditorGUILayout.LabelField(labelText, GUILayout.MaxWidth(80));
         editorSalaryVariable = EditorGUILayout.FloatField(editorSalaryVariable);
-        var targetSalarySEs = job.StatusEffects.FindAll((se) => se.Flags.HasFlag(targetFlag));
+        var targetSalarySEs = job.StatusEffects.FindAll((se) => se != null && se.Flags.HasFlag(StatusEffectFlags.Job) && se.Frequency == frequency);
         // If there are no daily salary SE
         if (targetSalarySEs.Count == 0)
         {
             // If daily salary is set in editor -> create appropriate SE for job
             if (editorSalaryVariable != 0)
             {
-                StatusEffectFrequency frequency;
-                switch (targetFlag)
-                {
-                    case StatusEffectFlags.DailySalary:
-                        frequency = StatusEffectFrequency.Daily;
-                        break;
-                    case StatusEffectFlags.WeeklySalary:
-                        frequency = StatusEffectFrequency.Weekly;
-                        break;
-                    case StatusEffectFlags.MonthlySalary:
-                        frequency = StatusEffectFrequency.Monthly;
-                        break;
-                    case StatusEffectFlags.YearlySalary:
-                        frequency = StatusEffectFrequency.Yearly;
-                        break;
-                    default:
-                        frequency = StatusEffectFrequency.Daily;
-                        break;
-                }
-                job.StatusEffects.Add(new StatusEffect(seTitlePrefix + " (" + job.Title + ")", editorSalaryVariable, StatusEffectType.Money, frequency, targetFlag));
+                job.StatusEffects.Add(new StatusEffect(seTitlePrefix + " (" + job.Title + ")", editorSalaryVariable, StatusEffectType.Money, frequency, StatusEffectFlags.Job));
             }
         }
         else

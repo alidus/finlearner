@@ -3,7 +3,7 @@ using UnityEditor;
 
 public interface IViewEquipState
 {
-    bool IsActive { get; set; }
+    bool IsEquipped { get; set; }
 
     void UpdateEquippedState();
 }

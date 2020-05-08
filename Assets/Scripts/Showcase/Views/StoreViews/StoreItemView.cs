@@ -7,18 +7,20 @@ using static UnityEngine.UI.Button;
 
 public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice, IViewPurchaseState, IViewEquipState
 {
-
-    public Button ButtonComponent { get; set; }
+    StoreItem storeItem;
+    Button buttonComponent;
     public Text PriceTagTextComponent { get; set; }
     public Image IconImageComponent { get; set; }
     public Image OwnageIndicatorImageComponent { get; set; }
     public Image EqiupHighlgihtImageComponent { get; set; }
 
+    Animator animator;
+
     public float Price { get; set; }
     public Sprite Sprite { get; set; }
 
     public bool IsPurchased { get; set; }
-    public bool IsActive { get; set; }
+    public bool IsEquipped { get; set; }
     private void OnEnable()
     {
         Transform iconTransform = this.transform.Find("Icon");
@@ -42,8 +44,69 @@ public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice
         {
             EqiupHighlgihtImageComponent = equipHightlightTransform.GetComponent<Image>();
         }
-        
-        
+
+        buttonComponent = GetComponent<Button>();
+        animator = GetComponent<Animator>();
+    }
+
+    public override void Init(Item target)
+    {
+        storeItem = target as StoreItem;
+
+        Title = storeItem.Title;
+        Price = storeItem.Price;
+        Sprite = storeItem.Sprite;
+        IsPurchased = storeItem.IsPurchased;
+        IsEquipped = storeItem.IsEquipped;
+
+        buttonComponent.onClick.AddListener(delegate
+        {
+            if (storeItem.CanBeEquipped)
+            {
+                if (!storeItem.IsEquipped)
+                {
+                    storeItem.Equip();
+                }
+                else
+                {
+                    storeItem.Uneqip();
+                }
+            }
+            else if (storeItem.CanBePurchased)
+            {
+                if (!storeItem.IsPurchased)
+                {
+                    storeItem.Purchase();
+                }
+            }
+        });
+
+        storeItem.OnPurchaseStateChanged -= PurchaseStateChangedHandler;
+        storeItem.OnPurchaseStateChanged += PurchaseStateChangedHandler;
+
+        storeItem.OnEquipStateChanged -= EquipStateChangedHandler;
+        storeItem.OnEquipStateChanged += EquipStateChangedHandler;
+    }
+
+    private void OnDestroy()
+    {
+        if (storeItem)
+        {
+            storeItem.OnPurchaseStateChanged -= PurchaseStateChangedHandler;
+            storeItem.OnEquipStateChanged -= EquipStateChangedHandler;
+        }
+    }
+
+    void PurchaseStateChangedHandler()
+    {
+        IsPurchased = storeItem.IsPurchased;
+        UpdateView();
+    }
+
+    void EquipStateChangedHandler()
+    {
+        IsEquipped = storeItem.IsEquipped;
+        UpdateView();
     }
 
     public override void UpdateView()
@@ -52,7 +115,16 @@ public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice
         UpdatePrice();
         UpdateImage();
         UpdatePurchasedState();
+        UpdateAnimator();
         UpdateEquippedState();
+    }
+
+    public void UpdateAnimator()
+    {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+        animator.SetBool("IsPurchased", IsPurchased);
+        animator.SetBool("IsEquipped", IsEquipped);
     }
 
     public void UpdatePrice()
@@ -76,7 +148,7 @@ public class StoreItemView : DefaultItemView, IViewTitle, IViewImage, IViewPrice
     public void UpdateEquippedState()
     {
         if (EqiupHighlgihtImageComponent)
-            EqiupHighlgihtImageComponent.enabled =IsActive;
+            EqiupHighlgihtImageComponent.enabled =IsEquipped;
     }
 
 }

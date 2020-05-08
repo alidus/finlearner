@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum HintType { Message, Confirmation}
+public enum HintPreset { NotEnoughMoney }
+
 public class HintsManager : MonoBehaviour
 {
     public static HintsManager instance;
 
     // Prefabs
     GameObject hoveringPanelPrefab;
-    GameObject uiCanvas;
+    Transform hintWrapper;
+
+    public Dictionary<HintPreset, Hint> HintPresets = new Dictionary<HintPreset, Hint>();
 
     private void Awake()
     {
@@ -25,21 +30,32 @@ public class HintsManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         UpdateReferences();
+        FillHintPresets();
+    }
+
+    void FillHintPresets()
+    {
+        HintPresets.Add(HintPreset.NotEnoughMoney, new Hint(hintWrapper, "Не удалось купить", "У вас недосточно денег для покупки", new HintParams(false, true), HintType.Message));
     }
 
     void UpdateReferences()
     {
-        uiCanvas = GameObject.Find("UICanvas");
+        hintWrapper = GameObject.Find("PersCanvas").transform.Find("HintWrapper");
         hoveringPanelPrefab = Resources.Load<GameObject>("Prefabs/Hints/HoveringPanel");
     }
 
-    public void ShowHint(string title, string msg, IHintPresenter presenter = null)
+    public Hint ShowHint(string title, string msg, HintType hintType = HintType.Message)
     {
-        if (presenter == null)
-        {
-            presenter = new HoveringMessageHintPresenter(true, false);
-        }
-        Hint hint = new Hint(title, msg, presenter);
+        HintParams hintParams = new HintParams(false, true);
+        Hint hint = new Hint(hintWrapper, title, msg, hintParams, hintType);
+
         hint.Show();
+        return hint;
+    }
+
+    public Hint ShowHint(Hint hint)
+    {
+        hint.Show();
+        return hint;
     }
 }

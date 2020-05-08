@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameDataManager : MonoBehaviour
 {
 	public static GameDataManager instance;
+	StatusEffectsManager statusEffectsManager;
 
 	// Events, Delegates
 	public event Action OnMoneyValueChanged;
@@ -23,6 +26,11 @@ public class GameDataManager : MonoBehaviour
 	// Sprites
 	public Sprite placeHolderSprite;
 	public Sprite emptySprite;
+
+	public Color dailySEColor;
+	public Color weeklySEColor;
+	public Color monthlySEColor;
+	public Color yearlySEColor;
 
 	private void Awake()
 	{
@@ -41,12 +49,20 @@ public class GameDataManager : MonoBehaviour
 
 	private void Start()
 	{
+		dailySEColor = new Color(0.07f, 1f, 0.07f, 0.6f);
+		weeklySEColor = new Color(0.95f, 0.68f, 1f, 0.6f);
+		monthlySEColor = new Color(0.68f, 0.87f, 1f, 0.6f);
+		yearlySEColor = new Color(1f, 0.68f, 0.72f, 0.6f);
+
 		Init();
 	}
 
 	private void Init()
 	{
 		gameManager = GameManager.instance;
+		statusEffectsManager = StatusEffectsManager.instance;
+
+        InitSleepTimeConsumer();
 		SceneManager.sceneLoaded += SceneLoadedHandling;
 	}
 
@@ -55,7 +71,14 @@ public class GameDataManager : MonoBehaviour
 		Debug.Log(this.GetType().ToString() + "scene loaded handled");
 	}
 
+	public bool IsEnoughMoney(float value)
+	{
+		return Money >= value;
+	}
 
+	public const int TOTAL_FREE_HOURS_IN_A_WEEK = 7 * 24;
+
+	public float FreeHoursOfWeekLeft { get => freeHoursOfWeekLeft; set { freeHoursOfWeekLeft = value; CalculateFreeTimeAmountEffects(); } }
 	private bool isRecordingIncome;
 	public bool IsRecordingIncome
 	{
@@ -136,6 +159,16 @@ public class GameDataManager : MonoBehaviour
 		set { weeklyMoodChange = value; }
 	}
 
+	public float GetDeltaHours()
+	{
+		return Time.deltaTime * HoursPerSecond;
+	}
+
+	public float GetDeltaDay()
+	{
+		return Time.deltaTime * (HoursPerSecond / 24);
+	}
+
 	private DateTime currentDateTime = DateTime.Now;
 	public System.DateTime CurrentDateTime
 	{
@@ -146,6 +179,7 @@ public class GameDataManager : MonoBehaviour
 	private DateTime birthdayDate = DateTime.Now.AddDays(5);
 	private float dayProgress;
 	private GameManager gameManager;
+	private float freeHoursOfWeekLeft = TOTAL_FREE_HOURS_IN_A_WEEK;
 
 	public System.DateTime BirthdayDate
 	{
@@ -153,14 +187,22 @@ public class GameDataManager : MonoBehaviour
 		set { birthdayDate = value; }
 	}
 
-	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged?.Invoke(); }  }
+	public float DayProgress { get => dayProgress; set { dayProgress = value; OnDayProgressChanged?.Invoke(); } }
 	/// <summary>
 	/// How much hours pass per second
 	/// </summary>
 	public float HoursPerSecond { get; internal set; } = 6;
 
+	public ObservableCollection<ITimeConsumer> TimeConsumers { get; set; } = new ObservableCollection<ITimeConsumer>();
+
 	public bool DEBUG { get; set; } = true;
-	public void SetValuesToGameModeSpecified(GameMode gameMode)
+
+	StatusEffect moderateExhaustion = new StatusEffect("Небольшая усталость", -2, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
+    StatusEffect heavyExhaustion = new StatusEffect("Сильная усталость усталость", -5, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
+    StatusEffect tremendousExhaustion = new StatusEffect("Огромная усталость", -10, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
+
+
+    public void SetValuesToGameModeSpecified(GameMode gameMode)
 	{
 		if (gameMode != null)
 		{
@@ -171,12 +213,113 @@ public class GameDataManager : MonoBehaviour
 		}
 	}
 
-	void StartRecordingIncomeStatistics()
+	public void AddTimeConsumers(ITimeConsumer timeConsumer)
 	{
-        IsRecordingIncome = true;
+		TimeConsumers.Add(timeConsumer);
+		UpdateFreeHoursOfWeekLeft();
+	}
+	
+
+	/// <summary>
+	/// Calculate free time of week amount and apply mood status effects respectively
+	/// </summary>
+	public void CalculateFreeTimeAmountEffects()
+	{
+		float freeTimeOfWeekPercentage = FreeHoursOfWeekLeft / TOTAL_FREE_HOURS_IN_A_WEEK;
+		StatusEffect sutableStatusEffect;
+		if (freeTimeOfWeekPercentage <= 0.1)
+		{
+			// Moderate exhaustion
+			sutableStatusEffect = tremendousExhaustion;
+		} else if (freeTimeOfWeekPercentage <= 0.2)
+		{
+            sutableStatusEffect = heavyExhaustion;
+        } else
+		{
+            sutableStatusEffect = moderateExhaustion;
+        }
+
+		if (sutableStatusEffect == null)
+		{
+			statusEffectsManager.RemoveStatusEffects(StatusEffectFlags.Exhaustion);
+        } else
+		{
+            if (!statusEffectsManager.StatusEffects.Contains(sutableStatusEffect))
+			{
+                statusEffectsManager.RemoveStatusEffects(StatusEffectFlags.Exhaustion);
+                statusEffectsManager.ApplyStatusEffects(sutableStatusEffect);
+            }
+        }
     }
 
-    public void AddDay()
+	public void AddTimeConsumers(List<ITimeConsumer> timeConsumers)
+	{
+		foreach (ITimeConsumer timeConsumer in timeConsumers)
+		{
+			AddTimeConsumers(timeConsumer);
+		}
+		UpdateFreeHoursOfWeekLeft();
+	}
+
+	public void RemoveTimeConsumers(ITimeConsumer timeConsumer)
+	{
+		TimeConsumers.Remove(timeConsumer);
+		UpdateFreeHoursOfWeekLeft();
+	}
+
+	public void RemoveTimeConsumers(List<ITimeConsumer> timeConsumers)
+	{
+		foreach (TimeConsumer timeConsumer in timeConsumers)
+		{
+			TimeConsumers.Remove(timeConsumer);
+		}
+		UpdateFreeHoursOfWeekLeft();
+	}
+
+	void InitSleepTimeConsumer()
+	{
+		var sleepTimeConsumer = ScriptableObject.CreateInstance<TimeConsumer>();
+		sleepTimeConsumer.Title = "Sleep";
+		sleepTimeConsumer.HoursOfWeekToConsume = 7 * 8;
+		AddTimeConsumers(sleepTimeConsumer);
+	}
+
+	public void UpdateFreeHoursOfWeekLeft()
+	{
+		float result = TOTAL_FREE_HOURS_IN_A_WEEK;
+		foreach (ITimeConsumer timeConsumer in TimeConsumers)
+		{
+			result -= timeConsumer.HoursOfWeekToConsume;
+		}
+		FreeHoursOfWeekLeft = result;
+	}
+
+
+	void StartRecordingIncomeStatistics()
+	{
+		IsRecordingIncome = true;
+	}
+
+	public Color GetColorForSEFrequency(StatusEffectFrequency statusEffectFrequency)
+	{
+		switch (statusEffectFrequency)
+		{
+			case StatusEffectFrequency.OneShot:
+				return Color.red;
+			case StatusEffectFrequency.Daily:
+				return dailySEColor;
+			case StatusEffectFrequency.Weekly:
+				return weeklySEColor;
+			case StatusEffectFrequency.Monthly:
+				return monthlySEColor;
+			case StatusEffectFrequency.Yearly:
+				return yearlySEColor;
+			default:
+				return Color.white;
+		}
+	}
+
+	public void AddDay()
 	{
 		DailyIncome = 0;
 		int currentMonth = currentDateTime.Month;

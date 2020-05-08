@@ -6,8 +6,10 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-public class DefaultItemGroupView : View, IViewTitle
+public class DefaultItemGroupView<T> : View, IViewTitle where T : Item
 {
+    ItemGroup<T> itemGroup;
+
     public Image ImageComponent { get; private set; }
     public Text TextComponent { get; private set; }
 
@@ -15,11 +17,32 @@ public class DefaultItemGroupView : View, IViewTitle
     public ButtonClickedEvent OnClick { get => ButtonComponent.onClick; set => ButtonComponent.onClick = value; }
     public string Title { get; set; }
 
+    public bool IsSelected { get; set; }
+
     private void OnEnable()
     {
         ImageComponent = this.GetComponent<Image>();
         TextComponent = this.GetComponentInChildren<Text>();
         ButtonComponent = this.GetComponent<Button>();
+    }
+
+    public void Init(ItemGroup<T> itemGroup)
+    {
+        this.itemGroup = itemGroup;
+
+        if (itemGroup != null)
+        {
+            Title = itemGroup.Title;
+            itemGroup.OnSelectedStateChanged -= TargetItemGroupSelectedStateChangedHandler;
+            itemGroup.OnSelectedStateChanged += TargetItemGroupSelectedStateChangedHandler;
+            TargetItemGroupSelectedStateChangedHandler();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (itemGroup != null)
+            itemGroup.OnSelectedStateChanged -= TargetItemGroupSelectedStateChangedHandler;
     }
 
     public void Init(string title)
@@ -30,11 +53,29 @@ public class DefaultItemGroupView : View, IViewTitle
     public override void UpdateView()
     {
         UpdateTitle();
+        UpdateSelectionState();
+    }
+
+    private void UpdateSelectionState()
+    {
+        if (IsSelected)
+        {
+            ImageComponent.color = new Color(0.44f, 0.08f, 0.14f);
+        } else
+        {
+            ImageComponent.color = new Color(0.14f, 0.14f, 0.14f);
+        }
     }
 
     public void UpdateTitle()
     {
         TextComponent.text = Title;
+    }
+
+    void TargetItemGroupSelectedStateChangedHandler()
+    {
+        IsSelected = itemGroup.IsSelected; 
+        UpdateView();
     }
 
 }

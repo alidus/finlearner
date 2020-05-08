@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-public class JobExchangeItemGroupView : DefaultItemGroupView
+public class JobExchangeItemGroupView : DefaultItemGroupView<Job>
 {
 
 }

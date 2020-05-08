@@ -15,6 +15,11 @@ public class DefaultItemView : View, IViewTitle
         TitleTextComponent = this.transform.Find("TitleText").GetComponent<Text>();
     }
 
+    public virtual void Init(Item item)
+    {
+        Title = item.Title;
+    }
+
     public override void UpdateView()
     {
         UpdateTitle();

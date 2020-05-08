@@ -5,23 +5,20 @@ using UnityEngine.UIElements;
 
 public class DefaultItemListView : View
 {
-    public Transform ScrollViewContentTransform { get; set; }
+    private Transform scrollViewContentTransform;
+
+    public Transform ScrollViewContentTransform { 
+        get => scrollViewContentTransform;
+        set => scrollViewContentTransform = value; }
     [SerializeField]
 
     private void OnEnable()
     {
-        ScrollViewContentTransform = this.transform.Find("ScrollView")?.Find("Viewport")?.Find("Content") ?? null;
+        ScrollViewContentTransform = transform.Find("ScrollView")?.Find("Viewport")?.Find("Content");
     }
 
-    public void Init()
-    {
-    }
-    public override void UpdateView()
-    {
 
-    }
-
-    public void DestroyItemViews()
+    public virtual void DestroyItemViews()
     {
         var targetTransform = ScrollViewContentTransform;
         for (int i = targetTransform.childCount - 1; i >= 0; i--)
@@ -30,4 +27,8 @@ public class DefaultItemListView : View
         }
     }
 
+    public override void UpdateView()
+    {
+
+    }
 }

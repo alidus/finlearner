@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class JobExchange : Showcase<Job>
+public class JobExchange : Showcase<Job, JobExchange>
 {
     private UIManager uiManager;
     private GameManager gameManager;
@@ -10,12 +10,9 @@ public class JobExchange : Showcase<Job>
     private StatusEffectsManager statusEffectsController;
     private EnvironmentManager houseManager;
 
-    JobExchangeViewFactory<Job> factory;
+    JobExchangeViewFactory factory;
     Animator animator;
 
-    // Events, Delegates
-    public delegate void LaborExchangeStateChangedAction();
-    public event LaborExchangeStateChangedAction OnLaborExchangeStateChanged;
 
     List<Job> activeJobs = new List<Job>();
     public List<Job> ActiveJobs { get => activeJobs; set => activeJobs = value; }
@@ -37,7 +34,7 @@ public class JobExchange : Showcase<Job>
 
         if (factory == null)
         {
-            factory = new JobExchangeViewFactory<Job>(
+            factory = new JobExchangeViewFactory(
                 this,
                 Resources.Load("Prefabs/JobExchange/Views/JobExchangeView"),
                 Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemGroupListView"),
@@ -46,14 +43,14 @@ public class JobExchange : Showcase<Job>
                 Resources.Load("Prefabs/JobExchange/Views/JobExchangeItemView"));
         }
 
-        if (transform.childCount != 0)
-        {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Destroy(transform.GetChild(i).gameObject);
-            }
-        }
+        DestroyViews();
+
         RootView = factory.CreateRootView(this.transform);
+    }
+
+    private void Start()
+    {
+        gameDataManager = GameDataManager.instance;
     }
 
     protected override ItemDatabase<Job> LoadAssets()
@@ -105,7 +102,7 @@ public class JobExchange : Showcase<Job>
         }
     }
 
-    protected override List<ItemGroup<Job>> FormItemGroups()
+    protected List<ItemGroup<Job>> FormItemGroups()
     {
         var result = new List<ItemGroup<Job>>();
         foreach (Job job in ItemDatabase)
@@ -125,11 +122,13 @@ public class JobExchange : Showcase<Job>
     void RegisterJob(Job job)
     {
         StatusEffectsManager.instance.ApplyStatusEffects(job.StatusEffects);
+        gameDataManager.AddTimeConsumers(job);
     }
 
     void UnregisterJob(Job job)
     {
         StatusEffectsManager.instance.RemoveStatusEffects(job.StatusEffects);
+        gameDataManager.RemoveTimeConsumers(job);
     }
 
     private void OnDisable()

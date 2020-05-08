@@ -283,7 +283,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 18011bc4577a13f48a5a32d757307c34, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &158197520
 Transform:
   m_ObjectHideFlags: 0
@@ -1648,7 +1648,7 @@ PrefabInstance:
     - target: {fileID: 6681405377890085111, guid: da6a82e57aefc5746b3647b437fdee04,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 637899.2
+      value: 665532.7
       objectReference: {fileID: 0}
     - target: {fileID: 6681405377890085111, guid: da6a82e57aefc5746b3647b437fdee04,
         type: 3}

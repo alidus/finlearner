@@ -8,7 +8,6 @@ using static UnityEngine.UI.Button;
 public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IViewEquipState
 {
     Job job;
-    public Button ButtonComponent { get; set; }
     public Image IconImageComponent { get; set; }
     public Image EqiupHighlgihtImageComponent { get; set; }
 
@@ -23,7 +22,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
 
     public Sprite Sprite { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsEquipped { get; set; }
     public bool IsAvailable { get; set; }
 
     public SalaryDisplayView SalaryDisplayView;
@@ -57,24 +56,40 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
         this.job = job;
         Title = job.Title;
         Sprite = job.Sprite;
-        IsActive = job.IsEquipped;
+        IsEquipped = job.IsEquipped;
         Description = job.Description;
         IsAvailable = job.CanBeEquipped;
-        IsActive = job.IsEquipped;
+        IsEquipped = job.IsEquipped;
         SalaryDisplayView.UpdateValues(job);
 
-        job.OnEquipStateChanged += JobStateChangedHandler;
-        applyQuitButton.onClick.AddListener(job.OnClick);
+        job.OnEquipStateChanged -= EquipStateChangedHandler;
+        job.OnEquipStateChanged += EquipStateChangedHandler;
+
+        applyQuitButton.onClick.RemoveAllListeners();
+        applyQuitButton.onClick.AddListener(delegate
+        {
+            if (job.CanBeEquipped)
+            {
+                if (!job.IsEquipped)
+                {
+                    job.Equip();
+                }
+                else
+                {
+                    job.Uneqip();
+                }
+            }
+        });
     }
 
     private void OnDestroy()
     {
-        job.OnEquipStateChanged -= JobStateChangedHandler;
+        job.OnEquipStateChanged -= EquipStateChangedHandler;
     }
 
-    void JobStateChangedHandler()
+    void EquipStateChangedHandler()
     {
-        IsActive = job.IsEquipped;
+        IsEquipped = job.IsEquipped;
         UpdateView();
     }
 
@@ -99,7 +114,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
         if (animator == null)
             animator = GetComponent<Animator>();
         animator.SetBool("IsAvailable", IsAvailable);
-        animator.SetBool("IsActive", IsActive);
+        animator.SetBool("IsActive", IsEquipped);
     }
 
     public void UpdateImage()
@@ -111,7 +126,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
     public void UpdateEquippedState()
     {
         if (EqiupHighlgihtImageComponent)
-            EqiupHighlgihtImageComponent.enabled = IsActive;
+            EqiupHighlgihtImageComponent.enabled = IsEquipped;
     }
 
     public void UpdateDescription()

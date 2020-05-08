@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [CreateAssetMenu(menuName = "SO/Items/Job", fileName = "Job")]
-public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
-{ 
+public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertificate, ITimeConsumer
+{
     [SerializeField]
     private JobCategory category;
     public JobCategory Category
@@ -42,31 +42,11 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
 
     public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
     public bool IsEquipped { get => isEquipped; set => isEquipped = value; }
-    public UnityAction OnClick { get; set; }
-
-    private Job()
-    {
-        SetupClickAction();
-    }
-
-    private void SetupClickAction()
-    {
-        OnClick = delegate
-        {
-            if (CanBeEquipped)
-            {
-                if (!IsEquipped)
-                {
-                    Equip();
-
-                }
-                else
-                {
-                    Uneqip();
-                }
-            }
-        };
-    }
+    public List<Certificate> MandatoryCertificates { get; set; }
+    [SerializeField]
+    private float hoursOfWeekToConsume = 5 * 8;
+    public float HoursOfWeekToConsume { get => hoursOfWeekToConsume; set => hoursOfWeekToConsume = value; }
+    public TimeConsumerCategory TimeConsumerCategory { get; set; } = TimeConsumerCategory.Job;
 
     public IncomeData GetIncomeData()
     {
@@ -176,7 +156,8 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IClickable
             if (job.isValid())
             {
                 return job;
-            } else
+            }
+            else
             {
                 return null;
             }

@@ -6,9 +6,9 @@ using UnityEngine;
 /// <summary>
 /// Showcase that displays StoreObject items
 /// </summary>
-public class Store : Showcase<StoreItem>
+public class Store : Showcase<StoreItem, Store>
 {
-    StoreViewFactory<StoreItem> factory;
+    StoreViewFactory factory;
     Animator animator;
     private void OnEnable()
     {
@@ -27,7 +27,7 @@ public class Store : Showcase<StoreItem>
 
         if (factory == null)
         {
-            factory = new StoreViewFactory<StoreItem>(
+            factory = new StoreViewFactory(
                 this,
                 Resources.Load("Prefabs/Store/Views/StoreView"),
                 Resources.Load("Prefabs/Store/Views/StoreItemGroupListView"),
@@ -36,13 +36,8 @@ public class Store : Showcase<StoreItem>
                 Resources.Load("Prefabs/Store/Views/StoreItemView"));
         }
 
-        if (transform.childCount != 0)
-        {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Destroy(transform.GetChild(i).gameObject);
-            }
-        }
+        DestroyViews();
+
         RootView = factory.CreateRootView(this.transform);
         
     }
@@ -82,7 +77,7 @@ public class Store : Showcase<StoreItem>
         }
     }
 
-    protected override List<ItemGroup<StoreItem>> FormItemGroups()
+    protected List<ItemGroup<StoreItem>> FormItemGroups()
     {
         List<ItemGroup<StoreItem>> result = new List<ItemGroup<StoreItem>>();
         foreach (StoreItem item in ItemDatabase)

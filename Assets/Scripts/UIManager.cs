@@ -6,7 +6,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum GameplayUIState { Store, JobExchange, Home }
+public enum GameplayUIState { Store, JobExchange, Home, EducationHub, Inventory, StatisticsHub }
 
 /// <summary>
 /// Control global UI state
@@ -21,10 +21,13 @@ public class UIManager : MonoBehaviour
     StatusEffectsManager statusEffectsManager;
     Store store;
     JobExchange jobExchange;
+    EducationHub educationHub;
+    Inventory inventory;
+    StatisticsHub statisticsHub;
+
 
     // UI elements
     CanvasGroup loadingScreenCanvasGroup;
-    GameObject statusEffectsPanel;
     GameObject persCanvas;
 
     GameObject overlayCanvas;
@@ -50,19 +53,16 @@ public class UIManager : MonoBehaviour
     Button pauseMenuSettingsButton;
     Button pauseMenuMainMenuButton;
 
-    // Prefabs
-    GameObject statusEffectPanelPrefab;
 
     Image dayProgressBarFillImage;
 
-    HUD hud;
+    GameplayHUD hud;
     
     // Other
     Dictionary<StatusEffect, GameObject> modifiersPanelDictionary = new Dictionary<StatusEffect, GameObject>();
 
 
     public GameplayUIState State = GameplayUIState.Home;
-    int z = 5;
 
     //public enum UIState
     //{
@@ -78,21 +78,53 @@ public class UIManager : MonoBehaviour
     {
         switch (gameplayUIState)
         {
+            case GameplayUIState.Home:
+                store.Hide();
+                jobExchange.Hide();
+                inventory.Hide();
+                statisticsHub.Hide();
+                educationHub.Hide();
+                break;
             case GameplayUIState.Store:
                 jobExchange.Hide();
+                educationHub.Hide();
+                inventory.Hide();
+                statisticsHub.Hide();
                 store.Show();
                 break;
             case GameplayUIState.JobExchange:
                 store.Hide();
+                educationHub.Hide();
+                inventory.Hide();
+                statisticsHub.Hide();
                 jobExchange.Show();
                 break;
-            case GameplayUIState.Home:
+            case GameplayUIState.EducationHub:
                 store.Hide();
                 jobExchange.Hide();
+                inventory.Hide();
+                statisticsHub.Hide();
+                educationHub.Show();
+                break;
+            case GameplayUIState.Inventory:
+                store.Hide();
+                jobExchange.Hide();
+                educationHub.Hide();
+                statisticsHub.Hide();
+                inventory.Show();
+                break;
+            case GameplayUIState.StatisticsHub:
+                store.Hide();
+                jobExchange.Hide();
+                educationHub.Hide();
+                inventory.Hide();
+                statisticsHub.Show();
                 break;
             default:
                 break;
         }
+
+        Console.Print("UI state switched to: " + gameplayUIState.ToString());
 
         State = gameplayUIState;
     }
@@ -126,29 +158,16 @@ public class UIManager : MonoBehaviour
         {
             store = Store.instance as Store;
             jobExchange = JobExchange.instance as JobExchange;
+            educationHub = EducationHub.instance as EducationHub;
+            inventory = Inventory.instance as Inventory;
+            statisticsHub = StatisticsHub.instance as StatisticsHub;
+
             overlayCanvas = GameObject.Find("OverlayCanvas");
             storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;
 
             jobExchangeContainer = overlayCanvas.transform.Find("JobExchangeContainer").gameObject;
 
             pauseMenuPanel = overlayCanvas.transform.Find("PauseMenuPanel").gameObject;
-            statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel").gameObject;
-
-            foreach (Transform transform in statusEffectsPanel.transform.GetComponentsInChildren<Transform>())
-            {
-                if (transform.gameObject.name == "MoneyStatusEffectsContentPanel")
-                {
-                    moneyStatusEffectsContentPanel = transform.gameObject;
-                }
-                else if (transform.gameObject.name == "MoodStatusEffectsContentPanel")
-                {
-                    moodStatusEffectsContentPanel = transform.gameObject;
-                }
-            }
-            statusEffectsPanel = overlayCanvas.transform.Find("StatusEffectsPanel")?.gameObject;
-
-            // Prefabs references
-            statusEffectPanelPrefab = Resources.Load("Prefabs/StatusEffects/StatusEffectPanel") as GameObject;
 
             Transform pauseMenuButtonsContainerTrans = pauseMenuPanel.transform.Find("ButtonsContainer");
             pauseMenuResumeButton = pauseMenuButtonsContainerTrans.Find("PauseMenuButton_Resume")?.GetComponent<Button>();
@@ -156,7 +175,7 @@ public class UIManager : MonoBehaviour
             pauseMenuMainMenuButton = pauseMenuButtonsContainerTrans.Find("PauseMenuButton_MainMenu")?.GetComponent<Button>();
         }
         
-        hud = GameObject.Find("HUDCanvas")?.GetComponent<HUD>();
+        hud = GameObject.Find("HUDCanvas")?.GetComponent<GameplayHUD>();
     }
 
     internal void OpenCardSelection()
@@ -191,9 +210,6 @@ public class UIManager : MonoBehaviour
         gameDataManager = GameDataManager.instance;
         statusEffectsManager = StatusEffectsManager.instance;
 
-
-
-        statusEffectsManager.OnStatusEffectsChanged += UpdateStatusEffectsView;
 
         SceneManager.sceneLoaded += SceneLoadedHandling;
         UpdateReferencesAndButtonMappings();
@@ -250,66 +266,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ShowModifiersInfoPanel(bool state)
-    {
-        if (state)
-        {
-        }
-        else
-        {
-        }
-        statusEffectsPanel.SetActive(state);
-    }
-
-    public void ToggleModifiersInfoPanel()
-    {
-        if (statusEffectsPanel.activeSelf)
-        {
-            ShowModifiersInfoPanel(false);
-        }
-        else
-        {
-            ShowModifiersInfoPanel(true);
-        }
-    }
-
-
-
-    
-
-
-    public void UpdateStatusEffectsView()
-    {
-        if (statusEffectsPanel)
-        {
-            // Clear status effect panel
-            foreach (Transform transform in moneyStatusEffectsContentPanel.transform.GetComponentInChildren<Transform>())
-            {
-                Destroy(transform.gameObject);
-            }
-            foreach (Transform transform in moodStatusEffectsContentPanel.transform.GetComponentInChildren<Transform>())
-            {
-                Destroy(transform.gameObject);
-            }
-            // Iterate through status effects list and create status effects panel
-            foreach (StatusEffect statusEffect in statusEffectsManager.StatusEffects)
-            {
-                GameObject panel = Instantiate(statusEffectPanelPrefab);
-                if (statusEffect.Type == StatusEffectType.Money)
-                {
-                    panel.transform.SetParent(moneyStatusEffectsContentPanel.transform);
-                } else if (statusEffect.Type == StatusEffectType.Mood)
-                {
-                    panel.transform.SetParent(moodStatusEffectsContentPanel.transform);
-                }
-                panel.transform.localScale = new Vector3(1, 1, 1);
-                panel.transform.Find("Info").transform.Find("TopPanel").transform.Find("TitleText").GetComponent<Text>().text = statusEffect.Title;
-                Transform BottomPanelTransform = panel.transform.Find("Info").transform.Find("BottomPanel");
-                BottomPanelTransform.transform.Find("TypePanel").GetComponentInChildren<Text>().text = statusEffect.Frequency.ToString();
-                BottomPanelTransform.transform.Find("ValuePanel").GetComponentInChildren<Text>().text = (statusEffect.Value > 0 ? "+" : "") + statusEffect.Value;
-            }
-        }
-    }
 
 
     public void ShowPauseMenu()

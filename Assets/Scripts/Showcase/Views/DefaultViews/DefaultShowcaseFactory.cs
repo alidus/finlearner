@@ -4,17 +4,23 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DefaultShowcaseViewFactory<T> where T : Item
+public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass : Component
 {
-    protected Showcase<T> showcase;
+    protected Showcase<T, TClass> showcase;
     protected Object rootViewPrefab;
     protected Object itemGroupListViewPrefab;
     protected Object itemGroupViewPrefab;
     protected Object itemListViewPrefab;
     protected Object itemViewPrefab;
 
+    protected View itemGroupListView;
+    protected DefaultItemListView itemListView;
+    protected View rootView;
+
+
+
     public DefaultShowcaseViewFactory(
-        Showcase<T> showcase,
+        Showcase<T, TClass> showcase,
         Object rootViewPrefab,
         Object itemGroupListViewPrefab,
         Object itemGroupViewPrefab,
@@ -31,16 +37,17 @@ public class DefaultShowcaseViewFactory<T> where T : Item
 
     public virtual View CreateRootView(Transform parentTransform)
     {
-        DefaultRootView storeView = GameObject.Instantiate(rootViewPrefab as GameObject, parentTransform).GetComponent<DefaultRootView>();
-        storeView.Init();
-        storeView.ItemGroupListView = CreateItemGroupListView(storeView.transform);
-        storeView.ItemListView = CreateItemListView(storeView.transform);
-        storeView.UpdateView();
-        return storeView;
+        rootView = GameObject.Instantiate(rootViewPrefab as GameObject, parentTransform).GetComponent<DefaultRootView>();
+        itemGroupListView = CreateItemGroupListView(rootView.transform);
+        itemListView = CreateItemListView(rootView.transform);
+        rootView.UpdateView();
+        return rootView;
     }
 
     public virtual View CreateItemGroupListView(Transform parentTransform)
     {
+        Console.Print("_Building default item group list view");
+
         DefaultItemGroupListView storeItemGroupListView = GameObject.Instantiate(itemGroupListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemGroupListView>();
         storeItemGroupListView.Init();
         foreach (ItemGroup<T> itemGroup in showcase.ItemGroups)
@@ -53,30 +60,43 @@ public class DefaultShowcaseViewFactory<T> where T : Item
 
     public virtual View CreateItemGroupView(ItemGroup<T> itemGroup, Transform parentTransform)
     {
-        DefaultItemGroupView storeItemGroupView = GameObject.Instantiate(itemGroupViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemGroupView>();
-        storeItemGroupView.OnClick.AddListener(delegate { showcase.SelectedItemGroup = itemGroup; });
-        storeItemGroupView.Init(itemGroup.Title);
+        DefaultItemGroupView<T> storeItemGroupView = GameObject.Instantiate(itemGroupViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemGroupView<T>>();
+        storeItemGroupView.OnClick.AddListener(delegate { 
+            showcase.SelectedItemGroup = itemGroup;
+        });
+        storeItemGroupView.Init(itemGroup);
+        
+
         storeItemGroupView.UpdateView();
         return storeItemGroupView;
     }
-    public virtual View CreateItemListView(Transform parentTransform)
+
+    public virtual void UpdateItemListView()
     {
-        DefaultItemListView itemListView = GameObject.Instantiate(itemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
-        itemListView.Init();
-        foreach(Item item in showcase.SelectedItemGroup.Items)
+        Console.Print("_Updating default item list view");
+
+        itemListView.DestroyItemViews();
+        foreach (Item item in showcase.SelectedItemGroup.Items)
         {
             CreateItemView(item, itemListView.ScrollViewContentTransform);
         }
+    }
+
+    public virtual DefaultItemListView CreateItemListView(Transform parentTransform)
+    {
+        Console.Print("_Building default item list view");
+
+        DefaultItemListView itemListView = GameObject.Instantiate(itemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
+
         return itemListView;
     }
 
     public virtual View CreateItemView(Item item, Transform parentTransform)
     {
-        DefaultItemView storeItemView = GameObject.Instantiate(itemViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemView>();
-        
-        storeItemView.Title = item.Title;
-        storeItemView.UpdateView();
-        return storeItemView;
+        DefaultItemView itemView = GameObject.Instantiate(itemViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemView>();
+        itemView.Init(item);
+        itemView.UpdateView();
+        return itemView;
     }
     
 }

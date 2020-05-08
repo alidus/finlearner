@@ -23,6 +23,4 @@ public class Item : ScriptableObject
         get { return desc; }
         set { desc = value; }
     }
-
-
 }

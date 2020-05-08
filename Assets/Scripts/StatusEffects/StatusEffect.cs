@@ -6,14 +6,15 @@ using UnityEngine;
 public enum StatusEffectType { Money, Mood}
 public enum StatusEffectFrequency { OneShot, Daily, Weekly, Monthly, Yearly }
 [Flags]
-public enum StatusEffectFlags { DailySalary = 1, WeeklySalary = 2 , MonthlySalary = 4 , YearlySalary = 8 }
+public enum StatusEffectFlags { Job = 1, Education = 2, Exhaustion = 4 }
+
 
 
 [System.Serializable]
 public class StatusEffect
 {
     [SerializeField]
-    private string title = "MODIFIER_TITLE";
+    private string title;
     public string Title
     {
         get { return title; }
@@ -35,8 +36,6 @@ public class StatusEffect
     }
     [SerializeField]
     private StatusEffectType type;
-
-
     public StatusEffectType Type
     {
         get { return type; }

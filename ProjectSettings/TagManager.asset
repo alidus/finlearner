@@ -12,6 +12,7 @@ TagManager:
   - Table
   - WeekDayIndicator
   - GameEvents
+  - PersCanvas
   layers:
   - Default
   - TransparentFX
@@ -60,4 +61,10 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 2943096007
+    locked: 0
+  - name: HintBackground
+    uniqueID: 3771977259
+    locked: 0
+  - name: Hint
+    uniqueID: 833548059
     locked: 0

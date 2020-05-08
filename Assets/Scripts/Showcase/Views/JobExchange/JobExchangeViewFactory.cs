@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JobExchangeViewFactory<T> : DefaultShowcaseViewFactory<T> where T : Job
+public class JobExchangeViewFactory : DefaultShowcaseViewFactory<Job, JobExchange>
 {
-    public JobExchangeViewFactory(Showcase<T> showcase, Object rootViewPrefab, Object itemGroupListViewPrefab, Object itemGroupViewPrefab, Object itemListViewPrefab, Object itemViewPrefab) : base(showcase, rootViewPrefab, itemGroupListViewPrefab, itemGroupViewPrefab, itemListViewPrefab, itemViewPrefab)
+    public JobExchangeViewFactory(Showcase<Job, JobExchange> showcase, Object rootViewPrefab, Object itemGroupListViewPrefab, Object itemGroupViewPrefab, Object itemListViewPrefab, Object itemViewPrefab) : base(showcase, rootViewPrefab, itemGroupListViewPrefab, itemGroupViewPrefab, itemListViewPrefab, itemViewPrefab)
     {
     }
 
-    public override View CreateItemListView(Transform parentTransform)
+    public override DefaultItemListView CreateItemListView(Transform parentTransform)
     {
         DefaultItemListView itemListView = GameObject.Instantiate(itemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
-        itemListView.Init();
         RefreshItemListView(itemListView, itemListView.ScrollViewContentTransform);
         showcase.OnSelectedItemGroupChanged += delegate { RefreshItemListView(itemListView, itemListView.ScrollViewContentTransform); };
         return itemListView;

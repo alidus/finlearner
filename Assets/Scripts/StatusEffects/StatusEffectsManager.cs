@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,18 +13,15 @@ public class StatusEffectsManager : MonoBehaviour
 
     // Controllers, Managers
     private GameDataManager gameDataManager;
-    
+
     // Status effects
-    List<StatusEffect> statusEffects = new List<StatusEffect>();
-    public System.Collections.Generic.List<StatusEffect> StatusEffects
+    ObservableCollection<StatusEffect> statusEffects = new ObservableCollection<StatusEffect>();
+    public ObservableCollection<StatusEffect> StatusEffects
     {
         get { return statusEffects; }
         set { statusEffects = value; }
     }
 
-    // Events, Delegates
-    public delegate void StatusEffectsChangedAction();
-    public event StatusEffectsChangedAction OnStatusEffectsChanged;
     private void Awake()
     {
         if (instance == null)
@@ -137,7 +136,6 @@ public class StatusEffectsManager : MonoBehaviour
                 StatusEffects.Add(statusEffect);
             }
         }
-        OnStatusEffectsChanged();
     }
 
     public void ApplyStatusEffects(StatusEffect statusEffect)
@@ -150,19 +148,33 @@ public class StatusEffectsManager : MonoBehaviour
         {
             StatusEffects.Add(statusEffect);
         }
-        OnStatusEffectsChanged();
     }
 
     public void RemoveStatusEffects(List<StatusEffect> statusEffects)
     {
-        this.StatusEffects.RemoveAll(statusEffect => statusEffects.Contains(statusEffect));
-        OnStatusEffectsChanged();
+        for (int i = statusEffects.Count - 1; i >= 0; i--)
+        {
+            RemoveStatusEffects(statusEffects[i]);
+        }
+    }
+
+    public void RemoveStatusEffects(IEnumerable<StatusEffect> statusEffects)
+    {
+        for (int i = statusEffects.Count() - 1; i >= 0; i--)
+        {
+            RemoveStatusEffects(statusEffects.ElementAt(i));
+        }
     }
 
     public void RemoveStatusEffects(StatusEffect statusEffect)
     {
         this.StatusEffects.Remove(statusEffect);
-        OnStatusEffectsChanged();
+    }
+
+    public void RemoveStatusEffects(StatusEffectFlags statusEffectFlags)
+    {
+        IEnumerable<StatusEffect> statusEffectsToDestoy = StatusEffects.Where(se => se.Flags.HasFlag(statusEffectFlags));
+        RemoveStatusEffects(statusEffectsToDestoy);
     }
 
 

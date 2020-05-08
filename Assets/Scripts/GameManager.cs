@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
     {
         if (GameState == GameState.InGame)
         {
-            gameDataManager.DayProgress += Time.deltaTime * (gameDataManager.HoursPerSecond / 24);
+            gameDataManager.DayProgress += gameDataManager.GetDeltaDay();
 
             if (gameDataManager.DayProgress >= 1)
             {
@@ -121,7 +121,16 @@ public class GameManager : MonoBehaviour
             ToggleConsole();
         }
 
-        CheckIfPauseInput();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (uiManager.State != GameplayUIState.Home)
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.Home);
+            } else
+            {
+                Pause();
+            }
+        }
     }
 
     private void SceneLoadedHandling(Scene arg0, LoadSceneMode arg1)
@@ -224,22 +233,10 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void CheckIfPauseInput()
-    {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Pause();
-        }
-    }
 
     public void PlayButtonOnClick(int gameModeIndex)
     {
         
-    }
-
-    public void ToggleModifiersInformation()
-    {
-        uiManager.ToggleModifiersInfoPanel();
     }
 
     public void Pause()
