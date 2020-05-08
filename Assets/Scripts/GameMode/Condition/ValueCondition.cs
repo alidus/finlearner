@@ -55,7 +55,7 @@ public class ValueCondition : GameCondition
         UpdateState();
     }
 
-    private void UpdateState()
+    private void UpdateState(float deltaValue = 0)
     {
         switch (targetVariable)
         {

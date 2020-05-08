@@ -13,22 +13,31 @@ public class SalaryDisplayView : View
     public float MonthlySalary { get => monthlySalary; set => monthlySalary = value; }
     public float YearlySalary { get => yearlySalary; set => yearlySalary = value; }
 
-    Text dailySalaryTextComponent, weeklySalaryTextComponent, monthlySalaryTextComponent, yearlySalaryTextComponent;
+    Text dailySalaryValueTextComponent, weeklySalaryValueTextComponent, monthlySalaryValueTextComponent, yearlySalaryValueTextComponent;
+    Text dailySalaryLabelTextComponent, weeklySalaryLabelTextComponent, monthlySalaryLabelTextComponent, yearlySalaryLabelTextComponent;
+
     Image dailySalaryBackground, weeklySalaryBackground, monthlySalaryBackground, yearlySalaryBackground;
 
 
     private void OnEnable()
     {
         var upperValues = transform.Find("UpperValues");
-        dailySalaryTextComponent = upperValues.Find("DailySalary").Find("Value").GetComponent<Text>();
-        weeklySalaryTextComponent = upperValues.Find("WeeklySalary").Find("Value").GetComponent<Text>();
+        dailySalaryValueTextComponent = upperValues.Find("DailySalary").Find("Value").GetComponent<Text>();
+        dailySalaryLabelTextComponent = upperValues.Find("DailySalary").Find("Label").GetComponent<Text>();
+
+        weeklySalaryValueTextComponent = upperValues.Find("WeeklySalary").Find("Value").GetComponent<Text>();
+        weeklySalaryLabelTextComponent = upperValues.Find("WeeklySalary").Find("Label").GetComponent<Text>();
 
         dailySalaryBackground = upperValues.Find("DailySalary").GetComponent<Image>();
         weeklySalaryBackground = upperValues.Find("WeeklySalary").GetComponent<Image>();
 
+
         var lowerValues = transform.Find("LowerValues");
-        monthlySalaryTextComponent = lowerValues.Find("MonthlySalary").Find("Value").GetComponent<Text>();
-        yearlySalaryTextComponent = lowerValues.Find("YearlySalary").Find("Value").GetComponent<Text>();
+        monthlySalaryValueTextComponent = lowerValues.Find("MonthlySalary").Find("Value").GetComponent<Text>();
+        monthlySalaryLabelTextComponent = lowerValues.Find("MonthlySalary").Find("Label").GetComponent<Text>();
+
+        yearlySalaryValueTextComponent = lowerValues.Find("YearlySalary").Find("Value").GetComponent<Text>();
+        yearlySalaryLabelTextComponent = lowerValues.Find("YearlySalary").Find("Label").GetComponent<Text>();
 
         monthlySalaryBackground = lowerValues.Find("MonthlySalary").GetComponent<Image>();
         yearlySalaryBackground = lowerValues.Find("YearlySalary").GetComponent<Image>();
@@ -41,10 +50,54 @@ public class SalaryDisplayView : View
 
     void UpdateColorScheme()
     {
-        dailySalaryBackground.color = GameDataManager.instance.DailySEColor;
-        weeklySalaryBackground.color = GameDataManager.instance.WeeklySEColor;
-        monthlySalaryBackground.color = GameDataManager.instance.MonthlySEColor;
-        yearlySalaryBackground.color = GameDataManager.instance.YearlySEColor;
+        if (dailySalary > 0)
+        {
+            dailySalaryLabelTextComponent.color = GameDataManager.instance.DailyFrequencyColor;
+            dailySalaryValueTextComponent.color = Color.white;
+        } else
+        {
+            dailySalaryLabelTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+            dailySalaryValueTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+        }
+
+        if (weeklySalary > 0)
+        {
+            weeklySalaryLabelTextComponent.color = GameDataManager.instance.WeeklyFrequencyColor;
+            weeklySalaryValueTextComponent.color = Color.white;
+
+        }
+        else
+        {
+            weeklySalaryLabelTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+            weeklySalaryValueTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+
+        }
+
+        if (monthlySalary > 0)
+        {
+            monthlySalaryLabelTextComponent.color = GameDataManager.instance.MonthlyFrequencyColor;
+            monthlySalaryValueTextComponent.color = Color.white;
+
+        }
+        else
+        {
+            monthlySalaryLabelTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+            monthlySalaryValueTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+
+        }
+
+        if (yearlySalary > 0)
+        {
+            yearlySalaryLabelTextComponent.color = GameDataManager.instance.YearlyFrequencyColor;
+            yearlySalaryValueTextComponent.color = Color.white;
+
+        }
+        else
+        {
+            yearlySalaryLabelTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+            yearlySalaryValueTextComponent.color = GameDataManager.instance.DefaultSalaryDisplayLabelColor;
+
+        }
     }
 
     public void UpdateValues(Job job)
@@ -62,9 +115,9 @@ public class SalaryDisplayView : View
 
     private void UpdateText()
     {
-        dailySalaryTextComponent.text = DailySalary.ToString();
-        weeklySalaryTextComponent.text = WeeklySalary.ToString();
-        monthlySalaryTextComponent.text = MonthlySalary.ToString();
-        yearlySalaryTextComponent.text = YearlySalary.ToString();
+        dailySalaryValueTextComponent.text = DailySalary.ToString();
+        weeklySalaryValueTextComponent.text = WeeklySalary.ToString();
+        monthlySalaryValueTextComponent.text = MonthlySalary.ToString();
+        yearlySalaryValueTextComponent.text = YearlySalary.ToString();
     }
 }

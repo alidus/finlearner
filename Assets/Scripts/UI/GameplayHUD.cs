@@ -11,8 +11,8 @@ public class GameplayHUD : MonoBehaviour
     UIManager uiManager;
     GameDataManager gameDataManager;
 
-    private GameObject moneyPanel;
-    private GameObject moodPanel;
+    private MoneyPanelView moneyPanelView;
+    private MoodPanelView moodPanelView;
     private GameObject weekProgressBar;
     private GameObject dayProgressBar;
     private GameObject infoPanel;
@@ -40,8 +40,8 @@ public class GameplayHUD : MonoBehaviour
 
     private void UpdateReferences()
     {
-        moneyPanel = GameObject.Find("MoneyPanel");
-        moodPanel = GameObject.Find("MoodPanel");
+        moneyPanelView = GameObject.Find("MoneyPanel").GetComponent<MoneyPanelView>();
+        moodPanelView = GameObject.Find("MoodPanel").GetComponent<MoodPanelView>();
         infoPanel = GameObject.Find("InfoPanel");
         weekProgressBar = GameObject.Find("WeekProgressBar");
         dayProgressBar = GameObject.Find("DayProgressBar");
@@ -147,23 +147,34 @@ public class GameplayHUD : MonoBehaviour
         UpdateWeekProgressBar();
     }
 
-    public void UpdateMoneyPanel()
+    public void UpdateMoneyPanel(float deltaValue = 0)
     {
-        if (moneyPanel)
+        if (moneyPanelView != null)
         {
-            moneyPanel.GetComponentInChildren<Text>().text = "$" + gameDataManager.Money.ToString();
+            moneyPanelView.Value = (int)gameDataManager.Money;
+            moneyPanelView.UpdateView();
+            if (deltaValue != 0)
+            {
+                if (deltaValue > 0)
+                    moneyPanelView.PlayAddAnim();
+                else
+                    moneyPanelView.PlaySubAnim();
+            }
         }
     }
 
-    public void UpdateMoodPanel()
+    public void UpdateMoodPanel(float deltaValue = 0)
     {
-        if (moodPanel)
+        if (moodPanelView != null)
         {
-            moodPanel.GetComponentInChildren<Text>().text = gameDataManager.Mood.ToString();
-            if (gameDataManager.Mood > 0)
+            moodPanelView.Value = (int)gameDataManager.Mood;
+            moodPanelView.UpdateView();
+            if (deltaValue != 0)
             {
-                float coef = (float)gameDataManager.Mood / 100;
-                moodPanel.GetComponentInChildren<Text>().color = new Color(1, coef, coef, 1);
+                if (deltaValue > 0)
+                    moodPanelView.PlayAddAnim();
+                else
+                    moodPanelView.PlaySubAnim();
             }
         }
     }

@@ -12,8 +12,9 @@ public class GameDataManager : MonoBehaviour
 	StatusEffectsManager statusEffectsManager;
 
 	// Events, Delegates
-	public event Action OnMoneyValueChanged;
-	public event Action OnMoodValueChanged;
+	public delegate void ValueChangedAction(float deltaValue);
+	public event ValueChangedAction OnMoneyValueChanged;
+	public event ValueChangedAction OnMoodValueChanged;
 
 	public event Action OnDayStarted;
 	public event Action OnNewWeekStarted;
@@ -27,13 +28,25 @@ public class GameDataManager : MonoBehaviour
 	public Sprite placeHolderSprite;
 	public Sprite emptySprite;
 
-	public Color DailySEColor = new Color(0.07f, 1f, 0.07f, 0.6f);
-	public Color WeeklySEColor = new Color(0.95f, 0.68f, 1f, 0.6f);
-	public Color MonthlySEColor = new Color(0.68f, 0.87f, 1f, 0.6f);
-	public Color YearlySEColor = new Color(1f, 0.68f, 0.72f, 0.6f);
+    [Header("Frequency colors")]
+    public Color DailyFrequencyColor = new Color(0.07f, 1f, 0.07f, 0.6f);
+	public Color WeeklyFrequencyColor = new Color(0.95f, 0.68f, 1f, 0.6f);
+	public Color MonthlyFrequencyColor = new Color(0.68f, 0.87f, 1f, 0.6f);
+	public Color YearlyFrequencyColor = new Color(1f, 0.68f, 0.72f, 0.6f);
 
+    [Header("Buttons colors")]
     public Color ButtonDefaultColor = new Color(0.14f, 0.14f, 0.14f);
 	public Color ButtonSelectedColor = new Color(0.44f, 0.08f, 0.14f);
+
+	[Header("Education-related colors")]
+	public Color CourseEducationEnityTypeColor = new Color(1f, 0, 0, 0.4f);
+	public Color DegreeEducationEnityTypeColor = new Color(1f, 0, 0.7f, 0.4f);
+	public Color TechnicalEducationDirectionTypeColor = new Color(0.12f, 0.13f, 0.68f, 0.7f);
+	public Color LawEducationDirectionTypeColor = new Color(0.84f, 0.62f, 0, 0.7f);
+	[Header("Salary display")]
+	public Color DefaultSalaryDisplayLabelColor = Color.white;
+
+
 
 	private void Awake()
 	{
@@ -92,16 +105,19 @@ public class GameDataManager : MonoBehaviour
 		get { return money; }
 		set
 		{
-			if (IsRecordingIncome)
+			if (value != money)
 			{
 				float delta = (value - money);
-				DailyIncome += delta;
-				WeeklyIncome += delta;
-				MonthlyIncome += delta;
-				YearlyIncome += delta;
-			}
-			money = value;
-			OnMoneyValueChanged?.Invoke();
+				if (IsRecordingIncome)
+                {
+                    DailyIncome += delta;
+                    WeeklyIncome += delta;
+                    MonthlyIncome += delta;
+                    YearlyIncome += delta;
+                }
+                money = value;
+                OnMoneyValueChanged?.Invoke(delta);
+            }
 		}
 	}
 
@@ -109,7 +125,14 @@ public class GameDataManager : MonoBehaviour
 	public float Mood
 	{
 		get { return mood; }
-		set { mood = value; OnMoodValueChanged?.Invoke(); }
+		set {
+			if (value != mood)
+			{
+				float delta = (value - money);
+				mood = value;
+				OnMoodValueChanged?.Invoke(delta);
+            }
+        }
 	}
 
 	private int age = 18;
@@ -226,7 +249,7 @@ public class GameDataManager : MonoBehaviour
 	public void CalculateFreeTimeAmountEffects()
 	{
 		float freeTimeOfWeekPercentage = FreeHoursOfWeekLeft / TOTAL_FREE_HOURS_IN_A_WEEK;
-		StatusEffect sutableStatusEffect;
+		StatusEffect sutableStatusEffect = null;
 		if (freeTimeOfWeekPercentage <= 0.1)
 		{
 			// Moderate exhaustion
@@ -234,7 +257,7 @@ public class GameDataManager : MonoBehaviour
 		} else if (freeTimeOfWeekPercentage <= 0.2)
 		{
             sutableStatusEffect = heavyExhaustion;
-        } else
+        } else if (freeTimeOfWeekPercentage <= 0.3)
 		{
             sutableStatusEffect = moderateExhaustion;
         }
@@ -307,13 +330,13 @@ public class GameDataManager : MonoBehaviour
 			case StatusEffectFrequency.OneShot:
 				return Color.red;
 			case StatusEffectFrequency.Daily:
-				return DailySEColor;
+				return DailyFrequencyColor;
 			case StatusEffectFrequency.Weekly:
-				return WeeklySEColor;
+				return WeeklyFrequencyColor;
 			case StatusEffectFrequency.Monthly:
-				return MonthlySEColor;
+				return MonthlyFrequencyColor;
 			case StatusEffectFrequency.Yearly:
-				return YearlySEColor;
+				return YearlyFrequencyColor;
 			default:
 				return Color.white;
 		}

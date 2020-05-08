@@ -9,6 +9,7 @@ public abstract class Showcase<T, TClass> : MonoBehaviour where T : Item where T
     public static Showcase<T, TClass> instance;
     private ItemGroup<T> selectedItemGroup;
 
+
     public ItemDatabase<T> ItemDatabase { get; protected set; } = new ItemDatabase<T>();
     public List<ItemGroup<T>> ItemGroups { get; set; } = new List<ItemGroup<T>>();
     public ItemGroup<T> SelectedItemGroup { get => selectedItemGroup; set { 
@@ -51,6 +52,7 @@ public abstract class Showcase<T, TClass> : MonoBehaviour where T : Item where T
         }
         return itemGroup;
     }
+
     private void OnDisable()
     {
         foreach (Transform child in gameObject.transform)

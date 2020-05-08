@@ -61,8 +61,11 @@ public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass :
     public virtual View CreateItemGroupView(ItemGroup<T> itemGroup, Transform parentTransform)
     {
         DefaultItemGroupView<T> storeItemGroupView = GameObject.Instantiate(itemGroupViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemGroupView<T>>();
-        storeItemGroupView.OnClick.AddListener(delegate { 
+        storeItemGroupView.OnClick.AddListener(delegate {
+            showcase.SelectedItemGroup.OnCollectionModified -= UpdateItemListView;
             showcase.SelectedItemGroup = itemGroup;
+            // Is case if selected item group was modified - update item list view
+            showcase.SelectedItemGroup.OnCollectionModified += UpdateItemListView;
         });
         storeItemGroupView.Init(itemGroup);
         

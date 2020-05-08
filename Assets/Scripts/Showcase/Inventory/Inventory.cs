@@ -45,7 +45,7 @@ public class Inventory : Showcase<Item, Inventory>
 
     private void Start()
     {
-         foreach (StoreItem item in Store.instance.ItemDatabase)
+        foreach (StoreItem item in Store.instance.ItemDatabase)
         {
             item.OnPurchaseStateChanged += delegate { if (item.IsPurchased == true) { AddItem(item); } else { RemoveItem(item); } };
         }
@@ -56,7 +56,7 @@ public class Inventory : Showcase<Item, Inventory>
     {
         ItemDatabase<Item> result = new ItemDatabase<Item>();
         Console.Print("Loading inventory items...");
-        
+         
         Console.Print("Inventory catalog loaded");
         return result;
     }

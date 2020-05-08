@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class InventoryViewFactory : DefaultShowcaseViewFactory<Item, Inventory>
 {
+    new Inventory showcase;
     protected Object certificateListViewPrefab;
     protected Object certificateViewPrefab;
     protected Object storeItemListViewPrefab;
@@ -13,6 +14,7 @@ public class InventoryViewFactory : DefaultShowcaseViewFactory<Item, Inventory>
     public InventoryViewFactory(Showcase<Item, Inventory> showcase, Object rootViewPrefab, Object itemGroupListViewPrefab, Object itemGroupViewPrefab, Object certificateListViewPrefab, Object itemViewPrefab, Object storeItemListViewPrefab, Object storeItemViewPrefab) 
         : base(showcase, rootViewPrefab, itemGroupListViewPrefab, itemGroupViewPrefab, null, null)
     {
+        this.showcase = showcase as Inventory;
         this.certificateListViewPrefab = certificateListViewPrefab;
         this.storeItemListViewPrefab = storeItemListViewPrefab;
         this.storeItemViewPrefab = storeItemViewPrefab;
@@ -27,6 +29,8 @@ public class InventoryViewFactory : DefaultShowcaseViewFactory<Item, Inventory>
         itemGroupListView = CreateItemGroupListView(rootView.transform);
         itemListView = CreateItemListView(rootView.transform);
         showcase.OnSelectedItemGroupChanged += delegate { UpdateItemListView(); };
+
+        
 
         UpdateItemListView();
         rootView.UpdateView();

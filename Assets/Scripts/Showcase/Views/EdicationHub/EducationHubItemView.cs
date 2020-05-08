@@ -21,6 +21,7 @@ public class EducationHubItemView : DefaultItemView, IViewTitle
 
     Button applyQuitButton;
     Text applyQuitButtonText;
+    Image eduEntityTypeBackground;
     Text eduEntityTypeText;
     Text priceTagText;
 
@@ -51,6 +52,7 @@ public class EducationHubItemView : DefaultItemView, IViewTitle
         TitleTextComponent = textInfo.Find("TitlePanel").Find("Title").GetComponent<Text>();
         DescriptionText = textInfo.Find("DescPanel").Find("Desc").GetComponent<Text>();
         var valuesInfo = infoPanel.Find("ValuesInfo");
+        eduEntityTypeBackground = valuesInfo.GetComponent<Image>();
         eduEntityTypeText = valuesInfo.Find("EduEntityType").GetComponent<Text>();
         priceTagText = valuesInfo.Find("PriceTag").Find("Text").GetComponent<Text>();
 
@@ -180,11 +182,11 @@ public class EducationHubItemView : DefaultItemView, IViewTitle
         {
             case EducationEntityType.Course:
                 eduEntityTypeText.text = "Курс";
-                eduEntityTypeText.color = Color.HSVToRGB(0, 0.7f, 0.5f);
+                eduEntityTypeBackground.color = GameDataManager.instance.CourseEducationEnityTypeColor;
                 break;
             case EducationEntityType.Degree:
-                eduEntityTypeText.text = "Образование";
-                eduEntityTypeText.color = Color.HSVToRGB(0.76f, 0.7f, 0.5f);
+                eduEntityTypeText.text = "Степень";
+                eduEntityTypeBackground.color = GameDataManager.instance.DegreeEducationEnityTypeColor;
                 break;
             default:
                 break;

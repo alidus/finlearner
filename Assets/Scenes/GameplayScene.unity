@@ -190,7 +190,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
-    m_MaxSize: 50
+    m_MaxSize: 54
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1010,6 +1010,8 @@ GameObject:
   - component: {fileID: 136311555}
   - component: {fileID: 136311554}
   - component: {fileID: 136311556}
+  - component: {fileID: 136311558}
+  - component: {fileID: 136311557}
   m_Layer: 5
   m_Name: MoneyPanel
   m_TagString: Untagged
@@ -1093,6 +1095,37 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &136311557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136311552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb42446f2c85f57419c6dc01f13f4a10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &136311558
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136311552}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ec14012021af5e245b8195528102a635, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &174364946
 GameObject:
   m_ObjectHideFlags: 0
@@ -2108,7 +2141,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 337433627}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -7356,12 +7389,12 @@ PrefabInstance:
     - target: {fileID: 6799286237191886184, guid: f11d6d71d26ae504a898f00652bc050f,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6799286237191886184, guid: f11d6d71d26ae504a898f00652bc050f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6799286237191886184, guid: f11d6d71d26ae504a898f00652bc050f,
         type: 3}
@@ -7371,12 +7404,12 @@ PrefabInstance:
     - target: {fileID: 6799286237191886184, guid: f11d6d71d26ae504a898f00652bc050f,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 190.51129
       objectReference: {fileID: 0}
     - target: {fileID: 6799286237191886184, guid: f11d6d71d26ae504a898f00652bc050f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -95.255646
       objectReference: {fileID: 0}
     - target: {fileID: 6925197606007486204, guid: f11d6d71d26ae504a898f00652bc050f,
         type: 3}
@@ -7760,7 +7793,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 958521266}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -11228,6 +11261,8 @@ GameObject:
   - component: {fileID: 1495758625}
   - component: {fileID: 1495758624}
   - component: {fileID: 1495758626}
+  - component: {fileID: 1495758628}
+  - component: {fileID: 1495758627}
   m_Layer: 5
   m_Name: MoodPanel
   m_TagString: Untagged
@@ -11312,6 +11347,37 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!95 &1495758627
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495758622}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ec14012021af5e245b8195528102a635, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1495758628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495758622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8265868d353fdb4090b13e5c90271f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1536111521 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5463752056494089509, guid: 5b57dd7495595284bb0980aa875d8a09,
@@ -12515,21 +12581,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2858777947960785604, guid: 25d95b59b759ea248be48ecc53ddfc77,
-        type: 3}
-      propertyPath: ButtonSelectedColor.r
-      value: 0.9150943
-      objectReference: {fileID: 0}
-    - target: {fileID: 2858777947960785604, guid: 25d95b59b759ea248be48ecc53ddfc77,
-        type: 3}
-      propertyPath: ButtonSelectedColor.g
-      value: 0.14244394
-      objectReference: {fileID: 0}
-    - target: {fileID: 2858777947960785604, guid: 25d95b59b759ea248be48ecc53ddfc77,
-        type: 3}
-      propertyPath: ButtonSelectedColor.b
-      value: 0.781063
-      objectReference: {fileID: 0}
     - target: {fileID: 2858777947960785607, guid: 25d95b59b759ea248be48ecc53ddfc77,
         type: 3}
       propertyPath: m_Name
@@ -13558,7 +13609,7 @@ PrefabInstance:
     - target: {fileID: 6681405377890085111, guid: da6a82e57aefc5746b3647b437fdee04,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -360767.88
+      value: -383425.7
       objectReference: {fileID: 0}
     - target: {fileID: 6681405377890085111, guid: da6a82e57aefc5746b3647b437fdee04,
         type: 3}
@@ -14015,7 +14066,7 @@ PrefabInstance:
     - target: {fileID: 2781126503484722117, guid: 3ca81de1a483eff4989d27aacc6064d1,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -827.5
+      value: -827.4998
       objectReference: {fileID: 0}
     - target: {fileID: 2781126503484722117, guid: 3ca81de1a483eff4989d27aacc6064d1,
         type: 3}

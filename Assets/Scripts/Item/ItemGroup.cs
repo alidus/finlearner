@@ -17,6 +17,7 @@ public class ItemGroup<T> : IEnumerable<T>, ISelectable
     public bool IsSelected { get => isSelected; set { if (isSelected != value) { isSelected = value; OnSelectedStateChanged?.Invoke(); } } }
 
     public event Action OnSelectedStateChanged;
+    public event Action OnCollectionModified;
 
     public ItemGroup<T> ParentGroup { get; set; }
 
@@ -44,11 +45,17 @@ public class ItemGroup<T> : IEnumerable<T>, ISelectable
     public void Add(T item)
     {
         Items.Add(item);
+        OnCollectionModified?.Invoke();
     }
 
     public bool Remove(T item)
     {
-       return Items.Remove(item);
+        var result = Items.Remove(item);
+        if (result == true)
+        {
+            OnCollectionModified?.Invoke();
+        }
+        return result;
     }
 
     public override string ToString()

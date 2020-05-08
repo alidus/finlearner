@@ -56,10 +56,10 @@ public class CertificateView : View
         switch (EducationEntityType)
         {
             case EducationEntityType.Course:
-                eduDirectionBg.color = new Color(1f, 0, 0, 0.4f);
+                eduEntityTypeBg.color = GameDataManager.instance.CourseEducationEnityTypeColor;
                 break;
             case EducationEntityType.Degree:
-                eduDirectionBg.color = new Color(1f, 0, 0.7f, 0.4f);
+                eduEntityTypeBg.color = GameDataManager.instance.DegreeEducationEnityTypeColor;
                 break;
             default:
                 break;
@@ -68,10 +68,10 @@ public class CertificateView : View
         switch (EducationDirection)
         {
             case EducationDirection.Technical:
-                eduEntityTypeBg.color = new Color(0.12f, 0.13f, 0.68f, 0.7f);
+                eduDirectionBg.color = GameDataManager.instance.TechnicalEducationDirectionTypeColor;
                 break;
             case EducationDirection.Law:
-                eduEntityTypeBg.color = new Color(0.84f, 0.62f, 0, 0.7f);
+                eduDirectionBg.color = GameDataManager.instance.LawEducationDirectionTypeColor;
                 break;
             default:
                 break;
