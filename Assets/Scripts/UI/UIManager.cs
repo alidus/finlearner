@@ -238,7 +238,7 @@ public class UIManager : MonoBehaviour
         if (gameManager.GameState == GameState.InGame)
         {
             pauseMenuResumeButton.onClick.RemoveAllListeners();
-            pauseMenuResumeButton.onClick.AddListener(gameManager.UnPause);
+            pauseMenuResumeButton.onClick.AddListener(gameManager.Resume);
 
             pauseMenuSettingsButton.onClick.RemoveAllListeners();
             pauseMenuSettingsButton.onClick.AddListener(delegate { print("Open settings..."); });

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -14,9 +13,10 @@ public class Console : MonoBehaviour
     Animator animator;
     ScrollRect outputScrollRect;
     const int LINE_LIMIT = 200;
-    bool isShown;
+    public bool IsShown;
     List<string> inputHistory = new List<string>();
     int inputHistoryPointerIndex;
+    Button submitButton;
 
     public List<ConsoleCommand> Commands { get; set; } = new List<ConsoleCommand>();
 
@@ -36,10 +36,14 @@ public class Console : MonoBehaviour
     private void OnEnable()
     {
         outputTextComponent = transform.Find("OutputScrollView").Find("Viewport").Find("Content").Find("OutputText").GetComponent<Text>();
-        inputFieldComponent = transform.Find("InputField").GetComponent<InputField>();
+        var inputPanel = transform.Find("InputPanel");
+        inputFieldComponent = inputPanel.Find("InputField").GetComponent<InputField>();
+        submitButton = inputPanel.Find("SubmitButton").GetComponent<Button>();
         outputScrollRect = GetComponentInChildren<ScrollRect>();
         animator = GetComponent<Animator>();
         InitCommands();
+
+        submitButton.onClick.AddListener(delegate { Sumbit(inputFieldComponent.text); });
     }
 
     private void InitCommands()
@@ -94,15 +98,8 @@ public class Console : MonoBehaviour
             Print();
             Print("**** Certificates:");
             Print();
-            string[] guids = AssetDatabase.FindAssets("t:" + typeof(Certificate).Name);
-            Certificate[] certificates = new Certificate[guids.Length];
-            var counter = 1;
-            for (int i = 0; i < guids.Length; i++)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-                certificates[i] = AssetDatabase.LoadAssetAtPath<Certificate>(path);
-            }
-            foreach (Certificate certificate in certificates)
+            var counter = 0;
+            foreach (Certificate certificate in Resources.LoadAll("ScriptableObjects/Education/Certificates", typeof(Certificate)).ToList().ConvertAll(go => (Certificate)go))
             {
                 Print(counter.ToString() + ") " + certificate.ToString());
                 counter++;
@@ -124,32 +121,38 @@ public class Console : MonoBehaviour
             Print();
             if (JobExchange.instance != null)
             {
+                Print("Jobs count: " + JobExchange.instance.ItemDatabase.Count.ToString());
+
                 var counter = 1;
-                foreach (Job job in JobExchange.instance.ItemDatabase)
+                Print(JobExchange.instance.ItemDatabase.ToString());
+                Print(JobExchange.instance.ItemDatabase[0].ToString());
+                foreach (Job job in (JobExchange.instance as JobExchange).ItemDatabase)
                 {
+                    Print(job.ToString());
+                    if (job is null)
+                    {
+                        Print("job is null");
+                    }
                     Print(counter.ToString() + ") " + job.ToString());
                     counter++;
-
                 }
                 Print();
                 Print("* Active jobs");
                 Print();
-                var activeJobs = (JobExchange.instance as JobExchange).ActiveJobs;
-                if (activeJobs.Count == 0)
-                {
-                    Print("None");
-                } else
-                {
-                    counter = 1;
-                    foreach (Job job in activeJobs)
-                    {
-                        Print(counter.ToString() + ") " + job.ToString());
-                        counter++;
 
-                    }
+                var activeJobs = (JobExchange.instance as JobExchange).ActiveJobs;
+                Print("Active jobs count: " + activeJobs.Count.ToString());
+
+                counter = 1;
+                foreach (Job job in activeJobs)
+                {
+                   
+                    Print(counter.ToString() + ") " + job.ToString());
+                    counter++;
+
                 }
-                    
-                
+
+
             } else
             {
                 Print("Job exchange is not instantiated. Are you in playing state?");
@@ -207,18 +210,18 @@ public class Console : MonoBehaviour
     {
         instance.inputFieldComponent.ActivateInputField();
         instance.animator.SetBool("IsShown", true);
-        instance.isShown = true;
+        instance.IsShown = true;
     }
     public static void Hide()
     {
         instance.inputFieldComponent.DeactivateInputField();
         instance.animator.SetBool("IsShown", false);
-        instance.isShown = false;
+        instance.IsShown = false;
 
     }
     public static void Toggle()
     {
-        if (instance.isShown)
+        if (instance.IsShown)
         {
             Hide();
         } else
@@ -230,7 +233,7 @@ public class Console : MonoBehaviour
 
     private void Update()
     {
-        if (instance.isShown)
+        if (instance.IsShown)
         { 
             if (Input.GetKeyDown(KeyCode.Return))
             {

@@ -13,8 +13,16 @@ public class Milestone : MonoBehaviour
     protected Animator animator;
     bool state;
     private GameCondition gameCondition;
+    protected RectTransform textContentRT;
+    protected RectTransform textViewportRT;
 
     public Action OnStateChanged;
+    protected float runningTextSpeed = 50;
+    protected float runningTextGlobalCooldown = 2;
+    protected float runningTextCurrentCooldown = 2;
+
+    protected bool isRunningText;
+    protected float targetTextContentXPosition;
 
     public GameCondition GameCondition { get => gameCondition; set => gameCondition = value; }
 
@@ -36,8 +44,41 @@ public class Milestone : MonoBehaviour
 
     private void OnEnable()
     {
-        textComponent = transform.Find("Text").GetComponent<Text>();
+        textViewportRT = transform.Find("TextViewport").GetComponent<RectTransform>();
+        textContentRT = textViewportRT.Find("TextContent").GetComponent<RectTransform>();
+        textComponent = textContentRT.Find("Text").GetComponent<Text>();
         animator = GetComponent<Animator>();
+        StartCoroutine(SetupIsRunningText());
+    }
+
+    protected IEnumerator SetupIsRunningText()
+    {
+        yield return null;
+        isRunningText = textContentRT.rect.width > textViewportRT.rect.width;
+    }
+
+    void UpdateTextContentPosition()
+    {
+        if (runningTextCurrentCooldown > 0)
+        {
+            runningTextCurrentCooldown -= Time.deltaTime;
+            if (runningTextCurrentCooldown <= 0)
+            {
+                // Cooldown will pass next frame
+                targetTextContentXPosition = 0;
+                textContentRT.anchoredPosition = new Vector3(targetTextContentXPosition, textContentRT.anchoredPosition.y);
+            }
+        } else
+        {
+            if (textContentRT.anchoredPosition.x + textContentRT.rect.width < textViewportRT.rect.width)
+            { 
+                // Running text reached destination, start cooldown
+                runningTextCurrentCooldown = runningTextGlobalCooldown;
+            }
+            targetTextContentXPosition = textContentRT.anchoredPosition.x - runningTextSpeed * Time.deltaTime;
+
+            textContentRT.anchoredPosition = new Vector3(targetTextContentXPosition, textContentRT.anchoredPosition.y);
+        }
     }
 
     public virtual void SubscribeToConditionChanges()
@@ -47,6 +88,12 @@ public class Milestone : MonoBehaviour
 
         GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
         GameCondition.OnStateChanged += delegate { OnStateChanged(); };
+    }
+
+    private void OnDestroy()
+    {
+        GameCondition.OnStateChanged -= UpdateMilestone;
+        GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
     }
 
 
@@ -72,6 +119,14 @@ public class Milestone : MonoBehaviour
                 default:
                     break;
             }
+        }
+    }
+
+    private void Update()
+    {
+        if (isRunningText)
+        {
+            UpdateTextContentPosition();
         }
     }
 

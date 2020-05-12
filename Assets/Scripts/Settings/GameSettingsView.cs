@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace UnityEngine
 {
-    public class GameSettings : MonoBehaviour
+    public class GameSettingsView : View
     {
         // UI elements
         GameObject uiCanvas;
@@ -39,7 +39,17 @@ namespace UnityEngine
                 Transform masterVolumeValueTextTransform = masterVolumeTransform?.transform.Find("ValueText");
                 masterVolumeValueText = masterVolumeValueTextTransform.GetComponent<Text>();
                 backButton = transform.Find("BackButton")?.GetComponent<Button>();
+
+                masterVolumeSlider.onValueChanged.RemoveAllListeners();
+                masterVolumeSlider.onValueChanged.AddListener(SliderValueChangedHandler);
             }
+        }
+
+        void SliderValueChangedHandler(float value)
+        {
+            globalVolume = value;
+            MusicPlayer.instance.TargetVolume = globalVolume;
+            UpdateView();
         }
         
         private void Start()
@@ -51,18 +61,13 @@ namespace UnityEngine
         {
             backButton.onClick.AddListener(Hide);
 
-            globalVolume = 0.5f;
-            UpdateGlobalVolumeSliderValue();
-            UpdateGlobalVolumeText();
+            SliderValueChangedHandler(masterVolumeSlider.value);
         }
 
         public void SetGlobalVolume(float globalVolume)
         {
             this.globalVolume = globalVolume;
-            UpdateGlobalVolumeSliderValue();
             UpdateGlobalVolumeText();
-            AudioListener.volume = globalVolume;
-            Debug.Log(globalVolume);
         }
 
         public float GetGlobalVolume()
@@ -76,10 +81,6 @@ namespace UnityEngine
                                                     .ToString(CultureInfo.InvariantCulture) + "%";
         }
         
-        private void UpdateGlobalVolumeSliderValue()
-        {
-            masterVolumeSlider.value = globalVolume;
-        }
 
         public void Hide()
         {
@@ -92,6 +93,11 @@ namespace UnityEngine
         public void Toggle()
         {
             gameObject.SetActive(!gameObject.activeSelf);
+        }
+
+        public override void UpdateView()
+        {
+            UpdateGlobalVolumeText();
         }
     }
 }

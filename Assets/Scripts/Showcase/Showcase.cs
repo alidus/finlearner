@@ -30,6 +30,7 @@ public abstract class Showcase<T, TClass> : MonoBehaviour where T : Item where T
     public Action OnSelectedItemGroupChanged;
 
 
+
     public View RootView { get; set; }
     /// <summary>
     /// Update showcase view

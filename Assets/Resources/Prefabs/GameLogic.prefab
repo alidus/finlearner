@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 2858777947960785615}
   - component: {fileID: 2858777947960785612}
   - component: {fileID: 2858777947960785609}
-  - component: {fileID: 6177444441434027388}
   - component: {fileID: 2553212583457126072}
   m_Layer: 0
   m_Name: GameLogic
@@ -126,22 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba93c1ae9662884383242426d5ad7be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6177444441434027388
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2858777947960785607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a201ed8f244f8546ae3d6ba9bdb2947, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainMenuMusicPlaylist: {fileID: 11400000, guid: da82f58112303c34ca573f552b681d65,
-    type: 2}
-  gameplayMusicPlaylist: {fileID: 11400000, guid: a73795e30b90a994984da721a00d6676,
-    type: 2}
 --- !u!114 &2553212583457126072
 MonoBehaviour:
   m_ObjectHideFlags: 0

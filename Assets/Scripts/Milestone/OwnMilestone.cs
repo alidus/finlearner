@@ -11,9 +11,13 @@ public class OwnMilestone : Milestone
 
     private void OnEnable()
     {
-        textComponent = transform.Find("Text").GetComponent<Text>();
+        textViewportRT = transform.Find("TextViewport").GetComponent<RectTransform>();
+        textContentRT = textViewportRT.Find("TextContent").GetComponent<RectTransform>();
+        textComponent = textContentRT.Find("Text").GetComponent<Text>();
         imageComponent = transform.Find("Image").GetComponent<Image>();
         animator = GetComponent<Animator>();
+        isRunningText = textContentRT.rect.width > textViewportRT.rect.width;
+        StartCoroutine(SetupIsRunningText());
     }
 
     public void UpdateImage(Sprite sprite)

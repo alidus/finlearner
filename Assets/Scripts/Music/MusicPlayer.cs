@@ -11,7 +11,7 @@ public class MusicPlayer : MonoBehaviour
 {
     public static MusicPlayer instance;
 
-    private AudioSource audioSource;
+    public AudioSource AudioSource;
     private AudioClip playingClip;
     private MusicPlaylist playingPlaylist;
 
@@ -25,8 +25,30 @@ public class MusicPlayer : MonoBehaviour
     }
     [SerializeField]
     private MusicPlaylist gameplayMusicPlaylist;
+    private float targetVolume = 0.8f;
+    Coroutine adjustVolumeCoroutine;
 
- 
+    /// <summary>
+    /// Change this property to automatically smooth adjust audio source volume
+    /// </summary>
+    public float TargetVolume { get => targetVolume; set
+        {
+            if (value != targetVolume)
+            {
+                targetVolume = value;
+                if (targetVolume != AudioSource.volume)
+                {
+                    if (adjustVolumeCoroutine != null)
+                    {
+                        StopCoroutine(adjustVolumeCoroutine);
+                    }
+                    adjustVolumeCoroutine = StartCoroutine(AdjustVolume(targetVolume));
+                }
+            }
+        }
+    }
+
+
 
     public MusicPlaylist GameplayMusicPlaylist
     {
@@ -45,12 +67,12 @@ public class MusicPlayer : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
-        if (audioSource == null)
+        if (AudioSource == null)
         {
-            audioSource = gameObject.GetComponent<AudioSource>();
+            AudioSource = gameObject.GetComponent<AudioSource>();
         }
-        if (audioSource)
-            audioSource.volume = 0;
+        if (AudioSource)
+            AudioSource.volume = 0;
     }
 
     void Update()
@@ -75,14 +97,14 @@ public class MusicPlayer : MonoBehaviour
 
     private IEnumerator PlayCoroutine(AudioClip clip)
     {
-        if (audioSource)
+        if (AudioSource)
         {
             yield return PauseCoroutine();
 
             playingClip = clip;
-            audioSource.clip = playingClip;
-            audioSource.Play();
-            yield return FadeInVolume();
+            AudioSource.clip = playingClip;
+            AudioSource.Play();
+            yield return AdjustVolume(targetVolume);
         }
     }
 
@@ -93,48 +115,31 @@ public class MusicPlayer : MonoBehaviour
 
     private IEnumerator PauseCoroutine()
     {
-        if (audioSource)
+        if (AudioSource)
         {
-            yield return FadeOutVolume();
-            audioSource.Pause();
+            yield return AdjustVolume(0);
+            AudioSource.Pause();
         }
     }
 
 
-    private IEnumerator FadeOutVolume(float rate = 1.3f, float newVolume = 0)
+    IEnumerator AdjustVolume(float targetVolume, float rate = 1.1f)
     {
-        if (audioSource)
+        
+        if (AudioSource.volume > targetVolume)
         {
-            while (audioSource.volume > newVolume)
+            while (AudioSource.volume > targetVolume)
             {
-                audioSource.volume -= rate * Time.deltaTime;
-                yield return null;
+                AudioSource.volume -= rate * Time.deltaTime;
+                yield return 0;
             }
         }
-    }
-    private IEnumerator FadeInVolume(float rate = 0.2f, float newVolume = 1)
-    {
-        if (audioSource)
+        else
         {
-            while (audioSource.volume < newVolume)
+            while (AudioSource.volume < targetVolume)
             {
-                audioSource.volume += rate * Time.deltaTime;
-                yield return null;
-            }
-        }
-    }
-
-    private IEnumerator SetVolume(float rate, float newVolume)
-    {
-        if (audioSource)
-        {
-            if (audioSource.volume < newVolume)
-            {
-                yield return FadeInVolume(rate, newVolume);
-            }
-            else
-            {
-                yield return FadeOutVolume(rate, newVolume);
+                AudioSource.volume += rate * Time.deltaTime;
+            yield return 1;
             }
         }
     }

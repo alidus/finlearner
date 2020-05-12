@@ -20,7 +20,24 @@ public class ItemDatabase<T> : IEnumerable where T : Item
 	{
 		Items = items.ToList();
 	}
-	public void Add(T item)
+
+    public T this[int index]
+    {
+        get => Items[index];
+		set 
+		{ 
+			if (Items.Count > index)
+			{
+				Items[index] = value;
+			} else
+			{
+				Items.Insert(index, value);
+			}
+		}
+    }
+
+
+    public void Add(T item)
 	{
 		Items.Add(item);
 	}

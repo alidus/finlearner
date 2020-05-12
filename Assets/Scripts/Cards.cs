@@ -46,7 +46,9 @@ public class Cards : MonoBehaviour
         ClearCards();
         cardPrefab = Resources.Load("Prefabs/MainMenu/Card") as GameObject;
 
-        List<GameMode> cards = Resources.LoadAll("ScriptableObjects/GameModes/Cards").ToList().ConvertAll(item => (GameMode)item);
+        List<GameMode> cards = new List<GameMode>();
+        Resources.LoadAll("ScriptableObjects/GameModes/Cards").ToList().ForEach(item => cards.Add(ScriptableObject.Instantiate(item) as GameMode));
+        cards.ForEach(item => item = ScriptableObject.Instantiate(item) as GameMode);
         Debug.Log("Found " + cards.Count + " cards");
         foreach (GameMode cardGM in cards)
         {

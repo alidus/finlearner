@@ -25,13 +25,14 @@ public class GameManager : MonoBehaviour
     private StatusEffectsManager statusEffectsManager;
     private HintsManager hintsManager;
     private MusicPlayer musicPlayer;
-
-    GameSettings gameSettings;
+    GameSettingsView gameSettings;
 
     // Misc
     [SerializeField]
     private GameMode gameMode;
     private GameState gameState = GameState.MainMenu;
+
+    public bool IsPaused;
     public GameState GameState
     {
         get { return gameState; }
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
         set { gameMode = value; }
     }
 
-    public GameSettings GameSettings { get => gameSettings; set => gameSettings = value; }
+    public GameSettingsView GameSettings { get => gameSettings; set => gameSettings = value; }
 
     private bool isPlaying;
 
@@ -83,10 +84,10 @@ public class GameManager : MonoBehaviour
         statusEffectsManager = StatusEffectsManager.instance;
         hintsManager = HintsManager.instance;
         musicPlayer = MusicPlayer.instance;
-        GameSettings = GameObject.Find("PersCanvas")?.transform.Find("Settings")?.GetComponent<GameSettings>();
+        GameSettings = GameObject.Find("PersCanvas")?.transform.Find("Settings")?.GetComponent<GameSettingsView>();
         if (GameMode == null)
         {
-            GameMode = Resources.Load("ScriptableObjects/GameModes/GM_Freeplay") as GameMode;
+            GameMode =  ScriptableObject.Instantiate(Resources.Load("ScriptableObjects/GameModes/GM_Freeplay")) as GameMode;
         }
         SceneManager.sceneLoaded += SceneLoadedHandling;
         UpdateReferences();
@@ -123,12 +124,25 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (uiManager.State != GameplayUIState.Home)
+            if (Console.instance.IsShown)
             {
-                uiManager.SetGamplayUIState(GameplayUIState.Home);
+                Console.Hide();
             } else
             {
-                Pause();
+                if (IsPaused)
+                {
+                    Resume();
+                } else
+                {
+                    if (uiManager.State != GameplayUIState.Home)
+                    {
+                        uiManager.SetGamplayUIState(GameplayUIState.Home);
+                    }
+                    else
+                    {
+                        Pause();
+                    }
+                }
             }
         }
     }
@@ -144,7 +158,7 @@ public class GameManager : MonoBehaviour
         uiManager.HideLoadingScreen();
         Debug.Log("Scene loaded and managers are initialized");
 
-        gameDataManager.SetValuesToGameModeSpecified(GameMode);
+        gameDataManager.UpdateValuesToNewGameMode(GameMode);
         gameMode.SubscribeConditions();
         switch ((GameState)GameState)
         {
@@ -243,11 +257,13 @@ public class GameManager : MonoBehaviour
     {
         uiManager.ShowPauseMenu();
         Time.timeScale = 0;
+        IsPaused = true;
     }
 
-    public void UnPause()
+    public void Resume()
     {
         uiManager.HidePauseMenu();
         Time.timeScale = 1;
+        IsPaused = false;
     }
 }

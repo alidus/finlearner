@@ -99,8 +99,8 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertif
     public override string ToString()
     {
         string result = "Title: " + Title + "\n";
-        result += "Category: " + Category.ToString() + "\n";
-        result += "Sprite: " + Sprite.ToString() + "\n";
+        result += "Category: " + Category?.ToString() ?? "missing category (unacceptable!)" + "\n";
+        result += "Sprite: " + Sprite?.ToString() ?? "missing sprite" + "\n";
         result += "Is Available: " + CanBeEquipped.ToString() + "\n";
         result += "Is Equipped: " + IsEquipped.ToString() + "\n";
         result += "Status effects: " + "\n";

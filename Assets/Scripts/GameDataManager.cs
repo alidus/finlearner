@@ -221,14 +221,15 @@ public class GameDataManager : MonoBehaviour
 	public bool DEBUG { get; set; } = true;
 
 	StatusEffect moderateExhaustion = new StatusEffect("Небольшая усталость", -2, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
-    StatusEffect heavyExhaustion = new StatusEffect("Сильная усталость усталость", -5, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
+    StatusEffect heavyExhaustion = new StatusEffect("Сильная усталость", -5, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
     StatusEffect tremendousExhaustion = new StatusEffect("Огромная усталость", -10, StatusEffectType.Mood, StatusEffectFrequency.Weekly, StatusEffectFlags.Exhaustion);
 
 
-    public void SetValuesToGameModeSpecified(GameMode gameMode)
+    public void UpdateValuesToNewGameMode(GameMode gameMode)
 	{
 		if (gameMode != null)
 		{
+			StopAndResetIncomeStatistics();
 			Money = gameMode.Money;
 			Mood = gameMode.Mood;
 			Age = gameMode.Age;
@@ -323,7 +324,16 @@ public class GameDataManager : MonoBehaviour
 		IsRecordingIncome = true;
 	}
 
-	public Color GetColorForSEFrequency(StatusEffectFrequency statusEffectFrequency)
+    void StopAndResetIncomeStatistics()
+    {
+        IsRecordingIncome = false;
+		DailyIncome = 0;
+        WeeklyIncome = 0;
+        MonthlyIncome = 0;
+        YearlyIncome = 0;
+    }
+
+    public Color GetColorForSEFrequency(StatusEffectFrequency statusEffectFrequency)
 	{
 		switch (statusEffectFrequency)
 		{
