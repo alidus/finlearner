@@ -15,4 +15,11 @@ MonoBehaviour:
   id: 0
   title: "\u041A\u0443\u0440\u0441\u044B \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F"
   desc: 
+  price: 1000
+  durationInDays: 7
+  hoursOfWeekToConsume: 10
   EducationDirection: 0
+  canBePurchased: 0
+  isPurchased: 0
+  certificates: []
+  mandatoryCertificates: []

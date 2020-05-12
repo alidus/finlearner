@@ -21,4 +21,14 @@ MonoBehaviour:
   money: 0
   mood: 0
   age: 0
-  gameConditionGroups: []
+  gameConditionGroups:
+  - gameConditionsContainer:
+      valueConditions: []
+      ownConditions: []
+    title: Winning condition group
+    flags: 1
+  - gameConditionsContainer:
+      valueConditions: []
+      ownConditions: []
+    title: Losing condition group
+    flags: 2
