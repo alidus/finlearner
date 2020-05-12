@@ -92,8 +92,11 @@ public class Milestone : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameCondition.OnStateChanged -= UpdateMilestone;
-        GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
+        if (GameCondition != null)
+        {
+            GameCondition.OnStateChanged -= UpdateMilestone;
+            GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
+        }
     }
 
 
