@@ -41,17 +41,21 @@ public class FinOpsManager : MonoBehaviour
     public void GetLoan()
     {
         Loan.LoanBuilder builder = new Loan.LoanBuilder();
-        Loan loan = builder.SetRate(0.16f)
-            .SetInitialValue(5000f)
-            .SetPeriod(100)
+        Loan loan = builder.SetRate()
+            .SetValue(5000f)
+            .SetTotalPeriod(100)
             .Build();
-        loan.StatusEffects.Add(new StatusEffect("Выплата кредита", -loan.GetMonthlyPaymentValue(), StatusEffectType.Money, StatusEffectFrequency.Monthly));
+        loan.StatusEffects.Add(
+            new StatusEffect("Выплата кредита", 
+                builder.GetMonthlyPaymentValue(), 
+                StatusEffectType.Money, 
+                StatusEffectFrequency.Monthly));
         ActivateLoan(loan);
     }
 
     private void ActivateLoan(Loan loan)
     {
-        gameDataManager.Money += loan.InitialValue;
+        gameDataManager.Money += loan.Value;
         activeLoans.Add(loan);
         statusEffectsManager.ApplyStatusEffects(loan.StatusEffects);
     }
