@@ -92,11 +92,17 @@ public class EducationEntity : Item, IDrawable, IPurchasable, IHaveStatusEffect,
     {
         if (GameDataManager.instance.IsEnoughMoney(Price))
         {
-            IsPurchased = true;
-            StatusEffectsManager.instance.ApplyStatusEffects(purchaseStatusEffect);
-            StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
-            GameDataManager.instance.AddTimeConsumers(this);
-            OnPurchaseStateChanged?.Invoke();
+            if (GameDataManager.instance.CheckIfHasFreeTimeFor(this))
+            {
+                IsPurchased = true;
+                StatusEffectsManager.instance.ApplyStatusEffects(purchaseStatusEffect);
+                StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
+                GameDataManager.instance.AddTimeConsumers(this);
+                OnPurchaseStateChanged?.Invoke();
+            } else
+            {
+                HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NoFreeTime]);
+            }
         }
         else
         {
@@ -133,6 +139,7 @@ public class EducationEntity : Item, IDrawable, IPurchasable, IHaveStatusEffect,
 
         foreach (Certificate certificate in Certificates)
         {
+            certificate.Equip();
             educationHub.Certificates.Add(certificate);
         }
 

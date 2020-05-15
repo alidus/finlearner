@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c424728ddb5a6b0459ce043617a0b3e5, type: 3}
+  m_Name: ITMasterDegree
+  m_EditorClassIdentifier: 
+  id: 0
+  title: "\u041C\u0430\u0433\u0438\u0441\u0442\u0440\u0430\u0442\u0443\u0440\u0430
+    \u0410\u043D\u0430\u043B\u0438\u0437 \u0414\u0430\u043D\u043D\u044B\u0445 "
+  desc: 
+  price: 2000
+  durationInDays: 7
+  hoursOfWeekToConsume: 10
+  EducationDirection: 0
+  canBePurchased: 0
+  isPurchased: 0
+  certificates:
+  - {fileID: 11400000, guid: 19ea368a1acfc704a9646c09bccc6f3d, type: 2}
+  mandatoryCertificates:
+  - {fileID: 11400000, guid: 7f440284b7ee01c4093b9dbcb2b246b9, type: 2}
+  EduDegreeLevel: 2

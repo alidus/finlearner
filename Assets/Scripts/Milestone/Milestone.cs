@@ -83,8 +83,36 @@ public class Milestone : MonoBehaviour
 
     public virtual void SubscribeToConditionChanges()
     {
-        GameCondition.OnStateChanged -= UpdateMilestone;
-        GameCondition.OnStateChanged += UpdateMilestone;
+
+        switch (GameCondition)
+        {
+            case ValueCondition _:
+                {
+                    var valueCondition = (ValueCondition)GameCondition;
+                    switch (valueCondition.TargetVariable)
+                    {
+                        case TargetVariable.Money:
+                            gameDataManager.OnMoneyValueChanged -= GameDataValueChangedHandler;
+                            gameDataManager.OnMoneyValueChanged += GameDataValueChangedHandler;
+                            break;
+                        case TargetVariable.Mood:
+                            gameDataManager.OnMoodValueChanged -= GameDataValueChangedHandler;
+                            gameDataManager.OnMoodValueChanged += GameDataValueChangedHandler;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                break;
+            case OwnCondition _:
+                {
+                    GameCondition.OnStateChanged -= UpdateMilestone;
+                    GameCondition.OnStateChanged += UpdateMilestone;
+                }
+                break;
+            default:
+                break;
+        }
 
         GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
         GameCondition.OnStateChanged += delegate { OnStateChanged(); };
@@ -97,6 +125,11 @@ public class Milestone : MonoBehaviour
             GameCondition.OnStateChanged -= UpdateMilestone;
             GameCondition.OnStateChanged -= delegate { OnStateChanged(); };
         }
+    }
+
+    public void GameDataValueChangedHandler(float value)
+    {
+        UpdateMilestone();
     }
 
 

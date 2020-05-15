@@ -17,7 +17,7 @@ MonoBehaviour:
     \u043D\u0430\u0443\u043A"
   desc: 
   price: 1000
-  durationInDays: 1
+  durationInDays: 7
   hoursOfWeekToConsume: 10
   EducationDirection: 1
   canBePurchased: 1

@@ -11,18 +11,20 @@ public class GameplayHUD : MonoBehaviour
     UIManager uiManager;
     GameDataManager gameDataManager;
 
-    private MoneyPanelView moneyPanelView;
-    private MoodPanelView moodPanelView;
-    private GameObject weekProgressBar;
-    private GameObject dayProgressBar;
-    private GameObject infoPanel;
+    MoneyPanelView moneyPanelView;
+    MoodPanelView moodPanelView;
+    GameObject weekProgressBar;
+    GameObject dayProgressBar;
+    GameObject infoPanel;
 
-    private Button storeButton;
-    private Button infoPanelButton;
-    private Button getCreditButtonTEST;
-    private Button jobExchangeButton;
-    private Button educationHubButton;
-    private Button inventoryButton;
+    Button storeButton;
+    Button infoPanelButton;
+    Button getCreditButtonTEST;
+    Button jobExchangeButton;
+    Button educationHubButton;
+    Button inventoryButton;
+    Button bankButton;
+
 
 
     private Image dayProgressBarFillImage;
@@ -49,6 +51,7 @@ public class GameplayHUD : MonoBehaviour
         jobExchangeButton = GameObject.Find("JobExchangeButton")?.GetComponent<Button>();
         educationHubButton = GameObject.Find("EducationHubButton")?.GetComponent<Button>();
         inventoryButton = GameObject.Find("InventoryButton")?.GetComponent<Button>();
+        bankButton = GameObject.Find("BankButton")?.GetComponent<Button>();
         infoPanelButton = GameObject.Find("InfoPanel")?.GetComponent<Button>();
         dayProgressBarFillImage = GameObject.Find("DayProgressBarFillImage")?.GetComponent<Image>();
         getCreditButtonTEST = GameObject.Find("GetCreditButton")?.GetComponent<Button>();
@@ -114,6 +117,19 @@ public class GameplayHUD : MonoBehaviour
             else
             {
                 uiManager.SetGamplayUIState(GameplayUIState.Inventory);
+            }
+        });
+
+        bankButton.onClick.RemoveAllListeners();
+        bankButton.onClick.AddListener(delegate
+        {
+            if (uiManager.State == GameplayUIState.Bank)
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.Home);
+            }
+            else
+            {
+                uiManager.SetGamplayUIState(GameplayUIState.Bank);
             }
         });
 

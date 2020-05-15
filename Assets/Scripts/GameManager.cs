@@ -103,18 +103,6 @@ public class GameManager : MonoBehaviour
             {
                 gameDataManager.AddDay();
             }
-            // Debug
-            if (Input.GetKeyDown(KeyCode.LeftBracket))
-            {
-                gameDataManager.Money += 50;
-                gameDataManager.Mood += 5;
-
-            }
-            if (Input.GetKeyDown(KeyCode.RightBracket))
-            {
-                gameDataManager.Money -= 50;
-                gameDataManager.Mood -= 5;
-            }
         }
 
         if (Input.GetKeyDown(KeyCode.BackQuote))

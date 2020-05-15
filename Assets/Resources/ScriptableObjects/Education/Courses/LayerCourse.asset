@@ -21,5 +21,6 @@ MonoBehaviour:
   EducationDirection: 1
   canBePurchased: 0
   isPurchased: 0
-  certificates: []
+  certificates:
+  - {fileID: 11400000, guid: d205db8695b720c4cb36530113ec5dd9, type: 2}
   mandatoryCertificates: []

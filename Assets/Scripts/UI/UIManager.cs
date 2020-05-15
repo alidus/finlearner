@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Showcase.Bank;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum GameplayUIState { Store, JobExchange, Home, EducationHub, Inventory, StatisticsHub }
+public enum GameplayUIState { Store, JobExchange, Home, EducationHub, Inventory, StatisticsHub, Bank }
 
 /// <summary>
 /// Control global UI state
@@ -24,6 +25,7 @@ public class UIManager : MonoBehaviour
     EducationHub educationHub;
     Inventory inventory;
     StatisticsHub statisticsHub;
+    Bank bank;
 
 
     // UI elements
@@ -83,6 +85,7 @@ public class UIManager : MonoBehaviour
                 jobExchange.Hide();
                 inventory.Hide();
                 statisticsHub.Hide();
+                bank.Hide();
                 educationHub.Hide();
                 break;
             case GameplayUIState.Store:
@@ -90,6 +93,7 @@ public class UIManager : MonoBehaviour
                 educationHub.Hide();
                 inventory.Hide();
                 statisticsHub.Hide();
+                bank.Hide();
                 store.Show();
                 break;
             case GameplayUIState.JobExchange:
@@ -97,6 +101,7 @@ public class UIManager : MonoBehaviour
                 educationHub.Hide();
                 inventory.Hide();
                 statisticsHub.Hide();
+                bank.Hide();
                 jobExchange.Show();
                 break;
             case GameplayUIState.EducationHub:
@@ -104,6 +109,7 @@ public class UIManager : MonoBehaviour
                 jobExchange.Hide();
                 inventory.Hide();
                 statisticsHub.Hide();
+                bank.Hide();
                 educationHub.Show();
                 break;
             case GameplayUIState.Inventory:
@@ -111,6 +117,7 @@ public class UIManager : MonoBehaviour
                 jobExchange.Hide();
                 educationHub.Hide();
                 statisticsHub.Hide();
+                bank.Hide();
                 inventory.Show();
                 break;
             case GameplayUIState.StatisticsHub:
@@ -118,7 +125,16 @@ public class UIManager : MonoBehaviour
                 jobExchange.Hide();
                 educationHub.Hide();
                 inventory.Hide();
+                bank.Hide();
                 statisticsHub.Show();
+                break;
+            case GameplayUIState.Bank:
+                store.Hide();
+                jobExchange.Hide();
+                inventory.Hide();
+                statisticsHub.Hide();
+                educationHub.Hide();
+                bank.Show();
                 break;
             default:
                 break;
@@ -161,6 +177,7 @@ public class UIManager : MonoBehaviour
             educationHub = EducationHub.instance as EducationHub;
             inventory = Inventory.instance as Inventory;
             statisticsHub = StatisticsHub.instance as StatisticsHub;
+            bank = Bank.instance as Bank;
 
             overlayCanvas = GameObject.Find("OverlayCanvas");
             storeContainer = overlayCanvas.transform.Find("StoreContainer").gameObject;

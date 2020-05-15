@@ -59,6 +59,7 @@ public class JobExchange : Showcase<Job, JobExchange>
         foreach (Job job in Resources.LoadAll("ScriptableObjects/JobExchange/Jobs"))
         {
             var jobInstance = ScriptableObject.Instantiate(job) as Job;
+            jobInstance.Init();
             jobInstance.OnEquipStateChanged += delegate { HandleJobActivationChange(jobInstance); };
 
             jobInstance.OnEquipStateChanged -= delegate { job.NotifyOnInstanceEquipStateChanged(jobInstance); };
@@ -80,7 +81,6 @@ public class JobExchange : Showcase<Job, JobExchange>
             if (!isInActiveList)
             {
                 // Add to active job list
-                ActiveJobs.Add(job);
                 RegisterJob(job);
             }
         } else
@@ -88,7 +88,6 @@ public class JobExchange : Showcase<Job, JobExchange>
             if (isInActiveList)
             {
                 // Remove from active job list
-                ActiveJobs.Remove(job);
                 UnregisterJob(job);
             }
         }
@@ -121,12 +120,14 @@ public class JobExchange : Showcase<Job, JobExchange>
 
     void RegisterJob(Job job)
     {
+        ActiveJobs.Add(job);
         StatusEffectsManager.instance.ApplyStatusEffects(job.StatusEffects);
         gameDataManager.AddTimeConsumers(job);
     }
 
     void UnregisterJob(Job job)
     {
+        ActiveJobs.Remove(job);
         StatusEffectsManager.instance.RemoveStatusEffects(job.StatusEffects);
         gameDataManager.RemoveTimeConsumers(job);
     }

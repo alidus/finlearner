@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb1bc5a162d9214db54188ba1a2225c, type: 3}
+  m_Name: ITMiddle
+  m_EditorClassIdentifier: 
+  id: 0
+  title: DataScientist
+  desc: "DataScientist \u0432 \u0431\u0430\u043D\u043A\u0435"
+  category: {fileID: 11400000, guid: ba5d00b79eaad914e92add332ac4b95d, type: 2}
+  sprite: {fileID: 21300000, guid: 06f4276ea0b714e408af3ec88a25e65f, type: 3}
+  statusEffects:
+  - title: "\u0415\u0436\u0435\u043C\u0435\u0441\u044F\u0447\u043D\u0430\u044F \u0437\u0430\u0440\u043F\u043B\u0430\u0442\u0430
+      (DataScientist)"
+    value: 1000
+    freqency: 3
+    type: 0
+    flags: 1
+  canBeEquipped: 0
+  isEquipped: 0
+  hoursOfWeekToConsume: 40
+  mandatoryCertificates:
+  - {fileID: 11400000, guid: 19ea368a1acfc704a9646c09bccc6f3d, type: 2}

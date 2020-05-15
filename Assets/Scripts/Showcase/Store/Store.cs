@@ -82,25 +82,10 @@ public class Store : Showcase<StoreItem, Store>
         List<ItemGroup<StoreItem>> result = new List<ItemGroup<StoreItem>>();
         foreach (StoreItem item in ItemDatabase)
         {
-            if (item is FurnitureItem)
-            {
-                if (result.Count > 0)
-                {
-                    var k = result[0].GetType().GetGenericTypeDefinition();
-                }
-                var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
-                if (groupOfType != null)
-                {
-                    groupOfType.Add(item);
-                }
-                else
-                {
-                    var newGroup = new ItemGroup<StoreItem>();
-                    newGroup.Title = "Мебель";
-                    newGroup.Add(item);
-                    result.Add(newGroup);
-                }
-            }
+            var itemGroup = FindOrCreateItemGroup(item.GetType().ToString());
+            itemGroup.Add(item);
+            if (!result.Contains(itemGroup))
+                result.Add(itemGroup);
         }
         string log = "Store item groups: ";
         result.ForEach(item => log += (item.ToString() + ", "));

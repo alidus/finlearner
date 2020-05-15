@@ -12,12 +12,11 @@ public class JobExchangeViewFactory : DefaultShowcaseViewFactory<Job, JobExchang
     public override DefaultItemListView CreateItemListView(Transform parentTransform)
     {
         DefaultItemListView itemListView = GameObject.Instantiate(itemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
-        RefreshItemListView(itemListView, itemListView.ScrollViewContentTransform);
-        showcase.OnSelectedItemGroupChanged += delegate { RefreshItemListView(itemListView, itemListView.ScrollViewContentTransform); };
+        itemListView.UpdateView();
         return itemListView;
     }
 
-    void RefreshItemListView(DefaultItemListView itemListView, Transform scrollViewContentTransform)
+    public override void UpdateItemListView()
     {
         itemListView.DestroyItemViews();
         foreach (Job item in showcase.SelectedItemGroup.Items)

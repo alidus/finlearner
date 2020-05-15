@@ -67,86 +67,68 @@ public class StatusEffectsManager : MonoBehaviour
 
     private void ExecuteDailyStatusEffects()
     {
-        ExecuteStatusEffects(StatusEffectFrequency.Daily);
+        TickStatusEffects(StatusEffectFrequency.Daily);
     }
     private void ExecuteWeeklyStatusEffects()
     {
-        ExecuteStatusEffects(StatusEffectFrequency.Weekly);
+        TickStatusEffects(StatusEffectFrequency.Weekly);
     }
     private void ExecuteMonthlyStatusEffects()
     {
-        ExecuteStatusEffects(StatusEffectFrequency.Monthly);
+        TickStatusEffects(StatusEffectFrequency.Monthly);
     }
     private void ExecuteYearlyStatusEffects()
     {
-        ExecuteStatusEffects(StatusEffectFrequency.Yearly);
+        TickStatusEffects(StatusEffectFrequency.Yearly);
     }
 
-    private void ExecuteStatusEffects(StatusEffectFrequency frequency)
+    private bool TickStatusEffects(StatusEffectFrequency frequency)
     {
         foreach (StatusEffect statusEffect in StatusEffects)
         {
             if (statusEffect.Frequency == frequency)
             {
-                ExecuteStatusEffect(statusEffect);
+                return TickStatusEffect(statusEffect);
             }
         }
+        return true;
     }
 
 
-    private void ExecuteStatusEffect(StatusEffect statusEffect)
+    private bool TickStatusEffect(StatusEffect statusEffect)
     {
-        switch (statusEffect.Type)
-        {
-            case StatusEffectType.Money:
-                gameDataManager.Money += statusEffect.Value;
-                break;
-            case StatusEffectType.Mood:
-                gameDataManager.Mood += statusEffect.Value;
-                break;
-            default:
-                break;
-        }
+        return gameDataManager.TryToTickStatusEffect(statusEffect);
     }
 
-    private void ExecuteOneShot(StatusEffect statusEffect)
-    {
-        switch (statusEffect.Type)
-        {
-            case StatusEffectType.Money:
-                gameDataManager.Money += statusEffect.Value;
-                break;
-            case StatusEffectType.Mood:
-                gameDataManager.Mood += statusEffect.Value;
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void ApplyStatusEffects(List<StatusEffect> statusEffects)
+    public bool ApplyStatusEffects(List<StatusEffect> statusEffects)
     {
         foreach (StatusEffect statusEffect in statusEffects)
         {
             if (statusEffect.Frequency == StatusEffectFrequency.OneShot)
             {
-                ExecuteOneShot(statusEffect);
+              if (!TickStatusEffect(statusEffect))
+                {
+                    return false;
+                }
             } else
             {
                 StatusEffects.Add(statusEffect);
             }
         }
+
+        return true;
     }
 
-    public void ApplyStatusEffects(StatusEffect statusEffect)
+    public bool ApplyStatusEffects(StatusEffect statusEffect)
     {
         if (statusEffect.Frequency == StatusEffectFrequency.OneShot)
         {
-            ExecuteOneShot(statusEffect);
+            return TickStatusEffect(statusEffect);
         }
         else
         {
             StatusEffects.Add(statusEffect);
+            return false;
         }
     }
 

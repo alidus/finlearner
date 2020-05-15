@@ -40,6 +40,9 @@ public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass :
         rootView = GameObject.Instantiate(rootViewPrefab as GameObject, parentTransform).GetComponent<DefaultRootView>();
         itemGroupListView = CreateItemGroupListView(rootView.transform);
         itemListView = CreateItemListView(rootView.transform);
+        showcase.OnSelectedItemGroupChanged -= UpdateItemListView;
+        showcase.OnSelectedItemGroupChanged += UpdateItemListView;
+        UpdateItemListView();
         rootView.UpdateView();
         return rootView;
     }
@@ -74,6 +77,9 @@ public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass :
         return storeItemGroupView;
     }
 
+    /// <summary>
+    /// Destroy all presented item views and create item views for each item in selected group
+    /// </summary>
     public virtual void UpdateItemListView()
     {
         Console.Print("_Updating default item list view");
@@ -90,7 +96,7 @@ public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass :
         Console.Print("_Building default item list view");
 
         DefaultItemListView itemListView = GameObject.Instantiate(itemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
-
+        itemListView.UpdateView();
         return itemListView;
     }
 
