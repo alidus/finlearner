@@ -6,7 +6,7 @@ using UnityEngine;
 public enum StatusEffectType { Money, Mood}
 public enum StatusEffectFrequency { OneShot, Daily, Weekly, Monthly, Yearly }
 [Flags]
-public enum StatusEffectFlags { Job = 1, Education = 2, Exhaustion = 4 }
+public enum StatusEffectFlags { Job = 1, Education = 2, Exhaustion = 4, Loan = 8 }
 
 
 

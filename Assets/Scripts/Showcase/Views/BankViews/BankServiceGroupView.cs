@@ -1,3 +1,3 @@
-﻿public class BankServiceGroupView : DefaultItemGroupView
+﻿public class BankServiceGroupView : DefaultItemGroupView<BankService>
 {
 }

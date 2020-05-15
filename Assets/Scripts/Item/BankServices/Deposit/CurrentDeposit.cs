@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "SO/Items/BankServices/CurrentDeposit", fileName = "CurrentDeposit")]
 /* This deposit is for an indefinite amount of time and 5% annual interest rate.
  It can be deposited and withdrawn at any time, interest is paid monthly.*/
-public class CurrentDeposit : BankService
+public class CurrentDeposit : BankService, IPurchasable, IHaveStatusEffect
 {
     private new const float Rate = 0.05f;
     public CurrentDeposit()
@@ -16,7 +16,7 @@ public class CurrentDeposit : BankService
 
         private CurrentDepositBuilder SetCurrentDepositValue(float value)
         {
-            currentDeposit.Value = value;
+            currentDeposit.Amount = value;
             return this;
         }
         private CurrentDepositBuilder AddStatusEffect(StatusEffect statusEffect)
@@ -26,16 +26,16 @@ public class CurrentDeposit : BankService
         }
         public float GetMonthlyPaymentValue()
         {
-            float rateMonthlyPayment = Rate / 12 * currentDeposit.Value;
+            float rateMonthlyPayment = Rate / 12 * currentDeposit.Amount;
             return rateMonthlyPayment;
         }
         public CurrentDeposit Build()
         {
-            AddStatusEffect(new StatusEffect("Бессрочный вклад: " + currentDeposit.Value, 
+            AddStatusEffect(new StatusEffect("Бессрочный вклад: " + currentDeposit.Amount, 
                 GetMonthlyPaymentValue(), 
                 StatusEffectType.Money, 
                 StatusEffectFrequency.Monthly));
-            SetCurrentDepositValue(currentDeposit.Value);
+            SetCurrentDepositValue(currentDeposit.Amount);
             return currentDeposit;
         }
     }

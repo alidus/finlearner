@@ -5,71 +5,72 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 [Serializable]
-public class BankService : Item, IClickable, IHaveStatusEffect
+public class BankService : Item, IHaveStatusEffect, IPurchasable
 {
-    [SerializeField] private float value;
-    [SerializeField] private bool canBePurchased = true;
-    [SerializeField] private float rate;
-    [SerializeField] private List<StatusEffect> statusEffects = new List<StatusEffect>();
-    [SerializeField] public float initialValue;
-    [SerializeField] public string amountTitle;
-    [SerializeField] public float maxValue;
-    [SerializeField] public string buttonText;
-    [SerializeField] public string amountValueText;
-    [SerializeField] public string amountInputFieldPlaceholderText;
-    [SerializeField] public string durationLabelText;
-    [SerializeField] public List<Dropdown.OptionData> durationDropdownOptions;
 
-    public bool CanBePurchased { get => canBePurchased; set => canBePurchased = value; }
-    public float Value { get => value; set => this.value = value; }
+    public event Action OnPurchaseStateChanged;
+    public event Action OnPurchasableStateChanged;
+    public event PurchasableInstanceHandler OnInstancePurchaseStateChanged;
+    public event PurchasableInstanceHandler OnInstancePurchasableStateChanged;
+    public List<StatusEffect> StatusEffects { get; set; } = new List<StatusEffect>();
 
-    public float Rate { get => rate; set => rate = value; }
+    public float Price { get => price; set => price = value; }
+    private float price = 0f;
 
-    public List<StatusEffect> StatusEffects { get => statusEffects; set => statusEffects = value; }
+    [SerializeField]
+    float amount;
 
-    public float InitialValue { get => initialValue; set => initialValue = value; }
-
-    public string AmountTitle { get => amountTitle; set => amountTitle = value; }
-
-    public float MaxValue { get => maxValue; set => maxValue = value; }
-
-    public string ButtonText { get => buttonText; set => buttonText = value; }
-
-    public string AmountValueText { get => amountValueText; set => amountValueText = value; }
-
-    public string AmountInputFieldPlaceholderText
-    { get => amountInputFieldPlaceholderText; set => amountInputFieldPlaceholderText = value; }
-
-    public string DurationLabelText { get => durationLabelText; set => durationLabelText = value; }
-
-    public List<Dropdown.OptionData> DurationDropdownOptions 
-    { get => durationDropdownOptions; set => durationDropdownOptions = value; }
-
-    public event Action OnBuy;
-    public UnityAction OnClick { get; set; }
-
-
-    public BankService()
+    public bool CanBePurchased
     {
-        SetupClickAction();
-    }
-
-    private void SetupClickAction()
-    {
-        OnClick = delegate
+        get => canBePurchased; set
         {
-            if (CanBePurchased)
+            if (value != canBePurchased)
             {
-                Get();
+                canBePurchased = value;
+                OnPurchasableStateChanged?.Invoke();
             }
-        };
-    }
-
-    public void Get()
-    {
-        if (CanBePurchased)
-        {
-            OnBuy?.Invoke();
         }
     }
+
+    [SerializeField]
+    private bool canBePurchased;
+    [SerializeField]
+    private bool isPurchased;
+
+    public bool IsPurchased { get => isPurchased; set => isPurchased = value; }
+    public float Amount { get => amount; set => amount = value; }
+
+    public virtual void Purchase()
+    {
+        // TODO: implement conditional expression to check if credit is acceptable for client
+        if (true)
+        {
+            IsPurchased = true;
+            StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
+            OnPurchaseStateChanged?.Invoke();
+        }
+        else
+        {
+            HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMoney]);
+        }
+    }
+
+    public virtual void Sell()
+    {
+        IsPurchased = false;
+        StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
+        OnPurchaseStateChanged?.Invoke();
+    }
+
+    public void NotifyOnInstancePurchaseStateChanged(IPurchasable purchasable)
+    {
+        OnInstancePurchaseStateChanged.Invoke(purchasable);
+    }
+
+    public void NotifyOnInstancePurchasableStateChanged(IPurchasable purchasable)
+    {
+        OnInstancePurchasableStateChanged.Invoke(purchasable);
+    }
+
+
 }

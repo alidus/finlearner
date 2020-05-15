@@ -13,21 +13,11 @@ MonoBehaviour:
   m_Name: Loan
   m_EditorClassIdentifier: 
   id: 0
-  title: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u0437\u043C\u0435\u0440
-    \u0438 \u0434\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C
-    \u043A\u0440\u0435\u0434\u0438\u0442\u0430, \u0441\u0442\u0430\u0432\u043A\u0430
-    15% \u0433\u043E\u0434\u043E\u0432\u044B\u0445"
+  title: "\u041A\u0440\u0435\u0434\u0438\u0442"
   desc: 
-  value: 0
+  amount: 1000
   canBePurchased: 1
+  isPurchased: 0
+  mixAmount: 1000
+  maxAmount: 10000
   rate: 0.2
-  statusEffects: []
-  initialValue: 0
-  amountTitle: 
-  maxValue: 0
-  buttonText: 
-  amountValueText: 
-  amountInputFieldPlaceholderText: 
-  durationLabelText: 
-  durationDropdownOptions: []
-  totalPeriod: 0

@@ -74,6 +74,9 @@ public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass :
         return storeItemGroupView;
     }
 
+    /// <summary>
+    /// Destroy all presented item views and create item views for each item in selected group
+    /// </summary>
     public virtual void UpdateItemListView()
     {
         Console.Print("_Updating default item list view");

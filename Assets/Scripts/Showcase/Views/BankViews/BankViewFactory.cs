@@ -3,71 +3,75 @@ using UnityEngine.UI;
 
 namespace Showcase.Views.BankViews
 {
-    public class BankViewFactory<T> : DefaultShowcaseViewFactory<T> where T : BankService
+    public class BankViewFactory : DefaultShowcaseViewFactory<BankService, Bank.Bank>
     {
-        public BankViewFactory(Showcase<T> showcase, 
+        Object loanViewPrefab;
+        Object currentDepositViewPrefab;
+        Object timeDepositViewPrefab;
+
+        public BankViewFactory(Showcase<BankService, Bank.Bank> showcase, 
             Object rootViewPrefab, 
             Object itemGroupListViewPrefab, 
             Object itemGroupViewPrefab, 
             Object itemListViewPrefab, 
-            Object itemViewPrefab) : 
+            Object loanViewPrefab,
+            Object currentDepositViewPrefab,
+            Object timeDepositViewPrefab) : 
             base(showcase, 
                 rootViewPrefab, 
                 itemGroupListViewPrefab, 
                 itemGroupViewPrefab, 
                 itemListViewPrefab, 
-                itemViewPrefab)
+                null)
         {
+            this.loanViewPrefab = loanViewPrefab;
+            this.currentDepositViewPrefab = currentDepositViewPrefab;
+            this.timeDepositViewPrefab = timeDepositViewPrefab;
         }
 
-        public override View CreateItemListView(Transform parentTransform)
+        public override View CreateRootView(Transform parentTransform)
         {
-            DefaultItemListView itemListView = GameObject.Instantiate(
-                itemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
-            itemListView.Init();
-            foreach (var item in showcase.SelectedItemGroup.Items)
-            {
-                CreateItemView(item, itemListView.ScrollViewContentTransform);
-            }
-            itemListView.UpdateView();
-            return itemListView;
+            Console.Print("___Start building bank___");
+            rootView = GameObject.Instantiate(rootViewPrefab as GameObject, parentTransform).GetComponent<BankView>();
+            itemGroupListView = CreateItemGroupListView(rootView.transform);
+            itemListView = CreateItemListView(rootView.transform);
+            UpdateItemListView();
+            showcase.OnSelectedItemGroupChanged -= UpdateItemListView;
+            showcase.OnSelectedItemGroupChanged += UpdateItemListView;
+            rootView.UpdateView();
+            return rootView;
         }
 
-        public View CreateItemView(BankService service, Transform parentTransform)
+        public View CreateLoanItemView(Transform parentTransform, Loan loanItem)
         {
-            var bankServiceView = GameObject.Instantiate(
-                itemViewPrefab as GameObject, parentTransform).GetComponent<BankServiceView>();
-        
-            bankServiceView.Title = service.Title;
+            LoanView loanView = GameObject.Instantiate(loanViewPrefab as GameObject, parentTransform).GetComponent<LoanView>();
 
-            var buttonComponent = bankServiceView.GetComponent<Button>();
-            var animator = bankServiceView.GetComponent<Animator>();
-            if (buttonComponent)
-            {
-                buttonComponent.onClick.AddListener(service.OnClick);
-                // Play animation
-
-                service.OnBuy += delegate {
-                    if (animator)
-                    {
-                        animator.SetTrigger("Buy");
-                    }
-                };
-            }
-            bankServiceView.UpdateView();
-            return bankServiceView;
-        }
-
-        public View CreateServiceView(Transform parentTransform)
-        {
-            DefaultRootView loanView = GameObject
-                .Instantiate(rootViewPrefab as GameObject, parentTransform)
-                .GetComponent<DefaultRootView>();
-            loanView.Init();
-            loanView.ItemGroupListView = CreateItemGroupListView(loanView.transform);
-            loanView.ItemListView = CreateItemListView(loanView.transform);
+            loanView.Init(loanItem);
             loanView.UpdateView();
+
             return loanView;
         }
+
+        public View CreateCurrentDepositItemView(Transform parentTransform, CurrentDeposit currentDeposit)
+        {
+            return null;
+        }
+
+        public View CreateTimeDepositItemView(Transform parentTransform, TimeDeposit timeDeposit)
+        {
+            return null;
+        }
+
+        public override View CreateItemView(Item item, Transform parentTransform)
+        {
+            switch (item)
+            {
+                case Loan _:
+                    return CreateLoanItemView(parentTransform, (Loan)item);
+                default:
+                    return null;
+            }
+        }
+
     }
 }

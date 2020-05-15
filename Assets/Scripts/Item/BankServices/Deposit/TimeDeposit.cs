@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "SO/Items/BankServices/TimeDeposit", fileName = "TimeDeposit")]
 /* This deposit is for a 366 days period and 10% annual interest rate.
  It can be withdraw after the period is over else the interest is burned. */
-public class TimeDeposit : BankService
+public class TimeDeposit : BankService, IPurchasable, IHaveStatusEffect
 {
     private const float rate = 0.1f;
 
@@ -27,7 +27,7 @@ public class TimeDeposit : BankService
 
         public TimeDepositBuilder SetTimeDepositValue(float value)
         {
-            timeDeposit.Value = value;
+            timeDeposit.Amount = value;
             return this;
         }
         private TimeDepositBuilder AddStatusEffect(StatusEffect statusEffect)
@@ -37,15 +37,15 @@ public class TimeDeposit : BankService
         }
         private float GetYearlyPayment()
         {
-            return timeDeposit.Value * rate;
+            return timeDeposit.Amount * rate;
         }
         public TimeDeposit Build()
         {
-            AddStatusEffect(new StatusEffect("Срочный вклад: " + timeDeposit.Value, 
+            AddStatusEffect(new StatusEffect("Срочный вклад: " + timeDeposit.Amount, 
                 GetYearlyPayment(), 
                 StatusEffectType.Money, 
                 StatusEffectFrequency.Yearly));
-            SetTimeDepositValue(timeDeposit.Value);
+            SetTimeDepositValue(timeDeposit.Amount);
             return timeDeposit;
         }
     }

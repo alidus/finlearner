@@ -1,44 +1,49 @@
+using System;
 using System.Collections.Generic;
 using Showcase.Views.BankViews;
 using UnityEditor.VersionControl;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace Showcase.Bank
 {
     /// <summary>
     /// Showcase that displays BankObject items
     /// </summary>
-    public class Bank : Showcase<BankService>
+    public class Bank : Showcase<BankService, Bank>
     {
-        private BankViewFactory<BankService> factory;
+        Animator animator;
+
+        private BankViewFactory factory;
         private Asset loanAsset;
 
         private void OnEnable()
         {
+            animator = GetComponent<Animator>();
+
             ItemDatabase.Clear();
             // Load all services from assets
-            foreach (var service in Resources.LoadAll("ScriptableObjects/Bank/Catalog"))
-            {
-                ItemDatabase.Add(Instantiate(service) as BankService);
-            }
+            ItemDatabase = LoadAssets();
 
             // Setup groups
             if (ItemDatabase.Count > 0)
             {
-                ItemGroups = GetItemGroups();
+                FormItemGroups();
                 if (ItemGroups.Count > 0)
                     SelectedItemGroup = ItemGroups[0];
             }
 
             if (factory == null)
             {
-                factory = new BankViewFactory<BankService>(
+                factory = new BankViewFactory(
                     this,
-                    Resources.Load("Prefabs/Store/Views/BankView"),
-                    Resources.Load("Prefabs/Store/Views/BankServiceGroupListView"),
-                    Resources.Load("Prefabs/Store/Views/BankServiceGroupView"),
-                    Resources.Load("Prefabs/Store/Views/BankServiceListView"),
-                    Resources.Load("Prefabs/Store/Views/BankServiceView"));
+                    Resources.Load("Prefabs/Bank/Views/BankView"),
+                    Resources.Load("Prefabs/Bank/Views/BankItemGroupListView"),
+                    Resources.Load("Prefabs/Bank/Views/BankItemGroupView"),
+                    Resources.Load("Prefabs/Bank/Views/BankItemListView"),
+                    Resources.Load("Prefabs/Bank/Views/BankLoanView"),
+                    null,
+                    null);
             }
 
             if (transform.childCount != 0)
@@ -50,7 +55,16 @@ namespace Showcase.Bank
             }
             RootView = factory.CreateRootView(transform);
         }
-    
+
+        private void FormItemGroups()
+        {
+            foreach (BankService item in ItemDatabase)
+            {
+                var itemGroup = FindOrCreateItemGroup(item.GetType().ToString());
+                itemGroup.Add(item);
+            }
+        }
+
         private void OnDisable()
         {
             foreach (Transform child in gameObject.transform)
@@ -67,57 +81,47 @@ namespace Showcase.Bank
             }
         }
 
-        protected override List<ItemGroup<BankService>> GetItemGroups()
+
+        protected override ItemDatabase<BankService> LoadAssets()
         {
-            var result = new List<ItemGroup<BankService>>();
-            foreach (BankService item in ItemDatabase)
+            Console.Print("Loading bank services...");
+            var result = new ItemDatabase<BankService>();
+            foreach (var service in Resources.LoadAll("ScriptableObjects/Bank/Catalog"))
             {
-                switch (item)
-                {
-                    case Loan _:
-                    {
-                        var k = result[0].GetType().GetGenericTypeDefinition();
-                        var groupOfType = result.Find(group => @group.Items[0] is Loan);
-                        if (groupOfType != null) { groupOfType.Add(item); }
-                        else
-                        {
-                            var newGroup = new ItemGroup<BankService> {Title = "Кредит"};
-                            newGroup.Add(item);
-                            result.Add(newGroup);
-                        }
-                        break;
-                    }
-                    case CurrentDeposit _:
-                    {
-                        var k = result[0].GetType().GetGenericTypeDefinition();
-                        var groupOfType = result.Find(group => @group.Items[0] is CurrentDeposit);
-                        if (groupOfType != null) { groupOfType.Add(item); }
-                        else
-                        {
-                            var newGroup = new ItemGroup<BankService> {Title = "Бессрочный вклад"};
-                            newGroup.Add(item);
-                            result.Add(newGroup);
-                        }
-                        break;
-                    }
-                    case TimeDeposit _:
-                    {
-                        var k = result[0].GetType().GetGenericTypeDefinition();
-                        var groupOfType = result.Find(group => @group.Items[0] is TimeDeposit);
-                        if (groupOfType != null) { groupOfType.Add(item); }
-                        else
-                        {
-                            var newGroup = new ItemGroup<BankService> {Title = "Срочный вклад"};
-                            newGroup.Add(item);
-                            result.Add(newGroup);
-                        }
-                        break;
-                    }
-                }
+                result.Add(Instantiate(service) as BankService);
             }
-            string log = "Bank item groups: ";
-            result.ForEach(item => log += (item + ", "));
-            return result;
+
+            return result; 
+        }
+
+        public void TakeLoan(Loan loan)
+        {
+            loan.Purchase();
+            Debug.Log(loan.ToString() + ": loan taken!");
+        }
+
+        public override void Toggle()
+        {
+            if (animator)
+            {
+                animator.SetBool("IsOpened", !animator.GetBool("IsOpened"));
+            }
+        }
+
+        public override void Show()
+        {
+            if (animator)
+            {
+                animator.SetBool("IsOpened", true);
+            }
+        }
+
+        public override void Hide()
+        {
+            if (animator)
+            {
+                animator.SetBool("IsOpened", false);
+            }
         }
     }
 }
