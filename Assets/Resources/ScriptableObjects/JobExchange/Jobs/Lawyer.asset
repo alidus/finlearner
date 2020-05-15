@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb1bc5a162d9214db54188ba1a2225c, type: 3}
+  m_Name: Lawyer
+  m_EditorClassIdentifier: 
+  id: 0
+  title: "\u0410\u0434\u0432\u043E\u043A\u0430\u0442"
+  desc: "\u0410\u0434\u0432\u043E\u043A\u0430\u0442 \u0432 \u0441\u0443\u0434\u0435\u0431\u043D\u043E\u0439
+    \u043A\u043E\u043D\u0442\u043E\u0440\u0435"
+  category: {fileID: 11400000, guid: ae5683c4037c3794b86e0665671352bd, type: 2}
+  sprite: {fileID: 0}
+  statusEffects:
+  - title: "\u0415\u0436\u0435\u043D\u0435\u0434\u0435\u043B\u044C\u043D\u0430\u044F
+      \u0437\u0430\u0440\u043F\u043B\u0430\u0442\u0430 (\u0410\u0434\u0432\u043E\u043A\u0430\u0442)"
+    value: 100
+    freqency: 2
+    type: 0
+    flags: 1
+  - title: "\u0415\u0436\u0435\u043C\u0435\u0441\u044F\u0447\u043D\u0430\u044F \u0437\u0430\u0440\u043F\u043B\u0430\u0442\u0430
+      (\u0410\u0434\u0432\u043E\u043A\u0430\u0442)"
+    value: 400
+    freqency: 3
+    type: 0
+    flags: 1
+  canBeEquipped: 1
+  isEquipped: 0
+  hoursOfWeekToConsume: 60

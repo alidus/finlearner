@@ -9,18 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6705346542c5de84b999d63359af14c5, type: 3}
-  m_Name: LayerCourse
+  m_Script: {fileID: 11500000, guid: c424728ddb5a6b0459ce043617a0b3e5, type: 3}
+  m_Name: ITBachelorDegree
   m_EditorClassIdentifier: 
   id: 0
-  title: "\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0430 \u0430\u0434\u0432\u043E\u043A\u0430\u0442\u0430"
+  title: "\u0411\u0430\u043A\u0430\u043B\u0430\u0432\u0440 IT "
   desc: 
   price: 1000
   durationInDays: 7
   hoursOfWeekToConsume: 10
-  EducationDirection: 1
-  canBePurchased: 0
+  EducationDirection: 0
+  canBePurchased: 1
   isPurchased: 0
   certificates:
-  - {fileID: 11400000, guid: d205db8695b720c4cb36530113ec5dd9, type: 2}
+  - {fileID: 11400000, guid: 7f440284b7ee01c4093b9dbcb2b246b9, type: 2}
   mandatoryCertificates: []
+  EduDegreeLevel: 0
