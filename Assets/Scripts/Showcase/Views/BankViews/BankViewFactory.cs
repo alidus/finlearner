@@ -35,7 +35,6 @@ namespace Showcase.Views.BankViews
             rootView = GameObject.Instantiate(rootViewPrefab as GameObject, parentTransform).GetComponent<BankView>();
             itemGroupListView = CreateItemGroupListView(rootView.transform);
             itemListView = CreateItemListView(rootView.transform);
-            UpdateItemListView();
             showcase.OnSelectedItemGroupChanged -= UpdateItemListView;
             showcase.OnSelectedItemGroupChanged += UpdateItemListView;
             rootView.UpdateView();
