@@ -106,7 +106,10 @@ public class StatusEffectsManager : MonoBehaviour
         {
             if (statusEffect.Frequency == StatusEffectFrequency.OneShot)
             {
-                return TickStatusEffect(statusEffect);
+              if (!TickStatusEffect(statusEffect))
+                {
+                    return false;
+                }
             } else
             {
                 StatusEffects.Add(statusEffect);
