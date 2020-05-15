@@ -30,8 +30,8 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
     private void OnEnable()
     {
         var dataPanel = transform.Find("Data");
-        var iconTransform = dataPanel.Find("Icon");
-        IconImageComponent = iconTransform.GetComponent<Image>();
+        var iconPanel = dataPanel.Find("IconPanel");
+        IconImageComponent = iconPanel.Find("Icon").GetComponent<Image>();
         var infoPanel = dataPanel.Find("Info");
         var textInfo = infoPanel.Find("TextInfo");
         TitleTextComponent = textInfo.Find("Title").GetComponent<Text>();
@@ -87,7 +87,12 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
 
     private void OnDestroy()
     {
-        job.OnEquipStateChanged -= EquipStateChangedHandler;
+        if (job)
+        {
+            job.OnEquipStateChanged -= EquipStateChangedHandler;
+            job.OnEquipStateChanged -= EquipStateChangedHandler;
+            job.OnEquippableStateChanged -= EquippableStateChangedHandler;
+        }
     }
 
     void EquipStateChangedHandler()
@@ -115,7 +120,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
 
     public void UpdateButtons()
     {
-        applyQuitButtonText.text = job.IsEquipped ? "Уволиться" : "Устроиться";
+        applyQuitButtonText.text = IsEquippable ? "Уволиться" : "Устроиться";
     }
 
     public void UpdateAnimator()

@@ -67,6 +67,8 @@ namespace Showcase.Views.BankViews
             {
                 case Loan _:
                     return CreateLoanItemView(parentTransform, (Loan)item);
+                case TimeDeposit _:
+                    return CreateTimeDepositItemView(parentTransform, (TimeDeposit)item);
                 default:
                     return null;
             }
