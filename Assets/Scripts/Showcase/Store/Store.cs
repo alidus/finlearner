@@ -82,25 +82,38 @@ public class Store : Showcase<StoreItem, Store>
         List<ItemGroup<StoreItem>> result = new List<ItemGroup<StoreItem>>();
         foreach (StoreItem item in ItemDatabase)
         {
-            if (item is FurnitureItem)
+            switch (item)
             {
-                if (result.Count > 0)
-                {
-                    var k = result[0].GetType().GetGenericTypeDefinition();
-                }
-                var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
-                if (groupOfType != null)
-                {
-                    groupOfType.Add(item);
-                }
-                else
-                {
-                    var newGroup = new ItemGroup<StoreItem>();
-                    newGroup.Title = "Мебель";
-                    newGroup.Add(item);
-                    result.Add(newGroup);
-                }
+                case FurnitureItem _:
+                    {
+                        if (result.Count > 0)
+                        {
+                            var k = result[0].GetType().GetGenericTypeDefinition();
+                        }
+                        var groupOfType = result.Find(group => group.Items[0] is FurnitureItem);
+                        if (groupOfType != null)
+                        {
+                            groupOfType.Add(item);
+                        }
+                        else
+                        {
+                            var newGroup = new ItemGroup<StoreItem>();
+                            newGroup.Title = "Мебель";
+                            newGroup.Add(item);
+                            result.Add(newGroup);
+                        }
+                    }
+                    break;
+                case CarItem _:
+                    {
+
+                    }
+                    break;
+
+                default:
+                    break;
             }
+
         }
         string log = "Store item groups: ";
         result.ForEach(item => log += (item.ToString() + ", "));

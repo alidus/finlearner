@@ -23,7 +23,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
     public Sprite Sprite { get; set; }
 
     public bool IsEquipped { get; set; }
-    public bool IsAvailable { get; set; }
+    public bool IsEquippable { get; set; }
 
     public SalaryDisplayView SalaryDisplayView;
 
@@ -58,12 +58,15 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
         Sprite = job.Sprite;
         IsEquipped = job.IsEquipped;
         Description = job.Description;
-        IsAvailable = job.CanBeEquipped;
+        IsEquippable = job.CanBeEquipped;
         IsEquipped = job.IsEquipped;
         SalaryDisplayView.UpdateValues(job);
 
         job.OnEquipStateChanged -= EquipStateChangedHandler;
         job.OnEquipStateChanged += EquipStateChangedHandler;
+
+        job.OnEquippableStateChanged -= EquippableStateChangedHandler;
+        job.OnEquippableStateChanged += EquippableStateChangedHandler;
 
         applyQuitButton.onClick.RemoveAllListeners();
         applyQuitButton.onClick.AddListener(delegate
@@ -93,6 +96,12 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
         UpdateView();
     }
 
+    void EquippableStateChangedHandler()
+    {
+        IsEquippable = job.CanBeEquipped;
+        UpdateView();
+    }
+
     public override void UpdateView()
     {
         UpdateTitle();
@@ -113,7 +122,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
     {
         if (animator == null)
             animator = GetComponent<Animator>();
-        animator.SetBool("IsAvailable", IsAvailable);
+        animator.SetBool("IsAvailable", IsEquippable);
         animator.SetBool("IsActive", IsEquipped);
     }
 

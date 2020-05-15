@@ -28,3 +28,5 @@ MonoBehaviour:
   canBeEquipped: 1
   isEquipped: 0
   hoursOfWeekToConsume: 40
+  mandatoryCertificates:
+  - {fileID: 11400000, guid: 4a94d99837b6c5a4e8e5123a96cce549, type: 2}
