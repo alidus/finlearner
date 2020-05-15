@@ -86,8 +86,15 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertif
 
     public void Equip()
     {
-        IsEquipped = true;
-        OnEquipStateChanged?.Invoke();
+        if (GameDataManager.instance.CheckIfHasFreeTimeFor(this))
+        {
+            IsEquipped = true;
+            OnEquipStateChanged?.Invoke();
+        } else
+        {
+            HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NoFreeTime]);
+        }
+        
     }
 
     public void Uneqip()

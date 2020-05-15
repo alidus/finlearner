@@ -50,6 +50,7 @@ public abstract class Showcase<T, TClass> : MonoBehaviour where T : Item where T
         if (itemGroup == null)
         {
             itemGroup = new ItemGroup<T>(title);
+            ItemGroups.Add(itemGroup);
         }
         return itemGroup;
     }

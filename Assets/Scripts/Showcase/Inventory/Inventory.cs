@@ -70,6 +70,20 @@ public class Inventory : Showcase<Item, Inventory>
         }
     }
 
+    public List<T> GetItems<T>() where T : Item
+    {
+        List<T> result = new List<T>();
+        foreach (Item item in ItemDatabase)
+        {
+            if (item is T)
+            {
+                result.Add(item as T);
+            }
+        }
+
+        return result;
+    }
+
     protected List<ItemGroup<Item>> FormItemGroups()
     {
         List<ItemGroup<Item>> result = new List<ItemGroup<Item>>();

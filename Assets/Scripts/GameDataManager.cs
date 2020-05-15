@@ -237,11 +237,36 @@ public class GameDataManager : MonoBehaviour
 		}
 	}
 
-	public void AddTimeConsumers(ITimeConsumer timeConsumer)
+	public bool CheckIfHasFreeTimeFor(ITimeConsumer timeConsumer)
 	{
-		TimeConsumers.Add(timeConsumer);
-		UpdateFreeHoursOfWeekLeft();
-	}
+        if (FreeHoursOfWeekLeft < timeConsumer.HoursOfWeekToConsume)
+        {
+            return false;
+        } else
+		{
+			return true;
+		}
+    }
+
+    public bool CheckIfHasFreeTimeFor(List<ITimeConsumer> timeConsumers)
+    {
+		float totalHoursOfWeekToConsume = 0;
+        timeConsumers.ForEach(consumer => totalHoursOfWeekToConsume += consumer.HoursOfWeekToConsume);
+        if (totalHoursOfWeekToConsume > freeHoursOfWeekLeft)
+        {
+            return false;
+        }
+        else
+		{
+			return true;
+		}
+    }
+
+    public void AddTimeConsumers(ITimeConsumer timeConsumer)
+	{
+        TimeConsumers.Add(timeConsumer);
+        UpdateFreeHoursOfWeekLeft();
+    }
 	
 
 	/// <summary>
@@ -278,11 +303,11 @@ public class GameDataManager : MonoBehaviour
 
 	public void AddTimeConsumers(List<ITimeConsumer> timeConsumers)
 	{
-		foreach (ITimeConsumer timeConsumer in timeConsumers)
-		{
-			AddTimeConsumers(timeConsumer);
-		}
-		UpdateFreeHoursOfWeekLeft();
+        foreach (ITimeConsumer timeConsumer in timeConsumers)
+        {
+            AddTimeConsumers(timeConsumer);
+        }
+        UpdateFreeHoursOfWeekLeft();
 	}
 
 	public void RemoveTimeConsumers(ITimeConsumer timeConsumer)
