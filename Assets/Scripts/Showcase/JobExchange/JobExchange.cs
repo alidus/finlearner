@@ -59,6 +59,7 @@ public class JobExchange : Showcase<Job, JobExchange>
         foreach (Job job in Resources.LoadAll("ScriptableObjects/JobExchange/Jobs"))
         {
             var jobInstance = ScriptableObject.Instantiate(job) as Job;
+            jobInstance.Init();
             jobInstance.OnEquipStateChanged += delegate { HandleJobActivationChange(jobInstance); };
 
             jobInstance.OnEquipStateChanged -= delegate { job.NotifyOnInstanceEquipStateChanged(jobInstance); };

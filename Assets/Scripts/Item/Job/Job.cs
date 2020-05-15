@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -40,11 +41,30 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertif
     public event EquippableInstanceHandler OnInstanceEquipStateChanged;
     public event EquippableInstanceHandler OnInstanceEquippableStateChanged;
 
-    public bool CanBeEquipped { get => canBeEquipped; set => canBeEquipped = value; }
-    public bool IsEquipped { get => isEquipped; set => isEquipped = value; }
-    public List<Certificate> MandatoryCertificates { get; set; }
+    public bool CanBeEquipped { get => canBeEquipped; set
+        {
+            if (value != canBeEquipped)
+            {
+                canBeEquipped = value;
+                OnEquippableStateChanged?.Invoke();
+            }
+        } }
+    public bool IsEquipped { get => isEquipped; set
+        {
+            if (value != isEquipped)
+            {
+                isEquipped = value;
+                OnEquipStateChanged?.Invoke();
+            }
+        }
+    }
+    public List<Certificate> MandatoryCertificates { get => mandatoryCertificates; set => mandatoryCertificates = value; }
     [SerializeField]
     private float hoursOfWeekToConsume = 5 * 8;
+    [SerializeField]
+    private List<Certificate> mandatoryCertificates = new List<Certificate>();
+    private EducationHub educationHub;
+
     public float HoursOfWeekToConsume { get => hoursOfWeekToConsume; set => hoursOfWeekToConsume = value; }
     public TimeConsumerCategory TimeConsumerCategory { get; set; } = TimeConsumerCategory.Job;
 
@@ -90,11 +110,12 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertif
         {
             IsEquipped = true;
             OnEquipStateChanged?.Invoke();
-        } else
+        }
+        else
         {
             HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NoFreeTime]);
         }
-        
+
     }
 
     public void Uneqip()
@@ -120,6 +141,19 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertif
         return result;
     }
 
+    public void Init()
+    {
+        educationHub = EducationHub.instance as EducationHub;
+        educationHub.Certificates.CollectionChanged -= UpdateAvailability;
+        educationHub.Certificates.CollectionChanged += UpdateAvailability;
+        UpdateAvailability(null, null);
+    }
+
+    private void UpdateAvailability(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        CanBeEquipped = Certificate.SertificateCheck(educationHub.Certificates, this);
+    }
+
     public void NotifyOnInstanceEquipStateChanged(IEquipable equipable)
     {
         OnInstanceEquipStateChanged?.Invoke(equipable);
@@ -127,7 +161,7 @@ public class Job : Item, IDrawable, IHaveStatusEffect, IEquipable, IDemandCertif
 
     public void NotifyOnInstanceEquippableStateChanged(IEquipable equipable)
     {
-        OnInstanceEquippableStateChanged.Invoke(equipable);
+        OnInstanceEquippableStateChanged?.Invoke(equipable);
     }
 
 
