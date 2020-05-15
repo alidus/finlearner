@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public enum HintType { Message, Confirmation}
 public enum HintPreset { NotEnoughMoney,
-    NoFreeTime
+    NoFreeTime,
+    NotEnoughMood
 }
 
 public class HintsManager : MonoBehaviour
@@ -39,6 +40,7 @@ public class HintsManager : MonoBehaviour
     {
         HintPresets.Add(HintPreset.NotEnoughMoney, new Hint(hintWrapper, "Не удалось купить", "У вас недосточно денег для покупки", new HintParams(false, true), HintType.Message));
         HintPresets.Add(HintPreset.NoFreeTime, new Hint(hintWrapper, "Нет свободного времени", "У вас слишком мало свободного времени, чтобы заняться этим", new HintParams(false, true), HintType.Message));
+        HintPresets.Add(HintPreset.NotEnoughMood, new Hint(hintWrapper, "Уровень настроения слишком мал", "Ваш уровень настроения подходит к критической точке", new HintParams(false, true), HintType.Message));
 
     }
 

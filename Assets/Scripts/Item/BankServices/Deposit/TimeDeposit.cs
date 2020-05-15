@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Items/BankServices/TimeDeposit", fileName = "TimeDeposit")]
@@ -5,48 +6,19 @@ using UnityEngine;
  It can be withdraw after the period is over else the interest is burned. */
 public class TimeDeposit : BankService, IPurchasable, IHaveStatusEffect
 {
-    private const float rate = 0.1f;
+    int daysLeftToRepay = -1;
 
-    private int daysRemained;
-
-    public int DaysRemained
+    protected override void GenerateStatusEffects()
     {
-        get => daysRemained;
-        set => daysRemained = value;
+        StatusEffects.Add(new StatusEffect("Вы оформили депозит", -Amount, StatusEffectType.Money, StatusEffectFrequency.OneShot, StatusEffectFlags.Deposit));
     }
 
-    private const int TotalPeriod = 366;
-
-    private TimeDeposit()
+    public float GetMonthlyPaymentValue()
     {
+        float rateMonthlyPayment = Rate / TotalPeriodInMonths * Amount;
+        float debtMonthlyPayment = Amount / TotalPeriodInMonths;
+        return rateMonthlyPayment + debtMonthlyPayment;
     }
 
-    public class TimeDepositBuilder : MonoBehaviour
-    {
-        TimeDeposit timeDeposit = new TimeDeposit();
 
-        public TimeDepositBuilder SetTimeDepositValue(float value)
-        {
-            timeDeposit.Amount = value;
-            return this;
-        }
-        private TimeDepositBuilder AddStatusEffect(StatusEffect statusEffect)
-        {
-            timeDeposit.StatusEffects.Add(statusEffect);
-            return this;
-        }
-        private float GetYearlyPayment()
-        {
-            return timeDeposit.Amount * rate;
-        }
-        public TimeDeposit Build()
-        {
-            AddStatusEffect(new StatusEffect("Срочный вклад: " + timeDeposit.Amount, 
-                GetYearlyPayment(), 
-                StatusEffectType.Money, 
-                StatusEffectFrequency.Yearly));
-            SetTimeDepositValue(timeDeposit.Amount);
-            return timeDeposit;
-        }
-    }
 }

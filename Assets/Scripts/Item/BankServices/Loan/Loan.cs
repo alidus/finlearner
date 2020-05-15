@@ -5,25 +5,6 @@ using UnityEngine.UI;
 [CreateAssetMenu(menuName = "SO/Items/BankServices/Loan", fileName = "Loan")]
 public class Loan : BankService, IPurchasable, IHaveStatusEffect
 {
-    [SerializeField]
-    float mixAmount = 1000f;
-    public float MixAmount
-    {
-        get { return mixAmount; }
-        set { mixAmount = value; }
-    }
-    [SerializeField]
-    float maxAmount = 10000f;
-    public float MaxAmount
-    {
-        get { return maxAmount; }
-        set { maxAmount = value; }
-    }
-
-    [SerializeField]
-    float rate = 0.20f;
-    public float Rate { get => rate; set => rate = value; }
-
     private List<StatusEffect> statusEffects = new List<StatusEffect>();
     [SerializeField]
     int totalPeriodInMonths = 12;
@@ -34,7 +15,7 @@ public class Loan : BankService, IPurchasable, IHaveStatusEffect
     }
     int daysLeftToRepay = -1;
 
-    void GenerateStatusEffects()
+    protected override void GenerateStatusEffects()
     {
         StatusEffects.Add(new StatusEffect("Деньги в кредит", Amount, StatusEffectType.Money, StatusEffectFrequency.OneShot, StatusEffectFlags.Loan));
         StatusEffects.Add(new StatusEffect("Выплата кредита", -GetMonthlyPaymentValue(), StatusEffectType.Money, StatusEffectFrequency.Monthly, StatusEffectFlags.Loan));
@@ -45,12 +26,6 @@ public class Loan : BankService, IPurchasable, IHaveStatusEffect
         float rateMonthlyPayment = Rate / TotalPeriodInMonths * Amount;
         float debtMonthlyPayment = Amount / TotalPeriodInMonths;
         return rateMonthlyPayment + debtMonthlyPayment;
-    }
-
-    public override void Purchase()
-    {
-        GenerateStatusEffects();
-        base.Purchase();
     }
 
 

@@ -89,7 +89,12 @@ public class GameDataManager : MonoBehaviour
 		return Money >= value;
 	}
 
-	public const int TOTAL_FREE_HOURS_IN_A_WEEK = 7 * 24;
+    public bool IsEnoughMood(float mood)
+    {
+        return Mood >= mood;
+    }
+
+    public const int TOTAL_FREE_HOURS_IN_A_WEEK = 7 * 24;
 
 	public float FreeHoursOfWeekLeft { get => freeHoursOfWeekLeft; set { freeHoursOfWeekLeft = value; CalculateFreeTimeAmountEffects(); } }
 	private bool isRecordingIncome;
@@ -103,7 +108,7 @@ public class GameDataManager : MonoBehaviour
 	public float Money
 	{
 		get { return money; }
-		set
+		private set
 		{
 			if (value != money)
 			{
@@ -125,7 +130,7 @@ public class GameDataManager : MonoBehaviour
 	public float Mood
 	{
 		get { return mood; }
-		set {
+		private set {
 			if (value != mood)
 			{
 				float delta = (value - money);
@@ -246,6 +251,54 @@ public class GameDataManager : MonoBehaviour
 		{
 			return true;
 		}
+    }
+
+	public bool TryToPurchase(IPurchasable purchasable)
+	{
+		if (IsEnoughMoney(purchasable.Price))
+		{
+			return true;
+		}
+		else
+		{
+			HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMoney]);
+			return false;
+		}
+	}
+
+    public bool TryToTickStatusEffect(StatusEffect statusEffect)
+    {
+		if (statusEffect.Value < 0)
+		{
+            switch (statusEffect.Type)
+            {
+                case StatusEffectType.Money:
+                    if (IsEnoughMoney(-statusEffect.Value))
+                    {
+                        Money += statusEffect.Value;
+                        return true;
+                    }
+                    else
+                    {
+                        HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMoney]);
+                        return false;
+                    }
+                case StatusEffectType.Mood:
+					if (IsEnoughMood(-statusEffect.Value))
+                    {
+                        Mood += statusEffect.Value;
+                        return true;
+                    }
+                    else
+                    {
+                        HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMood]);
+                        return false;
+                    }
+                default:
+                    break;
+            }
+        }
+		return true;
     }
 
     public bool CheckIfHasFreeTimeFor(List<ITimeConsumer> timeConsumers)
