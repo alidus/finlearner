@@ -61,10 +61,10 @@ public class DefaultItemGroupView<T> : View, IViewTitle where T : Item
     {
         if (IsSelected)
         {
-            ImageComponent.color = GameDataManager.instance.ButtonSelectedColor;
+            ImageComponent.color = GameDataManager.instance.GroupButtonSelectedColor;
         } else
         {
-            ImageComponent.color = GameDataManager.instance.ButtonDefaultColor;
+            ImageComponent.color = GameDataManager.instance.GroupButtonDefaultColor;
         }
     }
 

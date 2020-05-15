@@ -9,16 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3651df94b230402fafce624d4e5d4bdd, type: 3}
-  m_Name: CurrentDeposit
+  m_Script: {fileID: 11500000, guid: 44bdc49bfbba4aa0ba61a88c8344a334, type: 3}
+  m_Name: TimeDeposit
   m_EditorClassIdentifier: 
   id: 0
-  title: "\u041B\u0438\u043A\u0432\u0438\u0434\u043D\u044B\u0439 \u0434\u0435\u043F\u043E\u0437\u0438\u0442"
+  title: 
   desc: 
-  rate: 0.15
+  rate: 0.2
   mixAmount: 1000
   maxAmount: 10000
   totalPeriodInMonths: 12
   amount: 0
-  canBePurchased: 1
+  canBePurchased: 0
   isPurchased: 0

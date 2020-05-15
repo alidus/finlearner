@@ -18,6 +18,7 @@ public class LoanView : DefaultItemView
     Text DurationLabelTextComponent { get; set; }
     Button AcceptButtonComponent { get; set; }
     Text AcceptButtonTextComponent { get; set; }
+    Image AcceptButtonBackgroudImage { get; set; }
     Text rateText { get; set; }
     Text resultAmountText { get; set; }
 
@@ -27,6 +28,9 @@ public class LoanView : DefaultItemView
     public float InitialValue { get; set; }
     public float Amount { get; set; }
     public float MaxValue { get; set; }
+
+    public bool IsPurchased { get; set; }
+
     public List<Dropdown.OptionData> DurationDropdownOptions { get; set; } = new List<Dropdown.OptionData>();
 
     private float CalculateMonthlyPayment(float debtValue, float rate, int period)
@@ -54,11 +58,14 @@ public class LoanView : DefaultItemView
         rateText = infoPanelTransform.Find("RatePanel").Find("RateText").GetComponent<Text>();
         resultAmountText = infoPanelTransform.Find("ResultAmountPanel").Find("ResultAmountValuePanel").Find("ResultAmountValueText").GetComponent<Text>();
 
-        Transform buttonComponent = transform.Find("ButtonAccept");
-        AcceptButtonTextComponent = buttonComponent.transform.Find("Text").GetComponentInChildren<Text>();
-        AcceptButtonComponent = buttonComponent.GetComponentInChildren<Button>();
+        Transform buttonTransform = transform.Find("ButtonAccept");
+        AcceptButtonBackgroudImage = buttonTransform.GetComponent<Image>();
+        AcceptButtonTextComponent = buttonTransform.transform.Find("Text").GetComponentInChildren<Text>();
+        AcceptButtonComponent = buttonTransform.GetComponentInChildren<Button>();
         AmountSliderComponent.onValueChanged.AddListener(AmountSliderValueChangedHandler);
         DurationSliderComponent.onValueChanged.AddListener(DurationSliderValueChangedHandler);
+
+
 
         AcceptButtonComponent.onClick.RemoveAllListeners();
         AcceptButtonComponent.onClick.AddListener(delegate
@@ -77,6 +84,19 @@ public class LoanView : DefaultItemView
                 }
             }
         });
+    }
+    private void OnDestroy()
+    {
+        if (loan)
+        {
+            loan.OnPurchaseStateChanged -= LoanPurchaseStateChangedHandler;
+        }
+    }
+
+    void LoanPurchaseStateChangedHandler()
+    {
+        IsPurchased = loan.IsPurchased;
+        UpdateButton();
     }
 
     void DurationSliderValueChangedHandler(float value)
@@ -99,6 +119,10 @@ public class LoanView : DefaultItemView
         this.loan = loan;
         Title = loan.Title;
         Amount = loan.Amount;
+        IsPurchased = loan.IsPurchased;
+
+        loan.OnPurchaseStateChanged -= LoanPurchaseStateChangedHandler;
+        loan.OnPurchaseStateChanged += LoanPurchaseStateChangedHandler;
     }
 
     public void UpdateAmount()
@@ -118,7 +142,10 @@ public class LoanView : DefaultItemView
     public void UpdateButton()
     {
         if (AcceptButtonComponent)
-            AcceptButtonTextComponent.text = "Взять";
+        {
+            AcceptButtonTextComponent.text = IsPurchased ? "Кредит активен" : "Взять";
+            AcceptButtonBackgroudImage.color = IsPurchased ? GameDataManager.instance.InteractiveButtonInactiveColor : GameDataManager.instance.InteractiveButtonActiveColor;
+        }
     }
 
     public override void UpdateView()

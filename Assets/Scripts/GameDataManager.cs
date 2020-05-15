@@ -34,11 +34,15 @@ public class GameDataManager : MonoBehaviour
 	public Color MonthlyFrequencyColor = new Color(0.68f, 0.87f, 1f, 0.6f);
 	public Color YearlyFrequencyColor = new Color(1f, 0.68f, 0.72f, 0.6f);
 
-    [Header("Buttons colors")]
-    public Color ButtonDefaultColor = new Color(0.14f, 0.14f, 0.14f);
-	public Color ButtonSelectedColor = new Color(0.44f, 0.08f, 0.14f);
+    [Header("Group colors")]
+    public Color GroupButtonDefaultColor = new Color(0.14f, 0.14f, 0.14f);
+	public Color GroupButtonSelectedColor = new Color(0.44f, 0.08f, 0.14f);
 
-	[Header("Education-related colors")]
+    [Header("Interactive buttons colors")]
+    public Color InteractiveButtonActiveColor = new Color(0.14f, 0.14f, 0.14f);
+    public Color InteractiveButtonInactiveColor = new Color(0.44f, 0.08f, 0.14f);
+
+    [Header("Education-related colors")]
 	public Color CourseEducationEnityTypeColor = new Color(1f, 0, 0, 0.4f);
 	public Color DegreeEducationEnityTypeColor = new Color(1f, 0, 0.7f, 0.4f);
 	public Color TechnicalEducationDirectionTypeColor = new Color(0.12f, 0.13f, 0.68f, 0.7f);
@@ -268,37 +272,34 @@ public class GameDataManager : MonoBehaviour
 
     public bool TryToTickStatusEffect(StatusEffect statusEffect)
     {
-		if (statusEffect.Value < 0)
-		{
-            switch (statusEffect.Type)
-            {
-                case StatusEffectType.Money:
-                    if (IsEnoughMoney(-statusEffect.Value))
-                    {
-                        Money += statusEffect.Value;
-                        return true;
-                    }
-                    else
-                    {
-                        HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMoney]);
-                        return false;
-                    }
-                case StatusEffectType.Mood:
-					if (IsEnoughMood(-statusEffect.Value))
-                    {
-                        Mood += statusEffect.Value;
-                        return true;
-                    }
-                    else
-                    {
-                        HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMood]);
-                        return false;
-                    }
-                default:
-                    break;
-            }
+        switch (statusEffect.Type)
+        {
+            case StatusEffectType.Money:
+                if (statusEffect.Value >=0 || IsEnoughMoney(-statusEffect.Value))
+                {
+                    Money += statusEffect.Value;
+                    return true;
+                }
+                else
+                {
+                    HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMoney]);
+                    return false;
+                }
+            case StatusEffectType.Mood:
+                if (statusEffect.Value >= 0 || IsEnoughMood(-statusEffect.Value))
+                {
+                    Mood += statusEffect.Value;
+                    return true;
+                }
+                else
+                {
+                    HintsManager.instance.ShowHint(HintsManager.instance.HintPresets[HintPreset.NotEnoughMood]);
+                    return false;
+                }
+            default:
+                break;
         }
-		return true;
+        return true;
     }
 
     public bool CheckIfHasFreeTimeFor(List<ITimeConsumer> timeConsumers)
