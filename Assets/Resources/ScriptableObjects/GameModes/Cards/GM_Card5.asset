@@ -18,7 +18,7 @@ MonoBehaviour:
     \u0434\u043B\u044F \u0432\u0430\u0441. \u041F\u0440\u0438\u0448\u043B\u043E \u0432\u0440\u0435\u043C\u044F
     \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0434\u043E\u0441\u0442\u043E\u0439\u043D\u043E\u0435
     \u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u043D\u0438\u0435 \u0438 \u043F\u043E\u0439\u0442\u0438
-    \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0432 \u0421\u0431\u0435\u0440\u0431\u0430\u043D\u043A"
+    \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u0432 \u0421\u0431\u0435\u0440\u0431\u0430\u043D\u043A."
   sprite: {fileID: 21300000, guid: 8959493119a0e424681137d04a5f1463, type: 3}
   isCompleted: 0
   type: 0
@@ -36,13 +36,13 @@ MonoBehaviour:
         targetFloatValue: 10000
       ownConditions:
       - state: 0
-        targetItem: {fileID: 11400000, guid: ea76e0c2bf665864786ab9275dc5e321, type: 2}
-      - state: 0
         targetItem: {fileID: 11400000, guid: 19ea368a1acfc704a9646c09bccc6f3d, type: 2}
       - state: 0
         targetItem: {fileID: 11400000, guid: 7f440284b7ee01c4093b9dbcb2b246b9, type: 2}
       - state: 0
         targetItem: {fileID: 11400000, guid: a33913375cf75ef409e5912f20d06bb1, type: 2}
+      - state: 0
+        targetItem: {fileID: 11400000, guid: e019cb484d3a7bf44bf4817889323170, type: 2}
     title: Winning condition group
     flags: 1
   - gameConditionsContainer:
@@ -51,10 +51,10 @@ MonoBehaviour:
         targetVariable: 1
         valueConditionOperator: 4
         targetIntValue: 0
-        targetFloatValue: 30
+        targetFloatValue: 0
       - state: 0
         targetVariable: 0
-        valueConditionOperator: 0
+        valueConditionOperator: 4
         targetIntValue: 0
         targetFloatValue: 0
       ownConditions: []

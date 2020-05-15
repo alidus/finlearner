@@ -29,12 +29,7 @@ MonoBehaviour:
   age: 18
   gameConditionGroups:
   - gameConditionsContainer:
-      valueConditions:
-      - state: 0
-        targetVariable: 0
-        valueConditionOperator: 3
-        targetIntValue: 0
-        targetFloatValue: 10000
+      valueConditions: []
       ownConditions:
       - state: 0
         targetItem: {fileID: 11400000, guid: 20efa868038dfa44ea3661223826d1a8, type: 2}
@@ -44,6 +39,8 @@ MonoBehaviour:
         targetItem: {fileID: 11400000, guid: d59d4dcba8428274f9b199b1a302740d, type: 2}
       - state: 0
         targetItem: {fileID: 11400000, guid: 1114bc9290300d143ac619ae6233eda4, type: 2}
+      - state: 0
+        targetItem: {fileID: 11400000, guid: becce10d56106854d81072a793a7b3d8, type: 2}
     title: Winning condition group
     flags: 1
   - gameConditionsContainer:
@@ -52,7 +49,7 @@ MonoBehaviour:
         targetVariable: 1
         valueConditionOperator: 1
         targetIntValue: 0
-        targetFloatValue: 40
+        targetFloatValue: 0
       - state: 0
         targetVariable: 0
         valueConditionOperator: 4
