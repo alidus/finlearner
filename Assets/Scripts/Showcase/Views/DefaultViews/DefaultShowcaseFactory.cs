@@ -42,6 +42,7 @@ public class DefaultShowcaseViewFactory<T, TClass> where T : Item where TClass :
         itemListView = CreateItemListView(rootView.transform);
         showcase.OnSelectedItemGroupChanged -= UpdateItemListView;
         showcase.OnSelectedItemGroupChanged += UpdateItemListView;
+        UpdateItemListView();
         rootView.UpdateView();
         return rootView;
     }
