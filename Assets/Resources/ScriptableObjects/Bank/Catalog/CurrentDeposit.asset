@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: CurrentDeposit
   m_EditorClassIdentifier: 
   id: 0
-  title: "\u041B\u0438\u043A\u0432\u0438\u0434\u043D\u044B\u0439 \u0434\u0435\u043F\u043E\u0437\u0438\u0442"
-  desc: 
-  rate: 0.15
+  title: "\u041B\u0438\u043A\u0432\u0438\u0434\u043D\u044B\u0439 \u0432\u043A\u043B\u0430\u0434"
+  desc: "\u041B\u0438\u043A\u0432\u0438\u0434\u043D\u044B\u0439 \u0432\u043A\u043B\u0430\u0434"
+  rate: 0.05
   mixAmount: 1000
   maxAmount: 10000
   totalPeriodInMonths: 12
-  amount: 0
+  amount: 1000
   canBePurchased: 1
   isPurchased: 0

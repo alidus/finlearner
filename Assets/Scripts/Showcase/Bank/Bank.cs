@@ -42,8 +42,8 @@ namespace Showcase.Bank
                     Resources.Load("Prefabs/Bank/Views/BankItemGroupView"),
                     Resources.Load("Prefabs/Bank/Views/BankItemListView"),
                     Resources.Load("Prefabs/Bank/Views/BankLoanView"),
-                    null,
-                    null);
+                    Resources.Load("Prefabs/Bank/Views/BankCurrentDepositView"),
+                    Resources.Load("Prefabs/Bank/Views/BankTimeDepositView"));
             }
 
             if (transform.childCount != 0)
@@ -100,6 +100,12 @@ namespace Showcase.Bank
             Debug.Log(loan.ToString() + ": loan taken!");
         }
 
+        public void MakeDeposit(Deposit deposit)
+        {
+            deposit.Purchase();
+            Debug.Log(deposit.ToString() + ": deposit made!");
+        }
+
         public override void Toggle()
         {
             if (animator)
@@ -123,6 +129,8 @@ namespace Showcase.Bank
                 animator.SetBool("IsOpened", false);
             }
         }
+
+        
     }
 }
 

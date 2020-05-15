@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: TimeDeposit
   m_EditorClassIdentifier: 
   id: 0
-  title: 
+  title: "\u0421\u0440\u043E\u0447\u043D\u044B\u0439 \u0432\u043A\u043B\u0430\u0434"
   desc: 
-  rate: 0.2
+  rate: 0.1
   mixAmount: 1000
   maxAmount: 10000
-  totalPeriodInMonths: 12
-  amount: 0
-  canBePurchased: 0
+  totalPeriodInMonths: -1
+  amount: 1000
+  canBePurchased: 1
   isPurchased: 0

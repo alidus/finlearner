@@ -74,9 +74,11 @@ public class BankService : Item, IHaveStatusEffect, IPurchasable
         GenerateStatusEffects();
         if (true)
         {
-            IsPurchased = true;
-            StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
-            OnPurchaseStateChanged?.Invoke();
+            if (StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects))
+            {
+                IsPurchased = true;
+                OnPurchaseStateChanged?.Invoke();
+            }
         }
         else
         {
@@ -93,6 +95,7 @@ public class BankService : Item, IHaveStatusEffect, IPurchasable
 
     protected virtual void GenerateStatusEffects()
     {
+        StatusEffects.Clear();
         StatusEffects.Add(new StatusEffect("Использована банковская услуга", 1, StatusEffectType.Money, StatusEffectFrequency.OneShot, StatusEffectFlags.Loan));
     }
     public void NotifyOnInstancePurchaseStateChanged(IPurchasable purchasable)
