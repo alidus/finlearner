@@ -76,6 +76,20 @@ public class OwnMilestone : Milestone
                         SetState(OwnCondition.State);
                     }
                     break;
+                case CarItem _:
+                    {
+                        var carItem = (CarItem)OwnCondition.TargetItem;
+                        if (OwnCondition.State)
+                        {
+                            UpdateText("Вы должны купить машину: " + carItem.Title);
+                        }
+                        else
+                        {
+                            UpdateText("Купили машину: " + carItem.Title);
+                        }
+                        SetState(OwnCondition.State);
+                    }
+                    break;
                 default:
                     {
                         var item = OwnCondition.TargetItem;

@@ -60,11 +60,14 @@ public class StoreItem : Item, IPurchasable, IEquipable, IDrawable, IHaveStatusE
 
     public void Purchase()
     {
-        IsPurchased = true;
-        CanBeEquipped = true;
-        StatusEffectsManager.instance.ApplyStatusEffects(purchaseStatusEffect);
-        StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
-        OnPurchaseStateChanged?.Invoke();
+        
+        if (StatusEffectsManager.instance.ApplyStatusEffects(purchaseStatusEffect))
+        {
+            IsPurchased = true;
+            CanBeEquipped = true;
+            StatusEffectsManager.instance.ApplyStatusEffects(StatusEffects);
+            OnPurchaseStateChanged?.Invoke();
+        }
     }
 
     public void Sell()

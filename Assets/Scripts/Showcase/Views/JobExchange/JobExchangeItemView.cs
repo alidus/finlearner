@@ -120,7 +120,7 @@ public class JobExchangeItemView : DefaultItemView, IViewTitle, IViewImage, IVie
 
     public void UpdateButtons()
     {
-        applyQuitButtonText.text = IsEquippable ? "Уволиться" : "Устроиться";
+        applyQuitButtonText.text = IsEquipped ? "Уволиться" : "Устроиться";
     }
 
     public void UpdateAnimator()
