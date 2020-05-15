@@ -25,14 +25,6 @@ public class PlaceableObject : View
         this.placeableItem = placeableItem;
     }
 
-    private void OnMouseDown()
-    {
-        if (radialSelector == null)
-        {
-            radialSelector = radialSelectorSpawner.SpawnRadialSelector(this);
-        }
-        radialSelector.UpdateView();
-    }
 
     public override void UpdateView()
     {
@@ -42,5 +34,20 @@ public class PlaceableObject : View
     private void UpdateSprite()
     {
         spriteRenderer.sprite = placeableItem.Drawable.Sprite;
+    }
+
+    private void OnMouseDown()
+    {
+        if (radialSelector == null)
+        {
+            radialSelector = radialSelectorSpawner.SpawnRadialSelector(this);
+        }
+        UpdateSelectorList();
+        radialSelector.UpdateView();
+    }
+
+    protected virtual void UpdateSelectorList()
+    {
+        radialSelector.UpdatePlaceableList(inventory.GetItems<Item>().ConvertAll(item => (IPlaceable)item));
     }
 }

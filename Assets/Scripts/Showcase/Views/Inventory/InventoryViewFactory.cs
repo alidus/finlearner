@@ -56,13 +56,13 @@ public class InventoryViewFactory : DefaultShowcaseViewFactory<Item, Inventory>
             return CreateCertificateListView(parentTransform);
         } else if (showcase.SelectedItemGroup.Title == "Furniture")
         {
-            return CreateStoreItemListView(parentTransform);
+            return CreateFurnitureItemListView(parentTransform);
         }
 
         return null;
     }
 
-    public DefaultItemListView CreateStoreItemListView(Transform parentTransform)
+    public DefaultItemListView CreateFurnitureItemListView(Transform parentTransform)
     {
         DefaultItemListView itemListView = GameObject.Instantiate(storeItemListViewPrefab as GameObject, parentTransform).GetComponent<DefaultItemListView>();
         foreach (StoreItem item in showcase.SelectedItemGroup.Items)
