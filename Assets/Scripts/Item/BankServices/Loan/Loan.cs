@@ -5,16 +5,6 @@ using UnityEngine.UI;
 [CreateAssetMenu(menuName = "SO/Items/BankServices/Loan", fileName = "Loan")]
 public class Loan : BankService, IPurchasable, IHaveStatusEffect
 {
-    private List<StatusEffect> statusEffects = new List<StatusEffect>();
-    [SerializeField]
-    int totalPeriodInMonths = 12;
-    public int TotalPeriodInMonths
-    {
-        get { return totalPeriodInMonths; }
-        set { totalPeriodInMonths = value; }
-    }
-    int daysLeftToRepay = -1;
-
     protected override void GenerateStatusEffects()
     {
         StatusEffects.Add(new StatusEffect("Деньги в кредит", Amount, StatusEffectType.Money, StatusEffectFrequency.OneShot, StatusEffectFlags.Loan));
@@ -27,6 +17,9 @@ public class Loan : BankService, IPurchasable, IHaveStatusEffect
         float debtMonthlyPayment = Amount / TotalPeriodInMonths;
         return rateMonthlyPayment + debtMonthlyPayment;
     }
+
+
+
 
 
     public class LoanBuilder : MonoBehaviour

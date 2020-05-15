@@ -37,6 +37,7 @@ namespace Showcase.Views.BankViews
             itemListView = CreateItemListView(rootView.transform);
             showcase.OnSelectedItemGroupChanged -= UpdateItemListView;
             showcase.OnSelectedItemGroupChanged += UpdateItemListView;
+            UpdateItemListView();
             rootView.UpdateView();
             return rootView;
         }
@@ -53,12 +54,22 @@ namespace Showcase.Views.BankViews
 
         public View CreateCurrentDepositItemView(Transform parentTransform, CurrentDeposit currentDeposit)
         {
-            return null;
+            CurrentDepositView depositView = GameObject.Instantiate(currentDepositViewPrefab as GameObject, parentTransform).GetComponent<CurrentDepositView>();
+
+            depositView.Init(currentDeposit);
+            depositView.UpdateView();
+
+            return depositView;
         }
 
         public View CreateTimeDepositItemView(Transform parentTransform, TimeDeposit timeDeposit)
         {
-            return null;
+            TimeDepositView depositView = GameObject.Instantiate(timeDepositViewPrefab as GameObject, parentTransform).GetComponent<TimeDepositView>();
+
+            depositView.Init(timeDeposit);
+            depositView.UpdateView();
+
+            return depositView;
         }
 
         public override View CreateItemView(Item item, Transform parentTransform)
@@ -69,6 +80,8 @@ namespace Showcase.Views.BankViews
                     return CreateLoanItemView(parentTransform, (Loan)item);
                 case TimeDeposit _:
                     return CreateTimeDepositItemView(parentTransform, (TimeDeposit)item);
+                case CurrentDeposit _:
+                    return CreateCurrentDepositItemView(parentTransform, (CurrentDeposit)item);
                 default:
                     return null;
             }
