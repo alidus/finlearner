@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Showcase.Views.BankViews;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -15,7 +14,6 @@ namespace Showcase.Bank
         Animator animator;
 
         private BankViewFactory factory;
-        private Asset loanAsset;
 
         private void OnEnable()
         {
